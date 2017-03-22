@@ -1,0 +1,67 @@
+<!DOCTYPE html> 
+<html> 
+<head> <meta charset=" utf-8"> 
+	<title>脚本之家</title> 
+	<style type="text/css">  
+	div{   width:200px;   height:200px;  } 
+	 </style>  
+     <script src="http://code.jquery.com/jquery-latest.js"></script>
+	 <script type="text/javascript">  
+	 window.onload=function(){  
+	 
+        $.ajax({
+        type: "get",
+        url: "http://200.200.3.230:8012/api/GrainIot/PostPack",
+        data: {
+    "collectors": [
+        {
+            "c_short": "01fa",
+            "m_cpuid": "01ac345b",
+            "sum": "7",
+            "SensorId": [
+                "eeb5678f9c3d",
+                "eeb6678f9c3d",
+                "eeb7678f9c3d",
+                "eeb8678f9c3d",
+                "eeb9678f9c3d",
+                "eeba678f9c3d",
+                "eebb678f9c3d"
+            ],
+            "temp": "02b3678f9c3de2"
+        }
+    ],
+    "receiver": {
+        "c_short": "01fa",
+        "c_cpuid": "01ac345b",
+        "building": "L1",
+        "layer": "1",
+        "room": "2",
+        "hum": "73",
+        "temp": "23"
+    },
+    "alarms": [
+        {
+            "type2": "temp",
+            "c_short": "01fa",
+            "m_cpuid": "01ac345b",
+            "tempid": "ee23e3671601",
+            "data": "45"
+        }
+    ]
+}
+,
+        success: function (data, status) {
+            alert(2222);
+            if (status == "success") {
+                $("#div_test").html(data);
+            }
+        }
+    });
+
+	   }  
+	 </script>  
+</head>
+  <body>  
+  	<div id="div_test"></div>  
+  </body>  
+</html>

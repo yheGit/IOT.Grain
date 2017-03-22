@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6D30047C-4BAF-41F7-A2A7-8582E815C5D7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Net66.Entity</RootNamespace>
+    <AssemblyName>Net66.Entity</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="DR_Model\Collector.cs" />
+    <Compile Include="DR_Model\Floor.cs" />
+    <Compile Include="DR_Model\Granary.cs" />
+    <Compile Include="DR_Model\Heap.cs" />
+    <Compile Include="DR_Model\Humidity.cs" />
+    <Compile Include="DR_Model\Organization.cs" />
+    <Compile Include="DR_Model\Receiver.cs" />
+    <Compile Include="DR_Model\Sensor.cs" />
+    <Compile Include="DR_Model\Temperature.cs" />
+    <Compile Include="DR_Model\UserInfo.cs" />
+    <Compile Include="DR_Model\WareHouse.cs" />
+    <Compile Include="DR_Model\WareHouse_Log.cs" />
+    <Compile Include="IO_Model\IPackIot.cs" />
+    <Compile Include="IO_Model\IResultClass.cs" />
+    <Compile Include="IO_Model\IRetrunClass.cs" />
+    <Compile Include="IO_Model\ISearch.cs" />
+    <Compile Include="IO_Model\ISearchBase.cs" />
+    <Compile Include="IO_Model\IWareHouse.cs" />
+    <Compile Include="IO_Model\MobiResult.cs" />
+    <Compile Include="IO_Model\OFloor.cs" />
+    <Compile Include="IO_Model\OWareHouse.cs" />
+    <Compile Include="IO_Model\ReturnClass.cs" />
+    <Compile Include="Models\Alarm.cs" />
+    <Compile Include="Models\Collector.cs" />
+    <Compile Include="Models\Floor.cs" />
+    <Compile Include="Models\Grain_IOTContext.cs" />
+    <Compile Include="Models\Granary.cs" />
+    <Compile Include="Models\Heap.cs" />
+    <Compile Include="Models\Humidity.cs" />
+    <Compile Include="Models\Mapping\AlarmMap.cs" />
+    <Compile Include="Models\Mapping\CollectorMap.cs" />
+    <Compile Include="Models\Mapping\FloorMap.cs" />
+    <Compile Include="Models\Mapping\GranaryMap.cs" />
+    <Compile Include="Models\Mapping\HeapMap.cs" />
+    <Compile Include="Models\Mapping\HumidityMap.cs" />
+    <Compile Include="Models\Mapping\OrganizationMap.cs" />
+    <Compile Include="Models\Mapping\ReceiverMap.cs" />
+    <Compile Include="Models\Mapping\SensorMap.cs" />
+    <Compile Include="Models\Mapping\TemperatureMap.cs" />
+    <Compile Include="Models\Mapping\UserInfoMap.cs" />
+    <Compile Include="Models\Mapping\WareHouseMap.cs" />
+    <Compile Include="Models\Mapping\WareHouse_LogMap.cs" />
+    <Compile Include="Models\Mapping\SensorBase.cs" />
+    <Compile Include="Models\Organization.cs" />
+    <Compile Include="Models\Receiver.cs" />
+    <Compile Include="Models\Sensor.cs" />
+    <Compile Include="Models\Temperature.cs" />
+    <Compile Include="Models\UserInfo.cs" />
+    <Compile Include="Models\WareHouse.cs" />
+    <Compile Include="Models\WareHouse_Log.cs" />
+    <Compile Include="Models\SensorBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
