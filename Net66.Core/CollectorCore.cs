@@ -15,17 +15,22 @@ namespace Net66.Core
     public class CollectorCore : ICollectorCore
     {
         private static IGrainRepository<Collector> cRepository;
+        private static IGrainRepository<Granary> gRepository;
+        private static IGrainRepository<Receiver> rRepository;
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Sensor> sRepository;
         private static IGrainRepository<SensorBase> sbRepository;
 
         public CollectorCore(IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository
-            , IGrainRepository<Sensor> _sRepository, IGrainRepository<SensorBase> _sbRepository)
+            , IGrainRepository<Sensor> _sRepository, IGrainRepository<SensorBase> _sbRepository
+            , IGrainRepository<Receiver> _rRepository, IGrainRepository<Granary> _gRepository)
         {
             cRepository = _cRepository;
             tRepository = _tRepository;
             sRepository = _sRepository;
             sbRepository = _sbRepository;
+            rRepository = _rRepository;
+            gRepository = _gRepository;
         }
 
         public bool Install(IReceiver _entity)
@@ -35,11 +40,22 @@ namespace Net66.Core
             var c_short = TypeParse._16NAC_To_10NSC(_entity.c_short);
             var guidKey = c_short + "_" + _entity.heap + "_" + _entity.sublayer;
             var guid = Utils.MD5(guidKey);
+
+            var rInfo= rRepository.Get(g => g.ID == c_short);
+            if (rInfo == null)
+                return false;
+            var gInfo=gRepository.Get(g => g.WH_Number == rInfo.W_Number && g.Type == 1 && g.Code.ToString() == rInfo.F_Number);
+            if (gInfo == null)
+                return false;
+            var ggInfo=gRepository.Get(g => g.Type == 2 && g.PID == gInfo.Code && g.Code.ToString() == rInfo.G_Number);
+            if (ggInfo == null)
+                return false;
+            //gRepository.Get(g=>g.Type==0&&g.PID==
             var addCollecters = new List<Collector>() {new Collector(){
                     GuidID=guid,
                     CPUId = _entity.c_cpuid,
                     InstallDate = datenow,               
-                    H_Number=_entity.heap,
+                    //PID=_entity.heap,
                     R_Code=c_short,
                     Sublayer=_entity.sublayer,
                     //UserId=null,

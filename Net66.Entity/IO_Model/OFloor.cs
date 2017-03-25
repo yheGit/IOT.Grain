@@ -14,7 +14,7 @@ namespace Net66.Entity.IO_Model
         public string Location { get; set; }
         public string WH_Number { get; set; }
         public Nullable<int> UserId { get; set; }
-        public Nullable<byte> IsActive { get; set; }
+        public Nullable<int> IsActive { get; set; }
 
         public List<Granary> GranaryList { get; set; }
 

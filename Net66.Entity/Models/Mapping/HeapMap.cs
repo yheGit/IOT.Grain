@@ -28,6 +28,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.G_Number).HasColumnName("G_Number");
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
+            this.Property(t => t.BadPoints).HasColumnName("BadPoints");//
         }
     }
 }

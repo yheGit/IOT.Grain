@@ -70,5 +70,18 @@ namespace Net66.Service.Controllers
             else
                 return new MobiResult(1011, "不存在");
         }
+
+        [HttpPost]
+        public MobiResult GetList(List<int> ids)
+        {
+            if (ids == null || ids.Count <= 0)
+                return new MobiResult(1009);
+            var reList = granaryCore.GetHeapList(ids);
+            if (reList!=null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1011);
+        }
+
     }
 }

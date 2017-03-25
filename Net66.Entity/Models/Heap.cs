@@ -11,5 +11,6 @@ namespace Net66.Entity.Models
         public string G_Number { get; set; }
         public Nullable<int> UserId { get; set; }
         public Nullable<byte> IsActive { get; set; }
+        public Nullable<int> BadPoints { get; set; }
     }
 }

@@ -17,5 +17,7 @@ namespace Net66.Core.Interface
 
         bool IsExist(Granary _entity);
 
+        List<Granary> GetHeapList(List<int> idArr);
+
     }
 }

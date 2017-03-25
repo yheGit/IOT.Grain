@@ -56,7 +56,9 @@
     <Compile Include="Interface\IGranaryCore.cs" />
     <Compile Include="Interface\IHeapCore.cs" />
     <Compile Include="Interface\IReceiverCore.cs" />
+    <Compile Include="Interface\ISensorCore.cs" />
     <Compile Include="ReceiverCore.cs" />
+    <Compile Include="SensorCore.cs" />
     <Compile Include="WareHouseCore.cs" />
     <Compile Include="FloorCore.cs" />
     <Compile Include="Interface\IWareHouseCore.cs" />

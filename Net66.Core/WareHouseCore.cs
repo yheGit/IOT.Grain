@@ -16,13 +16,13 @@ namespace Net66.Core
     public class WareHouseCore : IWareHouseCore
     {
         private static IGrainRepository<WareHouse> Repository;
-        private static IGrainRepository<Floor> fRepository;
+        //private static IGrainRepository<Floor> fRepository;
         private static IGrainRepository<Granary> gRepository;
 
-        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Floor> _fRepository, IGrainRepository<Granary> _gRepository)
+        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository)
         {
             Repository = _Repository;
-            fRepository = _fRepository;
+            //fRepository = _fRepository;
             gRepository = _gRepository;
         }
 
@@ -84,11 +84,11 @@ namespace Net66.Core
             //获取粮仓信息
             var reList = Repository.GetPageLists(where, p => p.StampTime.ToString(), false, pageIndex, pageSize, ref rows);
             //获取楼层信息
-            var reIdList = reList.Select(s => s.Number).ToList();
-            var floorList = fRepository.GetList(g => reIdList.Contains(g.WH_Number));//WH_Number
+            var reIdList = reList.Select(s => s.ID).ToList();
+            var floorList = gRepository.GetList(g => reIdList.Contains(g.PID.Value));//WH_Number
             //廒间信息
-            var fIdList = floorList.Select(s => s.Number).ToList();
-            var granaryList = gRepository.GetList(g => fIdList.Contains(g.F_Number));
+            var fIdList = floorList.Select(s => s.ID).ToList();
+            var granaryList = gRepository.GetList(g => fIdList.Contains(g.PID.Value));
 
             var ofList = floorList.Select(s => new OFloor()
             {
@@ -97,23 +97,26 @@ namespace Net66.Core
                 Location = s.Location,
                 Number = s.Number,
                 UserId = s.UserId,
-                WH_Number = s.WH_Number,
-                GranaryList = granaryList.Where(w => w.F_Number == s.Number).ToList()
+                //WH_Number = s.WH_Number,
+                GranaryList = granaryList.Where(w => w.PID == s.ID).ToList()
             }).ToList();
 
             return reList.Select(s => new OWareHouse()
             {
-                ID = s.ID,
-                AverageTemperature = s.AverageTemperature,
+                ID = s.ID,                
                 IsActive = s.IsActive,
                 Location = s.Location,
+                AverageTemperature = s.AverageTemperature,
                 Maximumemperature = s.Maximumemperature,
                 MinimumTemperature = s.MinimumTemperature,
+                InSideTemperature=s.InSideTemperature,
+                OutSideTemperature=s.OutSideTemperature,
                 Name = s.Name,
                 Number = s.Number,
                 StampTime = s.StampTime,
                 Type = s.Type,
                 UserId = s.UserId,
+                BadPoints=s.BadPoints,
                 Floors = ofList.Where(w => w.WH_Number == s.Number).ToList()
             }).ToList();
         }

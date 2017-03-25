@@ -9,5 +9,7 @@ namespace Net66.Entity.Models
         public Nullable<decimal> Temp { get; set; }
         public string StampTime { get; set; }
         public string SensorId { get; set; }
+        public Nullable<int> RealHeart { get; set; }
+
     }
 }

@@ -31,11 +31,14 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Location).HasColumnName("Location");
             this.Property(t => t.Type).HasColumnName("Type");
             this.Property(t => t.UserId).HasColumnName("UserId");
+            this.Property(t => t.InSideTemperature).HasColumnName("InSideTemperature");
+            this.Property(t => t.OutSideTemperature).HasColumnName("OutSideTemperature");
             this.Property(t => t.AverageTemperature).HasColumnName("AverageTemperature");
             this.Property(t => t.Maximumemperature).HasColumnName("Maximumemperature");
             this.Property(t => t.MinimumTemperature).HasColumnName("MinimumTemperature");
             this.Property(t => t.StampTime).HasColumnName("StampTime");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
+            this.Property(t => t.BadPoints).HasColumnName("BadPoints");//
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Temp).HasColumnName("Temp");
             this.Property(t => t.StampTime).HasColumnName("StampTime");
             this.Property(t => t.SensorId).HasColumnName("SensorId");
+            this.Property(t => t.RealHeart).HasColumnName("RealHeart");
         }
     }
 }

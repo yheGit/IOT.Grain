@@ -14,7 +14,10 @@ namespace Net66.Entity.Models
         public Nullable<decimal> AverageTemperature { get; set; }
         public Nullable<decimal> Maximumemperature { get; set; }
         public Nullable<decimal> MinimumTemperature { get; set; }
+        public Nullable<decimal> InSideTemperature { get; set; }
+        public Nullable<decimal> OutSideTemperature { get; set; }
         public Nullable<System.DateTime> StampTime { get; set; }
         public Nullable<int> IsActive { get; set; }
+        public Nullable<int> BadPoints { get; set; }
     }
 }

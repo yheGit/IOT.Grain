@@ -29,5 +29,16 @@ namespace Net66.Comm.SysApi
             var numTemp = TypeParse._16NAC_To_10NSC(dex);
             return ConvertTemp(numTemp);
         }
+
+
+        public static decimal GetTempTest(string _temp, int i = 0)
+        {
+            if (string.IsNullOrEmpty(_temp))
+                return 0;
+            var index = i * 2;
+            var dex = _temp.Substring(index, 2);
+            return TypeParse._16NAC_To_10NSC(dex);
+        }
+
     }
 }
