@@ -79,6 +79,7 @@
     <Compile Include="IO_Model\ISearchBase.cs" />
     <Compile Include="IO_Model\IWareHouse.cs" />
     <Compile Include="IO_Model\MobiResult.cs" />
+    <Compile Include="IO_Model\OBBD.cs" />
     <Compile Include="IO_Model\OFloor.cs" />
     <Compile Include="IO_Model\OSensor.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />

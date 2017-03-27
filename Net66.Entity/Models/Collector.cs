@@ -10,8 +10,8 @@ namespace Net66.Entity.Models
         //public string H_Number { get; set; }
         public int R_Code { get; set; }
         public string InstallDate { get; set; }
-        public Nullable<int> UserId { get; set; }//PID
-        public Nullable<int> PID { get; set; }//
+        public Nullable<int> UserId { get; set; }//
+        public string HeapNumber { get; set; }//
         public Nullable<decimal> Voltage { get; set; }
         public int IsActive { get; set; }
         public string SensorIdArr { get; set; }

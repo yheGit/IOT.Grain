@@ -19,5 +19,18 @@ namespace Net66.Core.Interface
 
         List<Granary> GetHeapList(List<int> idArr);
 
+        #region new
+        string IsExist(string _cCode, string _fCode);
+
+        bool AddList(List<Granary> _addList, int _type);
+
+        bool Update(Granary _entity);
+
+        List<Granary> GetList(List<string> _params);
+
+
+        #endregion
+
+
     }
 }

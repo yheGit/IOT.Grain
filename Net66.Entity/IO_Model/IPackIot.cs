@@ -73,11 +73,11 @@ public class IReceiver
     /// <summary>
     /// 第一层
     /// </summary>
-    public int layer { get; set; }
+    public string layer { get; set; }
     /// <summary>
     /// 第二的个廒间
     /// </summary>
-    public int room { get; set; }
+    public string room { get; set; }
     /// <summary>
     /// 堆号 ，与采集器安装相关
     ///  </summary>

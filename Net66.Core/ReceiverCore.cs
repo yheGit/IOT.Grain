@@ -15,6 +15,7 @@ namespace Net66.Core
         private static IGrainRepository<Receiver> rRepository;
         private static IGrainRepository<Collector> cRepository;
         private static IGrainRepository<Humidity> hRepository;
+        private static string endash = StaticClass.Endash;
 
         public ReceiverCore(IGrainRepository<Receiver> _rRepository, IGrainRepository<Collector> _cRepository
             , IGrainRepository<Humidity> _hRepository)
@@ -41,6 +42,7 @@ namespace Net66.Core
                 W_Number=_entity.building,
                 F_Number = _entity.layer.ToString(),
                 G_Number=_entity.room.ToString(),
+                Number=Utils.StrSequenConcat(_entity.building,endash,_entity.layer,endash,_entity.room),
                 //IPAddress=null,
                 //UserId = null,
                  Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
@@ -73,14 +75,15 @@ namespace Net66.Core
         /// <returns></returns>
         public bool AddHum(IReceiver _entity)
         {
-             var datenow = Utils.GetServerTime();
-            var addEntity = new Humidity() {
+            var datenow = Utils.GetServerTime();
+            var addEntity = new Humidity()
+            {
                 Humility = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
                 Temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
                 ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
                 StampTime = datenow
             };
-           return hRepository.Add(addEntity)>0;
+            return hRepository.Add(addEntity) > 0;
         }
 
 

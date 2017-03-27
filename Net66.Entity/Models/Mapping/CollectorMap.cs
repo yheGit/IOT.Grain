@@ -14,8 +14,8 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.CPUId)
                 .HasMaxLength(50);
 
-            //this.Property(t => t.H_Number)
-            //    .HasMaxLength(50);
+            this.Property(t => t.HeapNumber)
+                .HasMaxLength(50);
 
             this.Property(t => t.GuidID)
                 .HasMaxLength(50);
@@ -33,9 +33,8 @@ namespace Net66.Entity.Models.Mapping
             this.ToTable("Collector");
             this.Property(t => t.ID).HasColumnName("ID");
             this.Property(t => t.CPUId).HasColumnName("CPUId");
-            //this.Property(t => t.H_Number).HasColumnName("H_Number");
             this.Property(t => t.R_Code).HasColumnName("R_Code");
-            this.Property(t => t.PID).HasColumnName("PID");
+            this.Property(t => t.HeapNumber).HasColumnName("HeapNumber");
             this.Property(t => t.InstallDate).HasColumnName("InstallDate");
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.Voltage).HasColumnName("Voltage");

@@ -171,7 +171,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        ///  string型转换为double型 by yhw96160 2016-11-18 17:53:32
+        ///  string型转换为double型 by yhw 2016-11-18 17:53:32
         /// </summary>
         public static double StrToDouble(object strValue, double defValue)
         {
@@ -184,7 +184,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// string型转换为double型 by yhw96160 2016-11-18 17:53:03
+        /// string型转换为double型 by yhw 2016-11-18 17:53:03
         /// </summary>
         public static double StrToDouble(string strValue, double defValue)
         {
@@ -206,7 +206,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 验证是否为Double类型 by yhw96160
+        /// 验证是否为Double类型 by yhw
         /// </summary>
         public static bool IsDouble(string _String)
         {
@@ -338,7 +338,7 @@ namespace Net66.Comm
 
 
         /// <summary>
-        /// 格林威治时间转换为标准时间(简化版的ISO8601延伸的格式)  by yhw96160 2016-11-14 19:16:21
+        /// 格林威治时间转换为标准时间(简化版的ISO8601延伸的格式)  by yhw 2016-11-14 19:16:21
         ///  //java时间转换为C#时间
         /// </summary>
         /// <param name="mitime"></param>
@@ -354,7 +354,7 @@ namespace Net66.Comm
 
 
         /// <summary>
-        /// 标准时间(简化版的ISO8601延伸的格式) 转换为格林威治时间 by yhw96160 2016-11-14 19:16:10
+        /// 标准时间(简化版的ISO8601延伸的格式) 转换为格林威治时间 by yhw 2016-11-14 19:16:10
         /// //c#时间转换为java时间
         /// </summary>
         /// <param name="time"></param>
@@ -366,7 +366,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 获取系统时间并格式化为指定字符类型 by yhw96160 2016-11-14 19:23:10
+        /// 获取系统时间并格式化为指定字符类型 by yhw 2016-11-14 19:23:10
         /// </summary>
         /// <returns></returns>
         public static string GetSysDateTime(string _format = "yyyy-MM-dd HH:mm:ss")
@@ -376,7 +376,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 返回标准日期格式string by yhw96160 2016-11-16 15:06:27
+        /// 返回标准日期格式string by yhw 2016-11-16 15:06:27
         /// </summary>
         public static string GetDateString()
         {
@@ -384,7 +384,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 返回标准日期格式string by yhw96160 2016-11-16 15:06:29
+        /// 返回标准日期格式string by yhw 2016-11-16 15:06:29
         /// </summary>
         public static string GetDate()
         {

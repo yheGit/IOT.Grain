@@ -83,5 +83,35 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
+
+        [HttpPost]
+        [System.Web.Mvc.Route("PostArray")]
+        public MobiResult IsExist(string _cCode, string _fCode)
+        {
+            //验证是否存在并返回长编码
+            if (string.IsNullOrEmpty(_cCode))
+                return new MobiResult(1009);
+            var reStr = granaryCore.IsExist(_cCode,_fCode);
+            if (string.IsNullOrEmpty(reStr))
+                return new MobiResult(1000, "存在");
+            else
+                return new MobiResult(1011, "不存在",null, reStr);
+        }
+
+        [HttpPost]
+        //[System.Web.Mvc.Route("PostArray")]
+        public MobiResult AddList(List<Granary> _addList,int _type=-1)
+        {
+            //_type 0duiwei、1louceng、2aojian
+            if (_addList == null || _addList.Count <= 0||_type==-1)
+                return new MobiResult(1009);
+            var reBit = granaryCore.AddList(_addList,_type);
+            if (reBit == true)
+                return new MobiResult(1000, "成功");
+            else
+                return new MobiResult(1011);
+        }
+
+
     }
 }

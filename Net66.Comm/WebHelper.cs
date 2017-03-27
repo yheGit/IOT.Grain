@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Net66.Comm
 {
     /// <summary>
-    /// web请求类 by yhw96160 2017-1-3 10:35:54
+    /// web请求类 by yhw 2017-1-3 10:35:54
     /// </summary>
     public class WebHelper
     {

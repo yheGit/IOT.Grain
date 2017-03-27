@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 
 /******************************************
-*Creater:yhw[96160]
+*Creater:yhw[]
 *CreatTime:
 *Description:
 *==========================================
@@ -41,5 +41,20 @@ namespace Net66.Data.Interface
 
         List<T> GetPageLists(Expression<Func<T, bool>> where, Expression<Func<T, string>> orderBy, bool ascending, int pageIndex, int pageSize, ref int rows);
         IEnumerable<T> GetPageLists2(Expression<Func<T, bool>> where, Expression<Func<T, string>> orderBy, bool ascending, int pageIndex, int pageSize, ref int rows);
+
+
+
+
+        #region Custom yhw
+
+        /// <summary>
+        /// add Temp and update temp
+        /// </summary>
+        int AddUpdate(List<T> list, Expression<Func<T, bool>> predicate, string updateKey, int updateValue, string defDate);
+
+        #endregion
+
+
+
     }
 }

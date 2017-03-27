@@ -20,6 +20,7 @@ namespace Net66.Core
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Sensor> sRepository;
         private static IGrainRepository<SensorBase> sbRepository;
+        private static string endash = StaticClass.Endash;
 
         public CollectorCore(IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository
             , IGrainRepository<Sensor> _sRepository, IGrainRepository<SensorBase> _sbRepository
@@ -40,25 +41,18 @@ namespace Net66.Core
             var c_short = TypeParse._16NAC_To_10NSC(_entity.c_short);
             var guidKey = c_short + "_" + _entity.heap + "_" + _entity.sublayer;
             var guid = Utils.MD5(guidKey);
-
-            var rInfo= rRepository.Get(g => g.ID == c_short);
+            var rInfo = rRepository.Get(g => g.ID == c_short);
             if (rInfo == null)
                 return false;
-            var gInfo=gRepository.Get(g => g.WH_Number == rInfo.W_Number && g.Type == 1 && g.Code.ToString() == rInfo.F_Number);
-            if (gInfo == null)
-                return false;
-            var ggInfo=gRepository.Get(g => g.Type == 2 && g.PID == gInfo.Code && g.Code.ToString() == rInfo.G_Number);
-            if (ggInfo == null)
-                return false;
-            //gRepository.Get(g=>g.Type==0&&g.PID==
+            var rnumber = rInfo.Number;
             var addCollecters = new List<Collector>() {new Collector(){
                     GuidID=guid,
                     CPUId = _entity.c_cpuid,
-                    InstallDate = datenow,               
-                    //PID=_entity.heap,
+                    InstallDate = datenow,
+                    HeapNumber=Utils.StrSequenConcat(rnumber,endash,_entity.heap),
                     R_Code=c_short,
-                    Sublayer=_entity.sublayer,
-                    //UserId=null,
+                    Sublayer= _entity.sublayer,
+                    UserId=0,
                     //Voltage=null,
                     //SensorIdArr=null,
                     IsActive = 1
@@ -80,6 +74,7 @@ namespace Net66.Core
             var addTemp = new List<Temperature>();
             var updateList = new List<Collector>();
             var addSensors = new List<Sensor>();
+            var sensorIdList = new List<string>();
             foreach (var cmodel in _list)
             {
                 #region 更新采集器
@@ -153,17 +148,19 @@ namespace Net66.Core
                         {
                             SensorId = f,
                             StampTime = datenow,
-                            Temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i)
+                            Temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i),
+                            RealHeart=0
                         }); i++;
                     });
                 }
+                sensorIdList.AddRange(sensorList);
                 #endregion
             }
 
             var selectKey = new string[] { "CPUId" };
             var updateKey = new string[] { "SensorIdArr", "InstallDate" };
             var reint = cRepository.AddUpdate(updateList, selectKey, updateKey);//批量添加采集器
-            reint = tRepository.Add(addTemp);//批量添加温度
+            reint = tRepository.AddUpdate(addTemp,p=>p.RealHeart==0&& sensorIdList.Contains(p.SensorId), "RealHeart", 1, "StampTime");//批量添加温度
             var sKey=new string[] { "GuidID" };
             var uKey = new string[] { "Collector", "GuidID" };
             reint = sRepository.AddUpdate(addSensors, sKey, uKey);//添加传感器

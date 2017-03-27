@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 
 /******************************************
-*Creater:yhw[96160]
+*Creater:yhw[]
 *CreatTime:
 *Description:
 *==========================================
@@ -20,7 +20,7 @@ namespace Net66.Core.Interface
     public interface ISensorCore
     {
 
-        List<Net66.Entity.IO_Model.OSensor> GetSensorList(int id);
+        List<Net66.Entity.IO_Model.OSensor> GetSensorList(string id);
 
     }
 }

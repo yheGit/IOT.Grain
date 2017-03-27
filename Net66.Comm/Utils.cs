@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 
 /******************************************
-*Creater:yhw[96160]
+*Creater:yhw[]
 *CreatTime:2016-11-09 14:47:37
 *Description:
 *==========================================
@@ -21,9 +21,18 @@ using System.Collections.Generic;
 namespace Net66.Comm
 {
     public class Utils
-    {       
+    {
+
         /// <summary>
-        /// 获取集合中指定Key至的Value by96160 2017-3-13 14:56:25
+        /// 有序连接字符串 by yhw 2017-3-27 11:46:58
+        /// </summary>
+        public static string StrSequenConcat(params string[] args)
+        {
+            return string.Concat(args);
+        }
+
+        /// <summary>
+        /// 获取集合中指定Key至的Value by 2017-3-13 14:56:25
         /// </summary>
         /// <returns></returns>
         public static string GetValue(List<string> _params, string _key)
@@ -64,7 +73,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 订单号 by yhw96160 2016-11-16 15:15:33
+        /// 订单号 by yhw 2016-11-16 15:15:33
         /// </summary>
         /// <param name="_pre">订单前缀</param>
         /// <returns></returns>
@@ -77,7 +86,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 生成n位随机数 by yhw96160 2016-11-16 15:13:59
+        /// 生成n位随机数 by yhw 2016-11-16 15:13:59
         /// </summary>
         /// <param name="n">n不大于9</param>
         /// <returns></returns>
@@ -93,7 +102,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 取n位数的最小值（n不大于9） by yhw96160 2016-11-16 15:23:10
+        /// 取n位数的最小值（n不大于9） by yhw 2016-11-16 15:23:10
         /// </summary>
         /// <param name="n">n>=1</param>
         /// <returns></returns>
@@ -103,7 +112,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 取n位数的最大值（n不大于9） by yhw96160 2016-11-16 15:25:39
+        /// 取n位数的最大值（n不大于9） by yhw 2016-11-16 15:25:39
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
@@ -117,7 +126,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 生成随机数字 by yhw96160 2016-11-16 15:01:38
+        /// 生成随机数字 by yhw 2016-11-16 15:01:38
         /// </summary>
         /// <param name="strlength"></param>
         /// <param name="seed"></param>
@@ -167,7 +176,7 @@ namespace Net66.Comm
 
 
         /// <summary>
-        ///  //yyyy/MM/dd,HH:mm:ss	format by yhw96160 2016-11-14 19:30:28
+        ///  //yyyy/MM/dd,HH:mm:ss	format by yhw 2016-11-14 19:30:28
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
@@ -207,7 +216,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// MD5函数 by yhw96160 2016-11-10 15:57:52
+        /// MD5函数 by yhw 2016-11-10 15:57:52
         /// </summary>
         /// <param name="str">原始字符串</param>
         /// <returns>MD5结果</returns>
@@ -222,7 +231,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 获取服务器根目录 by yhw96160 2016-11-10 10:19:23
+        /// 获取服务器根目录 by yhw 2016-11-10 10:19:23
         /// </summary>
         /// <param name="strPath"></param>
         /// <returns></returns>
@@ -243,7 +252,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 获取当前站点地址(包括端口号) by yhw96160 2016-11-10 10:28:45
+        /// 获取当前站点地址(包括端口号) by yhw 2016-11-10 10:28:45
         /// </summary>
         public static string SiteUrl
         {
@@ -255,7 +264,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 获取文件保存的路径 by yhw96160 2016-11-10 15:54:36
+        /// 获取文件保存的路径 by yhw 2016-11-10 15:54:36
         /// </summary>
         public static string GetFileSaveUrl
         {
@@ -276,7 +285,7 @@ namespace Net66.Comm
 
 
         /// <summary>
-        /// 获取文件保存的路径 by yhw96160 2016-11-10 14:11:17
+        /// 获取文件保存的路径 by yhw 2016-11-10 14:11:17
         /// </summary>
         public static string GetFileWebUrl
         {
@@ -332,7 +341,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 项目绝对地址 by yhw96160 2016-11-10 16:39:55
+        /// 项目绝对地址 by yhw 2016-11-10 16:39:55
         /// </summary>
         public static string LocalAddress
         {
@@ -389,7 +398,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 写日志 by yhw96160 2016-11-10 15:58:34
+        /// 写日志 by yhw 2016-11-10 15:58:34
         /// </summary>
         /// <param name="logtype"></param>
         /// <param name="path"></param>
@@ -419,7 +428,7 @@ namespace Net66.Comm
         }
 
         /// <summary>
-        /// 打印异常消息 by yhw96160 2016-11-10 16:39:05
+        /// 打印异常消息 by yhw 2016-11-10 16:39:05
         /// </summary>
         /// <param name="ex"></param>
         /// <param name="methodName"></param>

@@ -62,6 +62,7 @@
     <Compile Include="NLogUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegHelper.cs" />
+    <Compile Include="StaticClass.cs" />
     <Compile Include="SysApi\Tools.cs" />
     <Compile Include="SystemTypeExtension.cs" />
     <Compile Include="TypeParse.cs" />

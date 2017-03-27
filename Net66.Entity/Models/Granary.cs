@@ -6,7 +6,7 @@ namespace Net66.Entity.Models
     public partial class Granary
     {
         public int ID { get; set; }
-        public Nullable<int> Code { get; set; }
+        public string Code { get; set; }
         public string Number { get; set; }
         public string Location { get; set; }
         public Nullable<int> Type { get; set; }

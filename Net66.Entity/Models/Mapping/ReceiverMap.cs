@@ -14,8 +14,11 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.CPUId)
                 .HasMaxLength(50);
 
-            this.Property(t => t.G_Number)
+            this.Property(t => t.Number)
                 .HasMaxLength(50);
+
+            this.Property(t => t.G_Number)
+              .HasMaxLength(50);
 
             this.Property(t => t.F_Number)
                 .HasMaxLength(50);
@@ -36,6 +39,7 @@ namespace Net66.Entity.Models.Mapping
             this.ToTable("Receiver");
             this.Property(t => t.ID).HasColumnName("ID").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity); 
             this.Property(t => t.CPUId).HasColumnName("CPUId");
+            this.Property(t => t.Number).HasColumnName("Number");
             this.Property(t => t.G_Number).HasColumnName("G_Number");
             this.Property(t => t.F_Number).HasColumnName("F_Number");
             this.Property(t => t.W_Number).HasColumnName("W_Number");

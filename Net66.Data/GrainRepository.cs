@@ -121,7 +121,7 @@ namespace Net66.Data
 
                     return db.SaveChanges();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     return -22;
                 }
@@ -148,8 +148,6 @@ namespace Net66.Data
                 }
             }
         }
-
-
 
         public int AddUpdate(List<T> list, string[] selectKey, string[] updateKey)
         {
@@ -184,8 +182,6 @@ namespace Net66.Data
                 }
             }
         }
-
-
 
         public int AddUpdate(List<T> list, string[] selectKey, string[] updateKey, string defDate)
         {
@@ -228,7 +224,6 @@ namespace Net66.Data
                 }
             }
         }
-
 
         public int AddUpdateDelete(List<T> addupdateList, List<T> deleteList, string[] selectKey, string selectOrKey, string[] updateKey, string[] deleteKey, string defDate)
         {
@@ -298,9 +293,6 @@ namespace Net66.Data
             }
         }
 
-
-
-
         public int Update(List<T> list, string[] selectKey, string[] updateKey, string defDate)
         {
             using (GrainContext db = new GrainContext())
@@ -349,9 +341,6 @@ namespace Net66.Data
             }
         }
 
-
-
-
         public int Update(T entity)
         {
             using (GrainContext db = new GrainContext())
@@ -380,9 +369,6 @@ namespace Net66.Data
                 }
             }
         }
-
-
-
 
         public int Delete(T entity)
         {
@@ -413,7 +399,6 @@ namespace Net66.Data
             }
         }
 
-
         public T Get(Expression<Func<T, bool>> predicate)
         {
             using (GrainContext db = new GrainContext())
@@ -423,8 +408,6 @@ namespace Net66.Data
                 return db.Set<T>().Where(predicate).FirstOrDefault<T>();
             }
         }
-
-
 
         public List<T> GetList(Expression<Func<T, bool>> predicate)
         {
@@ -439,14 +422,11 @@ namespace Net66.Data
             }
         }
 
-
-
         public System.Data.DataTable QueryByTablde(string sql)
         {
             sqlHelper = sqlHelper ?? new SqlHelper(EfUtils.GetContext_ConneString);
             return sqlHelper.QueryByTablde(sql);
         }
-
 
         public int ExecuteSql(string sql)
         {
@@ -525,5 +505,49 @@ namespace Net66.Data
             }
             isDisposed = true;
         }
+
+
+        #region Custom yhw
+
+        /// <summary>
+        /// add Temp and update temp
+        /// </summary>
+        /// <param name="list">Addlist </param>
+        /// <param name="predicate">更新条件</param>
+        /// <param name="updateKey">更新key</param>
+        /// <param name="updateValue">更新值</param>
+        /// <param name="defDate">更新时间</param>
+        /// <returns></returns>
+        public int AddUpdate(List<T> list, Expression<Func<T, bool>> predicate, string updateKey, int updateValue, string defDate)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                try
+                {
+                    var plist = db.Set<T>().Where(predicate);
+                    foreach (var current in plist)
+                    {
+                        current.GetType().GetProperty(defDate).SetValue(current, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), null);
+                        current.GetType().GetProperty(updateKey).SetValue(current, updateValue, null);
+                        db.Set<T>().Attach(current);
+                        db.Entry<T>(current).State = EntityState.Modified;
+                    }
+
+                    foreach (var current in list)
+                    {
+                        db.Set<T>().Add(current);
+                    }
+
+                    return db.SaveChanges();
+                }
+                catch(Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

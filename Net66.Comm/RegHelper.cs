@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 
 /******************************************
-*Creater:yhw[96160]
+*Creater:yhw[]
 *CreatTime: 2016-11-18 18:05:10
 *Description:
 *==========================================

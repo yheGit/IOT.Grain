@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 
 /******************************************
-*Creater:yhw[96160]
+*Creater:yhw[]
 *CreatTime:
 *Description:
 *==========================================
@@ -32,9 +32,9 @@ namespace Net66.Core
             tRepository = _tRepository;
         }
 
-        public List<Net66.Entity.IO_Model.OSensor> GetSensorList(int id)
+        public List<Net66.Entity.IO_Model.OSensor> GetSensorList(string id)
         {
-            var cList = cRepository.GetList(g => g.PID == id);
+            var cList = cRepository.GetList(g => g.HeapNumber == id);
             if (cList == null)
                 return null;
             var cpuIdList = cList.Select(s => s.CPUId).ToList();

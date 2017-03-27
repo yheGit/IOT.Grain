@@ -18,6 +18,7 @@ namespace Net66.Core
         private static IGrainRepository<WareHouse> Repository;
         //private static IGrainRepository<Floor> fRepository;
         private static IGrainRepository<Granary> gRepository;
+        private static string endash = StaticClass.Endash;
 
         public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository)
         {
@@ -130,7 +131,7 @@ namespace Net66.Core
                 Location = _entity.Location,
                 Name = _entity.Name,
                 Number = _entity.Number,
-                Type = _entity.Type,
+                Type = _entity.Type,//1楼房、2平方、3筒仓
                 UserId = _entity.UserId,
                 StampTime = datenow,
                 AverageTemperature = 0,
@@ -138,6 +139,24 @@ namespace Net66.Core
                 MinimumTemperature = 0
             };
             var reInt = Repository.Add(model,f=>f.Number==model.Number);
+            if (reInt > 0 && model.Type != 1) {
+                var addList = new List<Granary>() {
+                  new Granary() {
+                      Code="1",Number=Utils.StrSequenConcat(model.Number,endash,"1"),IsActive=1,Location=null,
+                      Type=1,WH_ID=model.ID,WH_Number=model.Number,BadPoints=0
+                  },
+                  new Granary() {
+                       Code="1",Number=Utils.StrSequenConcat(model.Number,endash,"1",endash,"1"),IsActive=1,Location=null,
+                      Type=2,WH_ID=model.ID,WH_Number=model.Number,BadPoints=0
+                  },
+                  new Granary() {
+                       Code="1",Number=Utils.StrSequenConcat(model.Number,endash,"1",endash,"1",endash,"1"),IsActive=1,Location=null,
+                      Type=0,WH_ID=model.ID,WH_Number=model.Number,BadPoints=0
+                  }
+            };
+                gRepository.Add(addList);
+            }
+
             return reInt > 0;
         }
 
@@ -162,6 +181,36 @@ namespace Net66.Core
             if (ifno == null)
                 return false;
             return true;
+
+        }
+
+        public Dictionary<string,object[]> GetBBDList()
+        {
+            var rList= Repository.GetList(p => p.IsActive == 1);
+            if (rList == null)
+                return null;
+            var rIds = rList.Select(s => s.Number).ToList();
+            var gList=gRepository.GetList(g => rIds.Contains(g.WH_Number));
+            Dictionary<string, object[]> bbdDic = new Dictionary<string, object[]>();
+            foreach (var r in rList)
+            {
+                char whType = 'L';
+                var fCount = 1;
+                var gCount = 1;
+                if (r.Type == 1)
+                {
+                    fCount = gList.Count(w => w.WH_Number == r.Number && w.Type == 1);
+                    gCount = gList.Count(w => w.WH_Number == r.Number && w.Type == 2);
+                }
+                else if (r.Type == 2)
+                    whType = 'T';
+                else if (r.Type == 3)
+                    whType = 'Q';
+
+                bbdDic.Add(r.Number, new object[] { whType,fCount,gCount});//1loufang、2pingfang、3jiantong
+            }
+
+            return bbdDic;
 
         }
 

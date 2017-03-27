@@ -49,12 +49,12 @@ namespace Net66.Service.Controllers
 
         /// <summary>
         /// 获取传感器信息
-        /// id堆位ID
+        /// number堆位编号
         /// </summary>
         [HttpGet]
-        public MobiResult GetList(int id)
+        public MobiResult GetList(string number)
         {
-            var reList = sensorCore.GetSensorList(id);
+            var reList = sensorCore.GetSensorList(number);
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else

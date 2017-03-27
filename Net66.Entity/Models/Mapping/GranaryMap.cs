@@ -14,6 +14,9 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Number)
                 .HasMaxLength(50);
 
+            this.Property(t => t.Code)
+              .HasMaxLength(50);
+
             this.Property(t => t.Location)
                 .HasMaxLength(50);
 
@@ -25,7 +28,7 @@ namespace Net66.Entity.Models.Mapping
 
             // Table & Column Mappings
             this.ToTable("Granary");
-            this.Property(t => t.ID).HasColumnName("ID");
+            this.Property(t => t.ID).HasColumnName("ID").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity); ;
             this.Property(t => t.Code).HasColumnName("Code");
             this.Property(t => t.Number).HasColumnName("Number");
             this.Property(t => t.Location).HasColumnName("Location");
