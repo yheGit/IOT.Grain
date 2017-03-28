@@ -37,6 +37,7 @@ namespace Net66.Service.Controllers
                 return "";
             bool rebit = false;
             var datenow = Utils.GetServerDateTime();
+
             #region 采集器
             var clist = _pack.Measurers;
             if (clist != null && clist.Count > 0)
@@ -156,6 +157,9 @@ namespace Net66.Service.Controllers
 
         }
 
+        /// <summary>
+        /// huoquBBDshuju
+        /// </summary>
         public Dictionary<string, object[]> GetBBDList()
         {
             return wareHouseCore.GetBBDList();

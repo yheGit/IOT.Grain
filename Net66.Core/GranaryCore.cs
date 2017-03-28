@@ -15,11 +15,15 @@ namespace Net66.Core
     public class GranaryCore : IGranaryCore
     {
         private static IGrainRepository<Granary> gRepository;
+        private static IGrainRepository<Collector> cRepository;
+        private static IGrainRepository<Temperature> tRepository;
         private static string endash = StaticClass.Endash;
 
-        public GranaryCore(IGrainRepository<Granary> _gRepository)
+        public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository)
         {
             gRepository = _gRepository;
+            cRepository = _cRepository;
+            tRepository = _tRepository;
         }
 
         #region old
@@ -127,19 +131,29 @@ namespace Net66.Core
         {
             #region //条件查询
             int rows = 0;
-            int pIndex = TypeParse.StrToInt(Utils.GetValue(_params, "PageIndex^"),0);
+            int pIndex = TypeParse.StrToInt(Utils.GetValue(_params, "PageIndex^"), 0);
             int pageIndex = pIndex <= 0 ? 1 : pIndex;
             int pageSize = TypeParse.StrToInt(Utils.GetValue(_params, "PageCount^"), 0);
             string userId = Utils.GetValue(_params, "UserId^");
-            string wareCode = Utils.GetValue(_params, "wCode^");
+            string wareCode = Utils.GetValue(_params, "wCode^");//liangcang
+            string granaryCode = Utils.GetValue(_params, "gCode^");//aojian
             if (pageSize <= 0 || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(wareCode))
                 return null;
             var where = EfUtils.True<Granary>();
-            var wCode = TypeParse.StrToInt(wareCode, 0);
-            where = where.And(w => w.IsActive == 1 && w.WH_ID == wCode);
+            //var wCode = TypeParse.StrToInt(wareCode, 0);
+            where = where.And(w => w.IsActive == 1 && w.WH_Number == wareCode && w.Type == 0);
+            if (!string.IsNullOrEmpty(granaryCode))
+                where = where.And(w => w.Number.Contains(granaryCode));//loufangleixing
             #endregion
-            //获取粮仓堆位信息
-            var reList = gRepository.GetPageLists(where, p => p.ID.ToString(), false, pageIndex, pageSize, ref rows);
+            //huoquliangcangduiweidexinxi
+            var reList = gRepository.GetPageLists(where, p => p.ID.ToString(), true, pageIndex, pageSize, ref rows);
+
+            if (reList == null)
+                return null;
+            var gNumbers = reList.Select(s => s.Number).ToList();
+
+            var clist=cRepository.GetList(g => gNumbers.Contains(g.HeapNumber));
+
             return reList;
 
         }

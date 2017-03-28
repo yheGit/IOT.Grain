@@ -37,7 +37,7 @@ namespace Net66.Service.Controllers
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
-                return new MobiResult(1011);
+                return new MobiResult(1012);
         }
 
         [HttpPost]

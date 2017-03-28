@@ -6,6 +6,7 @@ using Net66.Entity.IO_Model;
 using Net66.Entity.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -82,44 +83,52 @@ namespace Net66.Core
             #endregion
 
             #endregion
-            //获取粮仓信息
+            //huoquliangcangxinxi
             var reList = Repository.GetPageLists(where, p => p.StampTime.ToString(), false, pageIndex, pageSize, ref rows);
-            //获取楼层信息
-            var reIdList = reList.Select(s => s.ID).ToList();
-            var floorList = gRepository.GetList(g => reIdList.Contains(g.PID.Value));//WH_Number
-            //廒间信息
-            var fIdList = floorList.Select(s => s.ID).ToList();
-            var granaryList = gRepository.GetList(g => fIdList.Contains(g.PID.Value));
-
-            var ofList = floorList.Select(s => new OFloor()
+            //louceng/aojian
+            var reIdList = reList.Select(s => s.Number).ToList();
+            var fg_List = gRepository.GetList(g => reIdList.Contains(g.WH_Number)&&(g.Type==1||g.Type==2));//WH_Number
+            //louceng
+            var floorList = fg_List.Where(w => w.Type == 1).ToList();
+            //aojianxinxi
+            var granaryList = fg_List.Where(w=>w.Type==2).ToList();
+            try
             {
-                ID = s.ID,
-                IsActive = s.IsActive,
-                Location = s.Location,
-                Number = s.Number,
-                UserId = s.UserId,
-                //WH_Number = s.WH_Number,
-                GranaryList = granaryList.Where(w => w.PID == s.ID).ToList()
-            }).ToList();
+                var ofList = floorList.Select(s => new OFloor()
+                {
+                    ID = s.ID,
+                    IsActive = s.IsActive,
+                    Location = s.Location,
+                    Number = s.Number,
+                    UserId = s.UserId,
+                    WH_Number = s.WH_Number,
+                    //GranaryList = granaryList.Where(w => SqlFunctions.PatIndex(s.Number + "__", w.Number) > 0).ToList()
+                    GranaryList = granaryList.Where(w => w.Number.Contains(s.Number)).ToList()
+                }).ToList();
 
-            return reList.Select(s => new OWareHouse()
+                return reList.Select(s => new OWareHouse()
+                {
+                    ID = s.ID,
+                    IsActive = s.IsActive,
+                    Location = s.Location,
+                    AverageTemperature = s.AverageTemperature,
+                    Maximumemperature = s.Maximumemperature,
+                    MinimumTemperature = s.MinimumTemperature,
+                    InSideTemperature = s.InSideTemperature,
+                    OutSideTemperature = s.OutSideTemperature,
+                    Name = s.Name,
+                    Number = s.Number,
+                    StampTime = s.StampTime,
+                    Type = s.Type,
+                    UserId = s.UserId,
+                    BadPoints = s.BadPoints,
+                    Floors = ofList.Where(w => w.WH_Number == s.Number).ToList()
+                }).ToList();
+            }
+            catch (Exception ex)
             {
-                ID = s.ID,                
-                IsActive = s.IsActive,
-                Location = s.Location,
-                AverageTemperature = s.AverageTemperature,
-                Maximumemperature = s.Maximumemperature,
-                MinimumTemperature = s.MinimumTemperature,
-                InSideTemperature=s.InSideTemperature,
-                OutSideTemperature=s.OutSideTemperature,
-                Name = s.Name,
-                Number = s.Number,
-                StampTime = s.StampTime,
-                Type = s.Type,
-                UserId = s.UserId,
-                BadPoints=s.BadPoints,
-                Floors = ofList.Where(w => w.WH_Number == s.Number).ToList()
-            }).ToList();
+                return null;
+            }
         }
 
         public bool AddWareHouse(IWareHouse _entity)
@@ -131,7 +140,7 @@ namespace Net66.Core
                 Location = _entity.Location,
                 Name = _entity.Name,
                 Number = _entity.Number,
-                Type = _entity.Type,//1楼房、2平方、3筒仓
+                Type = _entity.Type,//1(L)loufang、2(T)pingfang、3(Q)jiantong
                 UserId = _entity.UserId,
                 StampTime = datenow,
                 AverageTemperature = 0,
@@ -172,8 +181,7 @@ namespace Net66.Core
         {
             var reInt = Repository.Delete(_delList, new string[] { "Number" });
             return reInt > 0;
-        }
-       
+        }       
 
         public bool HasExist(string _code)
         {
