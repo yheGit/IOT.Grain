@@ -54,7 +54,7 @@ public class ICollector
 public class IReceiver
 {
     /// <summary>
-    /// 0更新数据， 1是采集器安装，2是收集器安装
+    /// 0更新数据， 1是采集器安装，2是收集器安装,
     /// </summary>
     public int type { get; set; }
 

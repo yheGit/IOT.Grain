@@ -54,9 +54,9 @@ namespace Net66.Core
             //{
             //     dt.Rows.Find("").
             //}
-            var tList=tRepository.GetList(g => IdList.Contains(g.SensorId) && g.RealHeart == 1);
+            var tList=tRepository.GetList(g => IdList.Contains(g.PId) && g.RealHeart == 1&&g.Type==0);
 
-            return reList.Select(s => new Net66.Entity.IO_Model.OSensor(tList.FirstOrDefault(f => f.SensorId == s.SensorId))
+            return reList.Select(s => new Net66.Entity.IO_Model.OSensor(tList.FirstOrDefault(f => f.PId == s.SensorId))
             {
                 ID = s.ID,
                 Collector = s.Collector,

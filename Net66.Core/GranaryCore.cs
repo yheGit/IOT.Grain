@@ -17,13 +17,15 @@ namespace Net66.Core
         private static IGrainRepository<Granary> gRepository;
         private static IGrainRepository<Collector> cRepository;
         private static IGrainRepository<Temperature> tRepository;
+        private static IGrainRepository<Sensor> sRepository;
         private static string endash = StaticClass.Endash;
 
-        public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository)
+        public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository, IGrainRepository<Sensor> _sRepository)
         {
             gRepository = _gRepository;
             cRepository = _cRepository;
             tRepository = _tRepository;
+            sRepository = _sRepository;
         }
 
         #region old
@@ -127,7 +129,10 @@ namespace Net66.Core
             return reInt > 0;
         }
 
-        public List<Granary> GetList(List<string> _params)
+        /// <summary>
+        /// huoqu duiwei xinxi (baohan tade shishi temp)
+        /// </summary>
+        public List<OHeap> GetList(List<string> _params)
         {
             #region //条件查询
             int rows = 0;
@@ -147,14 +152,56 @@ namespace Net66.Core
             #endregion
             //huoquliangcangduiweidexinxi
             var reList = gRepository.GetPageLists(where, p => p.ID.ToString(), true, pageIndex, pageSize, ref rows);
-
-            if (reList == null)
+            if (reList == null || reList.Count < 0)
                 return null;
-            var gNumbers = reList.Select(s => s.Number).ToList();
+            var gNumbers = reList.Select(s => s.Number).ToList();//duiweibianhao
 
-            var clist=cRepository.GetList(g => gNumbers.Contains(g.HeapNumber));
+            var clist = cRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
+            var cIds = clist.Select(s => s.CPUId).ToList();
+            var sList = sRepository.GetList(g => cIds.Contains(g.Collector)) ?? new List<Sensor>();
+            var sIds = sList.Select(s => s.SensorId).ToList();
+            var tempList = tRepository.GetList(g => g.Type == 0 && sIds.Contains(g.PId) && g.RealHeart == 0) ?? new List<Temperature>();
 
-            return reList;
+            #region chuanganqi bangding temp
+            var osensorList = sList.Select(s => new OSensor(tempList.FirstOrDefault(f => f.PId == s.SensorId))
+            {
+                Collector = s.Collector,
+                CRC = s.CRC,
+                Direction_X = s.Direction_X,
+                Direction_Y = s.Direction_Y,
+                Direction_Z = s.Direction_Z,
+                GuidID = s.GuidID,
+                ID = s.ID,
+                IsActive = s.IsActive,
+                Label = s.Label,
+                MaxTemp = s.MaxTemp,
+                MinTemp = s.MinTemp,
+                //RealTemp=null,
+                SensorId = s.SensorId,
+                Sequen = s.Sequen,
+                UserId = s.UserId
+            }).ToList() ?? new List<OSensor>();
+            #endregion
+
+            return reList.Select(s => new OHeap()
+            {
+                ID = s.ID,
+                AverageHumidity = s.AverageHumidity,
+                AverageTemperature = s.AverageTemperature,
+                BadPoints = s.BadPoints,
+                Code = s.Code,
+                IsActive = s.IsActive,
+                Location = s.Location,
+                MaxiTemperature = s.MaxiTemperature,
+                MinTemperature = s.MinTemperature,
+                Number = s.Number,
+                PID = s.PID,
+                SensorList = osensorList.Where(w => clist.Where(wh=>wh.HeapNumber==s.Number).Select(se=>se.CPUId).Contains(w.Collector)).ToList(),
+                Type = s.Type,
+                UserId = s.UserId,
+                WH_ID = s.WH_ID,
+                WH_Number = s.WH_Number
+            }).ToList();
 
         }
 

@@ -112,6 +112,21 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
+        /// <summary>
+        /// huoqu (liangcang bianhao he aojian bianhao) duiwei xinxi (baohan tade shishi temp)
+        /// [2017-3-29 20:13:10]
+        /// </summary>
+        [HttpPost]
+        public MobiResult GetHeapList(List<string> param)
+        {
+            if (param == null || param.Count <= 0)
+                return new MobiResult(1009);
+            var reList = granaryCore.GetList(param);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1011);
+        }
 
     }
 }

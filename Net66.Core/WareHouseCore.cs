@@ -17,15 +17,17 @@ namespace Net66.Core
     public class WareHouseCore : IWareHouseCore
     {
         private static IGrainRepository<WareHouse> Repository;
+        private static IGrainRepository<Temperature> tRepository;
         //private static IGrainRepository<Floor> fRepository;
         private static IGrainRepository<Granary> gRepository;
         private static string endash = StaticClass.Endash;
 
-        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository)
+        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository, IGrainRepository<Temperature> _tRepository)
         {
             Repository = _Repository;
             //fRepository = _fRepository;
             gRepository = _gRepository;
+            tRepository = _tRepository;
         }
 
         public List<OWareHouse> GetPageLists(ISearch _search, List<string> _params)
@@ -221,6 +223,34 @@ namespace Net66.Core
             return bbdDic;
 
         }
+
+        /// <summary>
+        /// huoqu suoyou liangcang wendu
+        /// </summary>
+        public void GetGrainsTemp()
+        {
+            var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
+            var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
+            var minTemp = temps.Min(m => m.Temp);//zuidiwendu
+            var avrg = temps.Average(a => a.Temp);//pingjunwendu
+            int badhot = 0;//huaidianshu
+        }
+
+        /// <summary>
+        /// tong guo langcang bioanhao huoqu duiwei wendu 
+        /// </summary>
+        /// <param name="number">L1</param>
+        public void getHeadsTemp(string number)
+        {
+           var temps= tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0)??new List<Temperature>();
+            var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
+            var minTemp = temps.Min(m => m.Temp);//zuidiwendu
+            var avrg = temps.Average(a => a.Temp);//pingjunwendu
+            int badhot = 0;//huaidianshu
+        }
+
+
+
 
     }
 }

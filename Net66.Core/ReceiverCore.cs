@@ -15,14 +15,16 @@ namespace Net66.Core
         private static IGrainRepository<Receiver> rRepository;
         private static IGrainRepository<Collector> cRepository;
         private static IGrainRepository<Humidity> hRepository;
+        private static IGrainRepository<Temperature> tRepository;
         private static string endash = StaticClass.Endash;
 
         public ReceiverCore(IGrainRepository<Receiver> _rRepository, IGrainRepository<Collector> _cRepository
-            , IGrainRepository<Humidity> _hRepository)
+            , IGrainRepository<Humidity> _hRepository, IGrainRepository<Temperature> _tRepository)
         {
             rRepository = _rRepository;
             cRepository = _cRepository;
             hRepository = _hRepository;
+            tRepository = _tRepository;
         }
 
         public bool Install(IReceiver _entity, out string c_short)
@@ -32,7 +34,7 @@ namespace Net66.Core
             var datenow = Utils.GetServerTime();
             var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
             var guid = Utils.MD5(guidKey);
-
+            var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
             var addList = new List<Receiver>() { new Receiver()
             {
                  GuidID=guid,
@@ -46,15 +48,28 @@ namespace Net66.Core
                 //IPAddress=null,
                 //UserId = null,
                  Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
-                Temperature =Comm.SysApi.Tools.GetTemp(_entity.temp, 0)// Convert.ToDecimal(_entity.temp)
+                Temperature =temp// Convert.ToDecimal(_entity.temp)
             } };
-
             var selectKey = new string[] { "GuidID" };
             var updateKey = new string[] { "CPUId", "Humidity", "IsActive", "Temperature" };
             reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
 
             if (reint > 0)
             {
+                if (_entity.type == 0)
+                {
+                    var ttype = 2;
+                    if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
+                        ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
+                    reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
+                    {
+                        PId = _entity.c_cpuid,
+                        StampTime = datenow,
+                        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
+                        RealHeart = 0,
+                        Temp = temp
+                    } }, p => (p.RealHeart == 0 && p.Type == ttype&&p.PId==_entity.c_cpuid), "RealHeart", 1, "StampTime");
+                }
                 var reId = addList.FirstOrDefault().ID;
                 if (reId == 0)
                 {

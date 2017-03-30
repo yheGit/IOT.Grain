@@ -1,4 +1,5 @@
-﻿using Net66.Entity.Models;
+﻿using Net66.Entity.IO_Model;
+using Net66.Entity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace Net66.Core.Interface
 
         bool Update(Granary _entity);
 
-        List<Granary> GetList(List<string> _params);
+        List<OHeap> GetList(List<string> _params);
 
 
         #endregion

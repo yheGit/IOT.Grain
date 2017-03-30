@@ -39,7 +39,7 @@ namespace Net66.Data
         }
 
         public int Add(T entity, Expression<Func<T, bool>> predicate)
-        {            
+        {
             using (GrainContext db = new GrainContext())
             {
                 try
@@ -65,7 +65,7 @@ namespace Net66.Data
                 try
                 {
                     var list = db.Set<T>().Where(predicate);
-                    foreach(var m in list)
+                    foreach (var m in list)
                         db.Entry<T>(m).State = EntityState.Deleted;
                     db.Set<T>().Add(entity);
                     return db.SaveChanges();
@@ -101,7 +101,7 @@ namespace Net66.Data
                         ex.InnerException
                     });
                     //Error.WriteLog("Repository-Add", msg);
-                   return -22;
+                    return -22;
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace Net66.Data
                 {
                     foreach (var current in list)
                     {
-                        var t = db.Set<T>().Where(EfUtils.AndOr<T>(AndKeys,OrKeys, current)).FirstOrDefault<T>();
+                        var t = db.Set<T>().Where(EfUtils.AndOr<T>(AndKeys, OrKeys, current)).FirstOrDefault<T>();
                         if (t == null)
                             db.Set<T>().Add(current);
                     }
@@ -164,7 +164,7 @@ namespace Net66.Data
                         }
                         else
                         {
-                            foreach(var k in updateKey)
+                            foreach (var k in updateKey)
                             {
                                 var value = current.GetType().GetProperty(k).GetValue(current, null);
                                 t.GetType().GetProperty(k).SetValue(t, value, null);
@@ -336,7 +336,7 @@ namespace Net66.Data
                         ex.InnerException
                     });
                     Error.WriteLog("Repository-Update-defDate", msg);
-                   return -22;
+                    return -22;
                 }
             }
         }
@@ -374,7 +374,7 @@ namespace Net66.Data
         {
             using (GrainContext db = new GrainContext())
             {
-                db.Entry<T>(entity).State =EntityState.Deleted;
+                db.Entry<T>(entity).State = EntityState.Deleted;
                 return db.SaveChanges();
             }
         }
@@ -415,7 +415,7 @@ namespace Net66.Data
             {
                 //调试模式则输出SQL
                 //if (Utils.DebugApp)
-                    db.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                db.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
                 if (predicate == null)
                     return db.Set<T>().ToList<T>();
                 return db.Set<T>().Where(predicate).ToList<T>();
@@ -438,6 +438,8 @@ namespace Net66.Data
         {
             using (var db = new GrainContext())
             {
+                //调试模式则输出SQL
+                db.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
                 if (where != null)
                 {
                     var list = db.Set<T>().Where(where);
@@ -540,7 +542,7 @@ namespace Net66.Data
 
                     return db.SaveChanges();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return -22;
                 }

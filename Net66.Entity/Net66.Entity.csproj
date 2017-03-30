@@ -81,6 +81,7 @@
     <Compile Include="IO_Model\MobiResult.cs" />
     <Compile Include="IO_Model\OBBD.cs" />
     <Compile Include="IO_Model\OFloor.cs" />
+    <Compile Include="IO_Model\OHeap.cs" />
     <Compile Include="IO_Model\OSensor.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />
     <Compile Include="IO_Model\ReturnClass.cs" />
