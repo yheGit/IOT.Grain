@@ -13,7 +13,6 @@ using System.Web.Http;
 
 namespace Net66.Service.Controllers
 {
-    [System.Web.Mvc.RoutePrefix("api/Grain")]
     public class GrainController : ApiController
     {
         public static IWareHouseCore wareHouseCore;
@@ -117,9 +116,9 @@ namespace Net66.Service.Controllers
         }
 
         [HttpGet]
-        //[System.Web.Mvc.RoutePrefix("api/Grain/GetList_HeadsTemp/{number}")]
-        public MobiResult GetList_HeadsTemp(string number)
+        public MobiResult HeapsTemp_GetList(string id)
         {
+            string number = id;
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getHeapsTemp(number);
