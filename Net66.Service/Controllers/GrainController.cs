@@ -13,6 +13,7 @@ using System.Web.Http;
 
 namespace Net66.Service.Controllers
 {
+    [System.Web.Mvc.RoutePrefix("api/Grain")]
     public class GrainController : ApiController
     {
         public static IWareHouseCore wareHouseCore;
@@ -105,6 +106,7 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011,"不存在");
         }
 
+        [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {
             var reList = wareHouseCore.GetGrainsTemp();
@@ -114,6 +116,18 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1012);
         }
 
+        [HttpGet]
+        //[System.Web.Mvc.RoutePrefix("api/Grain/GetList_HeadsTemp/{number}")]
+        public MobiResult GetList_HeadsTemp(string number)
+        {
+            if (string.IsNullOrEmpty(number))
+                return new MobiResult(1009);
+            var reList = wareHouseCore.getHeapsTemp(number);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1012);
+        }
 
     }
 }

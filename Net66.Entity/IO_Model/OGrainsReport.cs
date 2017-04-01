@@ -11,17 +11,18 @@ namespace Net66.Entity.IO_Model
     {
         public OGrainsReport() { }
 
-        public OGrainsReport(List<Temperature> temps,List<Collector> collectors=null)
+        public OGrainsReport(List<Temperature> temps, List<Collector> collectors = null)
         {
             var clist = temps.Where(w => w.Type == 0).ToList();
             Maximumemperature = clist.Max(m => m.Temp);//zuigaowendu
             MinimumTemperature = clist.Min(m => m.Temp);//zuidiwendu
-            AverageTemperature = clist.Average(a => a.Temp);//pingjunwendu
+            AverageTemperature = Math.Round(clist.Average(a => a.Temp)??0,2);//pingjunwendu
             var snmodel = temps.Where(w => w.Type == 2).Average(a => a.Temp);
-            InSideTemperature = snmodel.Value;
-            var swmodel = temps.Where(w => w.Type == 3).FirstOrDefault()??new Temperature();
+            InSideTemperature = Math.Round(snmodel ?? 0,2);
+            var swmodel = temps.Where(w => w.Type == 3).FirstOrDefault() ?? new Temperature();
             OutSideTemperature = swmodel.Temp;
-            BadPoints = collectors.Sum(s => s.BadPoints);
+            if (collectors != null)
+                BadPoints = collectors.Sum(s => s.BadPoints);
         }
         public string Number { get; set; }
         //public string Location { get; set; }

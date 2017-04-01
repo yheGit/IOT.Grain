@@ -37,5 +37,7 @@ namespace Net66.Core.Interface
 
         List<OGrainsReport> GetGrainsTemp(string userId = "0");
 
+        List<OHeapReport> getHeapsTemp(string number);
+
     }
 }

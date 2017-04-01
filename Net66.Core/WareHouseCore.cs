@@ -233,7 +233,7 @@ namespace Net66.Core
         /// </summary>
         public List<OGrainsReport> GetGrainsTemp(string userId = "0")
         {
-            var rList = Repository.GetList(p => p.IsActive == 1 && p.UserId == userId) ?? new List<WareHouse>();
+            var rList = Repository.GetList(p => p.IsActive == 1) ?? new List<WareHouse>();
             var temps = tRepository.GetList(g => g.RealHeart == 0) ?? new List<Temperature>();
 
             var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0); //huaidianshu
@@ -247,7 +247,7 @@ namespace Net66.Core
                 //InSideTemperature = null,
                 //OutSideTemperature = null,
                 //BadPoints = null,
-                Number = s.Number,               
+                Number = s.Number,
                 //Location=
                 //StampTime,
                 UserId = s.UserId
@@ -258,23 +258,24 @@ namespace Net66.Core
         /// tong guo langcang bioanhao huoqu duiwei wendu 
         /// </summary>
         /// <param name="number">L1</param>
-        public List<OHeapReport> getHeadsTemp(string number)
+        public List<OHeapReport> getHeapsTemp(string number)
         {
-            var heapList=gRepository.GetList(g => g.WH_Number == number && g.Type == 0 && g.IsActive == 1);
+            var heapList = gRepository.GetList(g => g.WH_Number == number && g.Type == 0 && g.IsActive == 1);
             var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
             var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
             var minTemp = temps.Min(m => m.Temp);//zuidiwendu
-            var avrg = temps.Average(a => a.Temp);//pingjunwendu
-            int badhot = 0;//huaidianshu
-            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0&& g.HeapNumber.IndexOf(number)>-1)??new List<Collector>();
+            var avrg = Math.Round(temps.Average(a => a.Temp) ?? 0, 2);//pingjunwendu
+            //int badhot = 0;//huaidianshu
+            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
 
-            return heapList.Select(s => new OHeapReport() {
-                AverageTemperature=avrg,
-                Maximumemperature=maxTemp,
-                MinimumTemperature=minTemp,
-                Number=s.Number,
-                BadPoints= badlist.Where(w=>w.HeapNumber==s.Number).Sum(u=>u.BadPoints),
-                UserId=s.UserId.ToString()
+            return heapList.Select(s => new OHeapReport()
+            {
+                AverageTemperature = avrg,
+                Maximumemperature = maxTemp,
+                MinimumTemperature = minTemp,
+                Number = s.Number,
+                BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
+                UserId = s.UserId.ToString()
             }).ToList();
         }
 
