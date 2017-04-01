@@ -29,6 +29,7 @@ namespace Net66.Core.Interface
 
         List<OHeap> GetList(List<string> _params);
 
+        List<Temperature> GetHeapTempsChart(string number, int type = 0);
 
         #endregion
 

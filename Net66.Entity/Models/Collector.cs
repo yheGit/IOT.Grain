@@ -17,5 +17,6 @@ namespace Net66.Entity.Models
         public string SensorIdArr { get; set; }
         public int Sublayer { get; set; }
         public string GuidID { get; set; }
+        public int BadPoints { get; set; }//
     }
 }

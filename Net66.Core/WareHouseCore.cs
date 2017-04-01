@@ -20,12 +20,15 @@ namespace Net66.Core
         private static IGrainRepository<Temperature> tRepository;
         //private static IGrainRepository<Floor> fRepository;
         private static IGrainRepository<Granary> gRepository;
+        private static IGrainRepository<Collector> cRepository;
         private static string endash = StaticClass.Endash;
 
-        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository, IGrainRepository<Temperature> _tRepository)
+        public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository
+            , IGrainRepository<Temperature> _tRepository, IGrainRepository<Collector> _cRepository)
         {
             Repository = _Repository;
             //fRepository = _fRepository;
+            cRepository = _cRepository;
             gRepository = _gRepository;
             tRepository = _tRepository;
         }
@@ -89,11 +92,11 @@ namespace Net66.Core
             var reList = Repository.GetPageLists(where, p => p.StampTime.ToString(), false, pageIndex, pageSize, ref rows);
             //louceng/aojian
             var reIdList = reList.Select(s => s.Number).ToList();
-            var fg_List = gRepository.GetList(g => reIdList.Contains(g.WH_Number)&&(g.Type==1||g.Type==2));//WH_Number
+            var fg_List = gRepository.GetList(g => reIdList.Contains(g.WH_Number) && (g.Type == 1 || g.Type == 2));//WH_Number
             //louceng
             var floorList = fg_List.Where(w => w.Type == 1).ToList();
             //aojianxinxi
-            var granaryList = fg_List.Where(w=>w.Type==2).ToList();
+            var granaryList = fg_List.Where(w => w.Type == 2).ToList();
             try
             {
                 var ofList = floorList.Select(s => new OFloor()
@@ -149,8 +152,9 @@ namespace Net66.Core
                 Maximumemperature = 0,
                 MinimumTemperature = 0
             };
-            var reInt = Repository.Add(model,f=>f.Number==model.Number);
-            if (reInt > 0 && model.Type != 1) {
+            var reInt = Repository.Add(model, f => f.Number == model.Number);
+            if (reInt > 0 && model.Type != 1)
+            {
                 var addList = new List<Granary>() {
                   new Granary() {
                       Code="1",Number=Utils.StrSequenConcat(model.Number,endash,"1"),IsActive=1,Location=null,
@@ -183,7 +187,7 @@ namespace Net66.Core
         {
             var reInt = Repository.Delete(_delList, new string[] { "Number" });
             return reInt > 0;
-        }       
+        }
 
         public bool HasExist(string _code)
         {
@@ -194,13 +198,13 @@ namespace Net66.Core
 
         }
 
-        public Dictionary<string,object[]> GetBBDList()
+        public Dictionary<string, object[]> GetBBDList()
         {
-            var rList= Repository.GetList(p => p.IsActive == 1);
+            var rList = Repository.GetList(p => p.IsActive == 1);
             if (rList == null)
                 return null;
             var rIds = rList.Select(s => s.Number).ToList();
-            var gList=gRepository.GetList(g => rIds.Contains(g.WH_Number));
+            var gList = gRepository.GetList(g => rIds.Contains(g.WH_Number));
             Dictionary<string, object[]> bbdDic = new Dictionary<string, object[]>();
             foreach (var r in rList)
             {
@@ -217,7 +221,7 @@ namespace Net66.Core
                 else if (r.Type == 3)
                     whType = 'Q';
 
-                bbdDic.Add(r.Number, new object[] { whType,fCount,gCount});//1loufang、2pingfang、3jiantong
+                bbdDic.Add(r.Number, new object[] { whType, fCount, gCount });//1loufang、2pingfang、3jiantong
             }
 
             return bbdDic;
@@ -227,26 +231,51 @@ namespace Net66.Core
         /// <summary>
         /// huoqu suoyou liangcang wendu
         /// </summary>
-        public void GetGrainsTemp()
+        public List<OGrainsReport> GetGrainsTemp(string userId = "0")
         {
-            var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
-            var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
-            var minTemp = temps.Min(m => m.Temp);//zuidiwendu
-            var avrg = temps.Average(a => a.Temp);//pingjunwendu
-            int badhot = 0;//huaidianshu
+            var rList = Repository.GetList(p => p.IsActive == 1 && p.UserId == userId) ?? new List<WareHouse>();
+            var temps = tRepository.GetList(g => g.RealHeart == 0) ?? new List<Temperature>();
+
+            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0); //huaidianshu
+
+            return rList.Select(s => new OGrainsReport(temps.Where(w => w.WH_Number == s.Number).ToList()
+                , badlist.Where(w => w.HeapNumber.IndexOf(s.Number) > -1).ToList())
+            {
+                //Maximumemperature = null,//zuigaowendu
+                //MinimumTemperature = null,//zuidiwendu
+                //AverageTemperature = null,//pingjunwendu
+                //InSideTemperature = null,
+                //OutSideTemperature = null,
+                //BadPoints = null,
+                Number = s.Number,               
+                //Location=
+                //StampTime,
+                UserId = s.UserId
+            }).ToList();
         }
 
         /// <summary>
         /// tong guo langcang bioanhao huoqu duiwei wendu 
         /// </summary>
         /// <param name="number">L1</param>
-        public void getHeadsTemp(string number)
+        public List<OHeapReport> getHeadsTemp(string number)
         {
-           var temps= tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0)??new List<Temperature>();
+            var heapList=gRepository.GetList(g => g.WH_Number == number && g.Type == 0 && g.IsActive == 1);
+            var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
             var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
             var minTemp = temps.Min(m => m.Temp);//zuidiwendu
             var avrg = temps.Average(a => a.Temp);//pingjunwendu
             int badhot = 0;//huaidianshu
+            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0&& g.HeapNumber.IndexOf(number)>-1)??new List<Collector>();
+
+            return heapList.Select(s => new OHeapReport() {
+                AverageTemperature=avrg,
+                Maximumemperature=maxTemp,
+                MinimumTemperature=minTemp,
+                Number=s.Number,
+                BadPoints= badlist.Where(w=>w.HeapNumber==s.Number).Sum(u=>u.BadPoints),
+                UserId=s.UserId.ToString()
+            }).ToList();
         }
 
 

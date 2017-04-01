@@ -18,6 +18,7 @@ namespace Net66.Entity.Models
         public Nullable<decimal> MinTemp { get; set; }
         public Nullable<int> UserId { get; set; }
         public Nullable<int> IsActive { get; set; }
+        public Nullable<int> IsBad { get; set; }
         public string GuidID { get; set; }
     }
 }

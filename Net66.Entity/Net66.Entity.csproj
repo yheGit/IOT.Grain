@@ -72,6 +72,7 @@
     <Compile Include="DR_Model\UserInfo.cs" />
     <Compile Include="DR_Model\WareHouse.cs" />
     <Compile Include="DR_Model\WareHouse_Log.cs" />
+    <Compile Include="IO_Model\OGrainsReport.cs" />
     <Compile Include="IO_Model\IPackIot.cs" />
     <Compile Include="IO_Model\IResultClass.cs" />
     <Compile Include="IO_Model\IRetrunClass.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="IO_Model\OBBD.cs" />
     <Compile Include="IO_Model\OFloor.cs" />
     <Compile Include="IO_Model\OHeap.cs" />
+    <Compile Include="IO_Model\OHeapsReport.cs" />
     <Compile Include="IO_Model\OSensor.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />
     <Compile Include="IO_Model\ReturnClass.cs" />

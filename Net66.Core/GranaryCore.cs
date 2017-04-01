@@ -17,15 +17,18 @@ namespace Net66.Core
         private static IGrainRepository<Granary> gRepository;
         private static IGrainRepository<Collector> cRepository;
         private static IGrainRepository<Temperature> tRepository;
+        private static IGrainRepository<Receiver> rRepository;
         private static IGrainRepository<Sensor> sRepository;
         private static string endash = StaticClass.Endash;
 
-        public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository, IGrainRepository<Sensor> _sRepository)
+        public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository,
+            IGrainRepository<Sensor> _sRepository, IGrainRepository<Receiver> _rRepository)
         {
             gRepository = _gRepository;
             cRepository = _cRepository;
             tRepository = _tRepository;
             sRepository = _sRepository;
+            rRepository = _rRepository;
         }
 
         #region old
@@ -196,7 +199,7 @@ namespace Net66.Core
                 MinTemperature = s.MinTemperature,
                 Number = s.Number,
                 PID = s.PID,
-                SensorList = osensorList.Where(w => clist.Where(wh=>wh.HeapNumber==s.Number).Select(se=>se.CPUId).Contains(w.Collector)).ToList(),
+                SensorList = osensorList.Where(w => clist.Where(wh => wh.HeapNumber == s.Number).Select(se => se.CPUId).Contains(w.Collector)).ToList(),
                 Type = s.Type,
                 UserId = s.UserId,
                 WH_ID = s.WH_ID,
@@ -204,6 +207,39 @@ namespace Net66.Core
             }).ToList();
 
         }
+
+        /// <summary>
+        /// tongguo duiwei bianhao huoqu tade sanwentu
+        /// Q1-1-1-1
+        /// type=0 zuijin24xiaoshi \ 1zuijin7tian \ 2zuijin1geyue \3 zuijin1nian
+        /// </summary>
+        /// <param name="number"></param>
+        public List<Temperature> GetHeapTempsChart(string number, int type = 0)
+        {
+            var cList = cRepository.GetList(g => g.HeapNumber == number) ?? new List<Collector>();
+            List<string> cpuIdList = cList.Select(s => s.CPUId).ToList();
+            var rIdList = cList.Select(s => s.R_Code).Distinct().ToList();
+            var rList = rRepository.GetList(g => rIdList.Contains(g.ID));
+            cpuIdList.AddRange(rList.Select(s => s.CPUId).ToList());
+            DateTime datenow = DateTime.Now;
+            switch (type)
+            {
+                case 1:
+                    datenow = datenow.AddDays(-7); break;//zuijin 1zhou
+                case 2:
+                    datenow = datenow.AddMonths(-1); break;//zuijin 1yue
+                case 3:
+                    datenow = datenow.AddYears(-1); break;//zuijin 1nian
+                default:
+                    datenow = datenow.AddHours(-24); break;//zuijin 1tian
+            }
+            //0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
+            //var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId)&& string.Compare(g.StampTime,DateTime.Now.ToString())>=0);
+            var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId) && g.Type != 0 && g.UpdateTime > datenow);
+            return temps;
+
+        }
+
 
     }
 }

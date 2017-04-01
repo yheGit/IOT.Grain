@@ -21,17 +21,24 @@ namespace Net66.Service
                 routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
                 );
-           
+
             config.Routes.MapHttpRoute(
                name: "DefaultApi1",
                routeTemplate: "api/Grain/IsExist/{_code}",
-               defaults: new { controller = "Grain", actton = "IsExist", _code=RouteParameter.Optional }
+               defaults: new { controller = "Grain", actton = "IsExist", _code = RouteParameter.Optional }
            );
             config.Routes.MapHttpRoute(
             name: "DefaultApi2",
             routeTemplate: "api/Info/AuthDevice/{machineId}",
             defaults: new { controller = "Info", actton = "AuthDevice", machineId = RouteParameter.Optional }
         );
+
+            config.Routes.MapHttpRoute(
+           name: "DefaultApi3",
+           routeTemplate: "api/Granary/GetHeapTempChart/{number}/{type}",
+           defaults: new { controller = "Granary", actton = "GetHeapTempChart", number = RouteParameter.Optional, type = RouteParameter.Optional }
+       );
+            
 
 
 

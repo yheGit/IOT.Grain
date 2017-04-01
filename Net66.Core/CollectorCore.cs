@@ -70,12 +70,15 @@ namespace Net66.Core
         {
             if (_list == null || _list.Count < 0)
                 return false;
-            var datenow = Utils.GetServerTime();
+            var datenow = Utils.GetServerDateTime();
+            var datenowStr = datenow.ToString();
             var addTemp = new List<Temperature>();
             var add_CTemp = new List<Temperature>();
             var updateList = new List<Collector>();
             var addSensors = new List<Sensor>();
             var sensorIdList = new List<string>();
+            var badhots = new List<string>();
+            var dicBadhots = new Dictionary<string, int>();
             foreach (var cmodel in _list)
             {
                 #region 更新采集器
@@ -84,7 +87,7 @@ namespace Net66.Core
                     updateList.Add(new Collector()
                     {
                         CPUId = cmodel.m_cpuid,
-                        InstallDate = datenow,
+                        InstallDate = datenowStr,
                         SensorIdArr = cmodel.sum > 0 ? string.Join(",", cmodel.SensorId) : null
                     });
                 }
@@ -96,7 +99,7 @@ namespace Net66.Core
                 if (cmodel.SensorId != null && cmodel.SensorId.Count > 0)
                 {
                     sensorList = cmodel.SensorId;
-                    var sublayer = cRepository.Get(g=>g.CPUId==cmodel.m_cpuid);
+                    var sublayer = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);
                     if (sublayer == null)
                         continue;
                     var sblist = sbRepository.GetList(g => sensorList.Contains(g.SCpu));
@@ -111,8 +114,8 @@ namespace Net66.Core
                         {
                             var count = linelist == null ? 0 : linelist.Count;
                             linelist.Add(lineCode, count + 1);
-                        }                       
-                        
+                        }
+
                         var sequen = baseinfo.SSequen;
                         var guidKey = cmodel.m_cpuid + "_" + lineCode + "_" + sequen;
                         var guid = Utils.MD5(guidKey);
@@ -125,8 +128,8 @@ namespace Net66.Core
                             Direction_X = sequen,
                             Direction_Y = linelist.FirstOrDefault(d => d.Key == lineCode).Value,
                             Direction_Z = sublayer.Sublayer,
-                            Sequen=sequen,
-                            GuidID = guid 
+                            Sequen = sequen,
+                            GuidID = guid
                         });
                     }
                 }
@@ -151,27 +154,51 @@ namespace Net66.Core
                     {
                         #region chuanganqi temp
                         int i = 0;
-                        sensorList.ForEach(f =>
+                        //sensorList.ForEach(f =>
+                        //{
+                        //    var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
+                        //    cjqTemp += temp;
+                        //    addTemp.Add(new Temperature()
+                        //    {
+                        //        PId = f,
+                        //        StampTime = datenowStr,
+                        //        UpdateTime= datenow,
+                        //        Temp = temp,
+                        //        RealHeart = 0,
+                        //        Type = 0,
+                        //        WH_Number=wh_number
+                        //    }); i++;
+                        //});
+                        for (; i < sensorIdList.Count; i++)
                         {
+                            var f = sensorIdList[i];
                             var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
+                            if (temp == 255)//huaidian
+                            {
+                                badhots.Add(f);
+                                continue;
+                            }
                             cjqTemp += temp;
                             addTemp.Add(new Temperature()
                             {
                                 PId = f,
-                                StampTime = datenow,
+                                StampTime = datenowStr,
+                                UpdateTime = datenow,
                                 Temp = temp,
                                 RealHeart = 0,
                                 Type = 0,
-                                WH_Number=wh_number
-                            }); i++;
-                        });
+                                WH_Number = wh_number
+                            });
+                        }
+                        cjqTemp = cjqTemp / i;
                         #endregion
 
                         #region caijiqi temp
                         add_CTemp.Add(new Temperature()
                         {
                             PId = cmodel.m_cpuid,
-                            StampTime = datenow,
+                            StampTime = datenowStr,
+                            UpdateTime = datenow,
                             Type = 1,//0chuanganqi、1caijiqi、2shoujiqi
                             RealHeart = 0,
                             Temp = cjqTemp,
@@ -182,17 +209,30 @@ namespace Net66.Core
                 }
                 sensorIdList.AddRange(sensorList);
                 #endregion
+
+                #region 更新坏点
+                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0&& badhots.Contains(p.SensorId), "SensorId", 1, "");//biaoji yijing huailede chaungganqi
+                if (rebad > 0)
+                {
+                    dicBadhots.Add(cmodel.m_cpuid, rebad);
+                }
+                #endregion
+
             }
             var cpuIds = _list.Select(s => s.m_cpuid).ToList();
             var selectKey = new string[] { "CPUId" };
             var updateKey = new string[] { "SensorIdArr", "InstallDate" };
             var reint = cRepository.AddUpdate(updateList, selectKey, updateKey);//pingliangtianjiacaijiqi
-            reint = tRepository.AddUpdate(addTemp,p=>p.RealHeart==0&& sensorIdList.Contains(p.PId)&&p.Type==0, "RealHeart", 1, "StampTime");//piliangtianjiawendu
+            reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && sensorIdList.Contains(p.PId) && p.Type == 0, "RealHeart", 1, "StampTime");//piliangtianjiawendu
             reint = tRepository.AddUpdate(add_CTemp, p => p.RealHeart == 0 && cpuIds.Contains(p.PId) && p.Type == 1, "RealHeart", 1, "StampTime");//tongshigengxin caijiqi temp
-            var sKey=new string[] { "GuidID" };
+            var sKey = new string[] { "GuidID" };
             var uKey = new string[] { "Collector", "GuidID" };
-            reint = sRepository.AddUpdate(addSensors, sKey, uKey);//tianjiachuanganqi
+            reint = sRepository.AddUpdate(addSensors, sKey, uKey);//tianjiachuanganqi    
+
+            new Data.Context.DbEntity().UpdateCollectorBadHot(dicBadhots);
             return reint > 0;
         }
+
+
     }
 }

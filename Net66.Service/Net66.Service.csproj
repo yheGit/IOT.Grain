@@ -87,7 +87,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Net66.Comm">
-      <HintPath>..\Net66.Comm\bin\Debug\Net66.Comm.dll</HintPath>
+      <HintPath>..\Net66.Comm\obj\Debug\Net66.Comm.dll</HintPath>
     </Reference>
     <Reference Include="Net66.Data">
       <HintPath>..\Net66.Data\bin\Debug\Net66.Data.dll</HintPath>

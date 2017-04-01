@@ -128,5 +128,22 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
+        /// <summary>
+        /// huoqu liangdui sanwentu
+        /// </summary>
+        //[HttpGet]
+        //[System.Web.Mvc.Route("api/Granary/GetHeapTempChart/{number}/{type}")]
+        public MobiResult GetHeapTempChart(string number, int type)
+        {
+            if (string.IsNullOrEmpty(number))
+                return new MobiResult(1009);
+            var reList = granaryCore.GetHeapTempsChart(number,type);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1011);
+        }
+        
+
     }
 }

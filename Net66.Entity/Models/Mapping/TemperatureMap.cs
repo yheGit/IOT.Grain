@@ -25,6 +25,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.ID).HasColumnName("ID");
             this.Property(t => t.Temp).HasColumnName("Temp");
             this.Property(t => t.StampTime).HasColumnName("StampTime");
+            this.Property(t => t.UpdateTime).HasColumnName("UpdateTime");
             this.Property(t => t.PId).HasColumnName("PId");
             this.Property(t => t.RealHeart).HasColumnName("RealHeart");
             this.Property(t => t.Type).HasColumnName("Type");

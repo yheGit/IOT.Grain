@@ -35,5 +35,7 @@ namespace Net66.Core.Interface
 
         Dictionary<string, object[]> GetBBDList();
 
+        List<OGrainsReport> GetGrainsTemp(string userId = "0");
+
     }
 }

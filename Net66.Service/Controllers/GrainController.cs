@@ -105,7 +105,14 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011,"不存在");
         }
 
-        
+        public MobiResult GetList_GrainReport_ByUserId()
+        {
+            var reList = wareHouseCore.GetGrainsTemp();
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1012);
+        }
 
 
     }

@@ -43,6 +43,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
             this.Property(t => t.GuidID).HasColumnName("GuidID");//
+            this.Property(t => t.IsBad).HasColumnName("IsBad");//
         }
     }
 }

@@ -31,7 +31,8 @@ namespace Net66.Core
         {
             var reint = 0;
             c_short = "ff";
-            var datenow = Utils.GetServerTime();
+            var datenow = Utils.GetServerDateTime();
+            var datenowStr = datenow.ToString();
             var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
             var guid = Utils.MD5(guidKey);
             var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
@@ -39,7 +40,7 @@ namespace Net66.Core
             {
                  GuidID=guid,
                 CPUId = _entity.c_cpuid,
-                InstallDate = datenow,
+                InstallDate = datenowStr,
                 IsActive = 1,
                 W_Number=_entity.building,
                 F_Number = _entity.layer.ToString(),
@@ -64,7 +65,8 @@ namespace Net66.Core
                     reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
                     {
                         PId = _entity.c_cpuid,
-                        StampTime = datenow,
+                        StampTime = datenowStr,
+                        UpdateTime=datenow, 
                         Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
                         RealHeart = 0,
                         Temp = temp

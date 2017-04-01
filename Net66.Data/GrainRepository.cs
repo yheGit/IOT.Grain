@@ -527,17 +527,24 @@ namespace Net66.Data
                 try
                 {
                     var plist = db.Set<T>().Where(predicate);
-                    foreach (var current in plist)
+                    if (plist != null)
                     {
-                        current.GetType().GetProperty(defDate).SetValue(current, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), null);
-                        current.GetType().GetProperty(updateKey).SetValue(current, updateValue, null);
-                        db.Set<T>().Attach(current);
-                        db.Entry<T>(current).State = EntityState.Modified;
+                        foreach (var current in plist)
+                        {
+                            if(!string.IsNullOrEmpty(defDate))
+                                current.GetType().GetProperty(defDate).SetValue(current, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), null);
+                            current.GetType().GetProperty(updateKey).SetValue(current, updateValue, null);
+                            db.Set<T>().Attach(current);
+                            db.Entry<T>(current).State = EntityState.Modified;
+                        }
                     }
 
-                    foreach (var current in list)
+                    if (list != null && list.Count > 0)
                     {
-                        db.Set<T>().Add(current);
+                        foreach (var current in list)
+                        {
+                            db.Set<T>().Add(current);
+                        }
                     }
 
                     return db.SaveChanges();
@@ -548,6 +555,8 @@ namespace Net66.Data
                 }
             }
         }
+
+
 
         #endregion
 

@@ -42,6 +42,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.SensorIdArr).HasColumnName("SensorIdArr");
             this.Property(t => t.Sublayer).HasColumnName("Sublayer");
             this.Property(t => t.GuidID).HasColumnName("GuidID");
+            this.Property(t => t.BadPoints).HasColumnName("BadPoints");
         }
     }
 }

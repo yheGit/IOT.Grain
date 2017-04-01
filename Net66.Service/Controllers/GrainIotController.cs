@@ -88,13 +88,27 @@ namespace Net66.Service.Controllers
             var datenow = Utils.GetServerDateTime();
             #region 采集温度
             var clist = _pack.Measurers;
-            rebit = collectorCore.AddTemp(clist);
+            if (clist != null && clist.Count > 0)
+                rebit = collectorCore.AddTemp(clist);
             #endregion
 
             #region 安装
             var rmodel = _pack.Collector;
             var c_short = string.Empty;
-            rebit = receiverCore.Install(rmodel, out c_short);
+            if (rmodel != null)
+            {
+                var type = TypeParse.StrToInt(rmodel.type, 0);
+                if (type == 2)
+                    rebit = receiverCore.Install(rmodel, out c_short);
+                else if (type == 1)
+                    rebit = collectorCore.Install(rmodel);
+                else if (type == 0)//更新湿度
+                {
+                    rebit = receiverCore.AddHum(rmodel);
+                }
+                else // 外网安装用，或者以备后续推行消息指令
+                { }
+            }
             #endregion
 
             #region 报警
