@@ -110,10 +110,28 @@ namespace Net66.Core
             return "";
         }
 
+        /// <summary>
+        /// 0添加堆位、1添加楼层、2添加廒间
+        /// </summary>
+        /// <param name="_addList"></param>
+        /// <param name="_type"></param>
+        /// <returns></returns>
         public bool AddList(List<Granary> _addList, int _type)
         {
             //_type 0duiwei、1louceng、2aojian
             _addList.ForEach(a => { a.IsActive = 1; a.Type = _type; });
+
+            var reInt = gRepository.Add(_addList);
+            return reInt > 0;
+        }
+
+        /// <summary>
+        /// 0添加堆位、1添加楼层、2添加廒间
+        /// </summary>
+        public bool AddList2(List<Granary> _addList)
+        {
+            //_type 0duiwei、1louceng、2aojian
+            _addList.ForEach(a => { a.IsActive = 1;});
 
             var reInt = gRepository.Add(_addList);
             return reInt > 0;
@@ -127,13 +145,13 @@ namespace Net66.Core
 
         public bool Update(Granary _entity)
         {
-            var fieldArr = new string[] { "IsActive", "Location", "F_Number", "UserId" };
+            var fieldArr = new string[] { "IsActive", "Location", "Code", "UserId", "WH_Number", "MaxiTemperature", "MinTemperature" };
             var reInt = gRepository.Update(new List<Granary>() { _entity }, new string[] { "Number" }, fieldArr, "StampTime");
             return reInt > 0;
         }
 
         /// <summary>
-        /// huoqu duiwei xinxi (baohan tade shishi temp)
+        /// 获取堆位信息（包含温度信息）
         /// </summary>
         public List<OHeap> GetList(List<string> _params)
         {
@@ -165,7 +183,7 @@ namespace Net66.Core
             var sIds = sList.Select(s => s.SensorId).ToList();
             var tempList = tRepository.GetList(g => g.Type == 0 && sIds.Contains(g.PId) && g.RealHeart == 0) ?? new List<Temperature>();
 
-            #region chuanganqi bangding temp
+            #region 传感器绑定 temp
             var osensorList = sList.Select(s => new OSensor(tempList.FirstOrDefault(f => f.PId == s.SensorId))
             {
                 Collector = s.Collector,
@@ -209,9 +227,9 @@ namespace Net66.Core
         }
 
         /// <summary>
-        /// tongguo duiwei bianhao huoqu tade sanwentu
+        /// 通过对位编号获取三温图
         /// Q1-1-1-1
-        /// type=0 zuijin24xiaoshi \ 1zuijin7tian \ 2zuijin1geyue \3 zuijin1nian
+        /// type=0 最近24小时、 1最近7天、 2最近1个月、3 最近1年
         /// </summary>
         /// <param name="number"></param>
         public List<Temperature> GetHeapTempsChart(string number, int type = 0)
@@ -235,8 +253,35 @@ namespace Net66.Core
             }
             //0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
             //var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId)&& string.Compare(g.StampTime,DateTime.Now.ToString())>=0);
+            //0传感器、1采集器、2收集器（室内）、3收集器（室外）
             var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId) && g.Type != 0 && g.UpdateTime > datenow);
-            return temps;
+            return temps=temps.OrderBy(o => o.UpdateTime).ToList();
+
+        }
+
+
+        /// <summary>
+        /// 通过传感器编号获取其折线变化图 2017-03-12 14:48:03
+        /// Q1-1-1-1
+        /// type=0 最近24小时、 1最近7天、 2最近1个月、3 最近1年
+        /// </summary>
+        /// <param name="number"></param>
+        public List<Temperature> GetSensorsChart(string number, int type = 0)
+        {
+            DateTime datenow = DateTime.Now;
+            switch (type)
+            {
+                case 1:
+                    datenow = datenow.AddDays(-7); break;//zuijin 1zhou
+                case 2:
+                    datenow = datenow.AddMonths(-1); break;//zuijin 1yue
+                case 3:
+                    datenow = datenow.AddYears(-1); break;//zuijin 1nian
+                default:
+                    datenow = datenow.AddHours(-24); break;//zuijin 1tian
+            }
+            var temps = tRepository.GetList(g => number.Equals(g.PId) && g.Type == 0 && g.UpdateTime > datenow);
+            return temps = temps.OrderBy(o => o.UpdateTime).ToList();
 
         }
 

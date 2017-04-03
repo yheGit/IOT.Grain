@@ -19,5 +19,8 @@ namespace Net66.Entity.Models
         public Nullable<System.DateTime> StampTime { get; set; }
         public Nullable<int> IsActive { get; set; }
         public Nullable<int> BadPoints { get; set; }
+        public Nullable<int> Width { get; set; }
+        public Nullable<int> Height { get; set; }
+        public Nullable<int> depth { get; set; }
     }
 }

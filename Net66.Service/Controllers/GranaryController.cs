@@ -97,15 +97,34 @@ namespace Net66.Service.Controllers
             else
                 return new MobiResult(1011, "不存在",null, reStr);
         }
+        
 
+        /// <summary>
+        /// 添加楼层、鏖间、堆位添加 2017-03-13 05:52:55
+        /// </summary>
         [HttpPost]
-        //[System.Web.Mvc.Route("PostArray")]
         public MobiResult AddList(List<Granary> _addList,int _type=-1)
         {
             //_type 0duiwei、1louceng、2aojian
             if (_addList == null || _addList.Count <= 0||_type==-1)
                 return new MobiResult(1009);
             var reBit = granaryCore.AddList(_addList,_type);
+            if (reBit == true)
+                return new MobiResult(1000, "成功");
+            else
+                return new MobiResult(1011);
+        }
+
+        /// <summary>
+        /// 添加楼层、鏖间、堆位添加 2017-04-02 13:09:37
+        /// </summary>
+        [HttpPost]
+        public MobiResult AddList2(List<Granary> _addList)
+        {
+            //_type 0duiwei、1louceng、2aojian
+            if (_addList == null || _addList.Count <= 0 )
+                return new MobiResult(1009);
+            var reBit = granaryCore.AddList2(_addList);
             if (reBit == true)
                 return new MobiResult(1000, "成功");
             else
@@ -129,15 +148,32 @@ namespace Net66.Service.Controllers
         }
 
         /// <summary>
-        /// huoqu liangdui sanwentu
+        /// 获取粮食的三温图 2017-04-02 14:43:46
         /// </summary>
         //[HttpGet]
-        //[System.Web.Mvc.Route("api/Granary/GetHeapTempChart/{number}/{type}")]
         public MobiResult GetHeapTempChart(string number, int type)
         {
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = granaryCore.GetHeapTempsChart(number,type);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1011);
+        }
+
+        /// <summary>
+        /// 获取传感器的折线变化图 2017-03-12 14:49:30
+        /// </summary>
+        /// <param name="sensorId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public MobiResult GetSensorsChart(string sensorId, int type)
+        {
+            if (string.IsNullOrEmpty(sensorId))
+                return new MobiResult(1009);
+            var reList = granaryCore.GetSensorsChart(sensorId, type);
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else

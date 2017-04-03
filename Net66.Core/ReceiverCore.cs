@@ -57,21 +57,21 @@ namespace Net66.Core
 
             if (reint > 0)
             {
-                if (_entity.type == 0)
-                {
-                    var ttype = 2;
-                    if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
-                        ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
-                    reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
-                    {
-                        PId = _entity.c_cpuid,
-                        StampTime = datenowStr,
-                        UpdateTime=datenow, 
-                        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
-                        RealHeart = 0,
-                        Temp = temp
-                    } }, p => (p.RealHeart == 0 && p.Type == ttype&&p.PId==_entity.c_cpuid), "RealHeart", 1, "StampTime");
-                }
+                //if (_entity.type == 0)
+                //{
+                //    var ttype = 2;
+                //    if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
+                //        ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
+                //    reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
+                //    {
+                //        PId = _entity.c_cpuid,
+                //        StampTime = datenowStr,
+                //        UpdateTime=datenow, 
+                //        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
+                //        RealHeart = 0,
+                //        Temp = temp
+                //    } }, p => (p.RealHeart == 0 && p.Type == ttype&&p.PId==_entity.c_cpuid), "RealHeart", 1, "StampTime");
+                //}
                 var reId = addList.FirstOrDefault().ID;
                 if (reId == 0)
                 {
@@ -92,14 +92,31 @@ namespace Net66.Core
         /// <returns></returns>
         public bool AddHum(IReceiver _entity)
         {
-            var datenow = Utils.GetServerTime();
+            var datenow = Utils.GetServerDateTime();
+            var datenowStr = datenow.ToString();
+            var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
             var addEntity = new Humidity()
             {
                 Humility = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
-                Temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
+                Temp = temp,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
                 ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
-                StampTime = datenow
+                StampTime = datenowStr
             };
+
+            var ttype = 2;
+            if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
+                ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
+           var reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
+                    {
+                        PId = _entity.c_cpuid,
+                        StampTime = datenowStr,
+                        UpdateTime=datenow, 
+                        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
+                        RealHeart = 0,
+                        Temp = temp,
+                        WH_Number=_entity.building
+                    } }, p => (p.RealHeart == 0 && p.Type == ttype && p.PId == _entity.c_cpuid), "RealHeart", 1, "StampTime");
+
             return hRepository.Add(addEntity) > 0;
         }
 

@@ -29,6 +29,7 @@ namespace Net66.Service.Controllers
 
         /// <summary>
         /// 200成功，203失败
+        /// 测试用
         /// </summary>
         [HttpPost]
         public string PostPackTest(IPacks _pack)
@@ -38,7 +39,7 @@ namespace Net66.Service.Controllers
             bool rebit = false;
             var datenow = Utils.GetServerDateTime();
 
-            #region 采集器
+            #region 批量插入温度
             var clist = _pack.Measurers;
             if (clist != null && clist.Count > 0)
                 rebit = collectorCore.AddTemp(clist);
@@ -51,9 +52,9 @@ namespace Net66.Service.Controllers
             {
                 var type = TypeParse.StrToInt(rmodel.type, 0);
                 if (type == 2)
-                    rebit = receiverCore.Install(rmodel, out c_short);
+                    rebit = receiverCore.Install(rmodel, out c_short);//安装收集器
                 else if (type == 1)
-                    rebit = collectorCore.Install(rmodel);
+                    rebit = collectorCore.Install(rmodel);//安装采集器
                 else if (type == 0)//更新湿度
                 {
                     rebit = receiverCore.AddHum(rmodel);
@@ -124,6 +125,7 @@ namespace Net66.Service.Controllers
 
         /// <summary>
         /// 200成功，203失败
+        /// pangdong diaoyong
         /// </summary>
         [HttpGet]
         public string PostPack2(string _pack)

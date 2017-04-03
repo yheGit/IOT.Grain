@@ -55,6 +55,7 @@ namespace Net66.Core
                     UserId=0,
                     //Voltage=null,
                     //SensorIdArr=null,
+                    BadPoints=0,
                     IsActive = 1
                 } };
 
@@ -66,6 +67,11 @@ namespace Net66.Core
 
         }
 
+        /// <summary>
+        /// 收集温度 2017-03-12 14:07:11
+        /// </summary>
+        /// <param name="_list"></param>
+        /// <returns></returns>
         public bool AddTemp(List<ICollector> _list)
         {
             if (_list == null || _list.Count < 0)
@@ -135,7 +141,7 @@ namespace Net66.Core
                 }
                 #endregion
 
-                #region wen du
+                #region 温度
                 if (!string.IsNullOrEmpty(cmodel.c_short))
                 {
                     var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
@@ -169,11 +175,11 @@ namespace Net66.Core
                         //        WH_Number=wh_number
                         //    }); i++;
                         //});
-                        for (; i < sensorIdList.Count; i++)
+                        for (; i < sensorList.Count; i++)
                         {
-                            var f = sensorIdList[i];
+                            var f = sensorList[i];
                             var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
-                            if (temp == 255)//huaidian
+                            if (temp == 255)//坏点
                             {
                                 badhots.Add(f);
                                 continue;
@@ -219,16 +225,27 @@ namespace Net66.Core
                 #endregion
 
             }
-            var cpuIds = _list.Select(s => s.m_cpuid).ToList();
+            
+            //批量添加采集器
             var selectKey = new string[] { "CPUId" };
             var updateKey = new string[] { "SensorIdArr", "InstallDate" };
-            var reint = cRepository.AddUpdate(updateList, selectKey, updateKey);//pingliangtianjiacaijiqi
-            reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && sensorIdList.Contains(p.PId) && p.Type == 0, "RealHeart", 1, "StampTime");//piliangtianjiawendu
-            reint = tRepository.AddUpdate(add_CTemp, p => p.RealHeart == 0 && cpuIds.Contains(p.PId) && p.Type == 1, "RealHeart", 1, "StampTime");//tongshigengxin caijiqi temp
+            var reint = cRepository.AddUpdate(updateList, selectKey, updateKey);
+            
+            //批量插入温度
+            reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && sensorIdList.Contains(p.PId) && p.Type == 0
+                , "RealHeart", 1, "StampTime");
+
+            //同时更新采集器的温度
+            var cpuIds = _list.Select(s => s.m_cpuid).ToList();
+            reint = tRepository.AddUpdate(add_CTemp, p => p.RealHeart == 0 && cpuIds.Contains(p.PId) && p.Type == 1
+                , "RealHeart", 1, "");
+
+            //添加传感器
             var sKey = new string[] { "GuidID" };
             var uKey = new string[] { "Collector", "GuidID" };
-            reint = sRepository.AddUpdate(addSensors, sKey, uKey);//tianjiachuanganqi    
+            reint = sRepository.AddUpdate(addSensors, sKey, uKey); 
 
+            //跟新采集器的坏点数
             new Data.Context.DbEntity().UpdateCollectorBadHot(dicBadhots);
             return reint > 0;
         }

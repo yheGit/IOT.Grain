@@ -34,6 +34,10 @@ namespace Net66.Entity.IO_Model
         public Nullable<decimal> OutSideTemperature { get; set; }
         //public Nullable<System.DateTime> StampTime { get; set; }
         public Nullable<int> BadPoints { get; set; }
+        /// <summary>
+        /// 粮仓类型 1楼房仓，2平方仓，3立筒仓
+        /// </summary>
+        public int Type { get; set; }
 
     }
 }

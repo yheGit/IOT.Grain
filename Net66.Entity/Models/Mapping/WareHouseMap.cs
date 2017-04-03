@@ -39,6 +39,9 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.StampTime).HasColumnName("StampTime");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
             this.Property(t => t.BadPoints).HasColumnName("BadPoints");//
+            this.Property(t => t.Width).HasColumnName("Width");
+            this.Property(t => t.Height).HasColumnName("Height");
+            this.Property(t => t.depth).HasColumnName("depth");
         }
     }
 }

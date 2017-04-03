@@ -22,11 +22,11 @@ namespace Net66.Service
                 defaults: new { id = RouteParameter.Optional }
              );
 
-            // config.Routes.MapHttpRoute(
-            //    name: "DefaultApi1",
-            //    routeTemplate: "api/Grain/IsExist/{_code}",
-            //    defaults: new { controller = "Grain", actton = "IsExist", _code = RouteParameter.Optional }
-            //);
+            config.Routes.MapHttpRoute(
+               name: "DefaultApi1",
+               routeTemplate: "api/Granary/GetSensorsChart/{sensorId}/{type}",
+               defaults: new { controller = "Granary", actton = "GetSensorsChart", sensorId = RouteParameter.Optional, type = RouteParameter.Optional }
+           );
 
            config.Routes.MapHttpRoute(
                name: "DefaultApi3",

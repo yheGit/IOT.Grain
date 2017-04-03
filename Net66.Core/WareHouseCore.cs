@@ -33,6 +33,12 @@ namespace Net66.Core
             tRepository = _tRepository;
         }
 
+        /// <summary>
+        /// 查寻粮仓信息 2017-03-13 05:35:36
+        /// </summary>
+        /// <param name="_search"></param>
+        /// <param name="_params"></param>
+        /// <returns></returns>
         public List<OWareHouse> GetPageLists(ISearch _search, List<string> _params)
         {
             #region //条件查询
@@ -99,7 +105,7 @@ namespace Net66.Core
             var granaryList = fg_List.Where(w => w.Type == 2).ToList();
             try
             {
-                var ofList = floorList.Select(s => new OFloor()
+                var ofList = floorList.OrderBy(o=>o.Code).Select(s => new OFloor()
                 {
                     ID = s.ID,
                     IsActive = s.IsActive,
@@ -108,7 +114,7 @@ namespace Net66.Core
                     UserId = s.UserId,
                     WH_Number = s.WH_Number,
                     //GranaryList = granaryList.Where(w => SqlFunctions.PatIndex(s.Number + "__", w.Number) > 0).ToList()
-                    GranaryList = granaryList.Where(w => w.Number.Contains(s.Number)).ToList()
+                    GranaryList = granaryList.Where(w => w.Number.Contains(s.Number)).OrderBy(o => o.Code).ToList()
                 }).ToList();
 
                 return reList.Select(s => new OWareHouse()
@@ -136,6 +142,11 @@ namespace Net66.Core
             }
         }
 
+        /// <summary>
+        /// 添加粮仓信息 2017-03-13 05:36:15
+        /// </summary>
+        /// <param name="_entity"></param>
+        /// <returns></returns>
         public bool AddWareHouse(IWareHouse _entity)
         {
             DateTime datenow = Utils.GetServerDateTime();
@@ -248,6 +259,7 @@ namespace Net66.Core
                 //OutSideTemperature = null,
                 //BadPoints = null,
                 Number = s.Number,
+                Type=s.Type??0,
                 //Location=
                 //StampTime,
                 UserId = s.UserId
