@@ -20,8 +20,8 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Location)
                 .HasMaxLength(50);
 
-            //this.Property(t => t.F_Number)
-            //    .HasMaxLength(50);
+            this.Property(t => t.StampTime)
+                .HasMaxLength(50);
 
             this.Property(t => t.WH_Number)
                 .HasMaxLength(50);
@@ -44,6 +44,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.WH_ID).HasColumnName("WH_ID");
             this.Property(t => t.WH_Number).HasColumnName("WH_Number");
             this.Property(t => t.BadPoints).HasColumnName("BadPoints");
+            this.Property(t => t.StampTime).HasColumnName("StampTime");
 
 
         }

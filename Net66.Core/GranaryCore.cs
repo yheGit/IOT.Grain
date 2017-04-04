@@ -54,10 +54,49 @@ namespace Net66.Core
             return true;
         }
 
+        public bool IsExist2(List<string> _params)
+        {
+             //TypeParse.StrToInt(Utils.GetValue(_params, "number^"), 0)
+            string _number = Utils.GetValue(_params, "number^");
+            int _type = TypeParse.StrToInt(Utils.GetValue(_params, "type^"), 0);
+            var ifno = gRepository.Get(g => g.Number == _number && g.Type == _type);
+            if (ifno == null)
+                return false;
+            return true;
+        }
+
+
         public bool UpdateGranary(Granary _entity)
         {
-            var fieldArr = new string[] { "IsActive", "Location", "F_Number", "UserId" };
+            var fieldArr = new string[] { "IsActive", "Location", "Code", "UserId", "WH_Number", "MaxiTemperature", "MinTemperature" };
             var reInt = gRepository.Update(new List<Granary>() { _entity }, new string[] { "Number" }, fieldArr, "StampTime");
+            return reInt > 0;
+        }
+
+        /// <summary>
+        /// 批量更新楼层、鏖间、堆位等信息 2017-03-14 22:35:47
+        /// </summary>
+        /// <param name="_list"></param>
+        /// <returns></returns>
+        public bool UpdateList(List<Granary> _list)
+        {
+            List<Granary> addList = new List<Granary>();
+            foreach (var model in _list)
+            {
+                if (model.Type == null || string.IsNullOrEmpty(model.Number))
+                    continue;
+                model.AverageHumidity = model.AverageHumidity ?? 0;
+                model.AverageTemperature = model.AverageTemperature ?? 0;
+                model.BadPoints = model.BadPoints ?? 0;
+                model.IsActive = model.IsActive ?? 1;
+                model.MaxiTemperature = model.MaxiTemperature ?? 0;
+                model.MinTemperature = model.MinTemperature ?? 0;
+                model.StampTime = Utils.GetServerTime();
+                addList.Add(model);
+            }
+
+            var fieldArr = new string[] { "IsActive", "Location", "Code", "UserId", "WH_Number", "MaxiTemperature", "MinTemperature" };
+            var reInt = gRepository.AddUpdate(addList, new string[] { "Number" }, fieldArr, "StampTime");
             return reInt > 0;
         }
 

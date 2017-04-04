@@ -37,7 +37,7 @@ namespace Net66.Comm.SysApi
                 return 0;
             var index = i * 2;
             var dex = _temp.Substring(index, 2);
-            return TypeParse._16NAC_To_10NSC(dex);
+            return TypeParse._16NAC_To_10NSC(dex);            
         }
 
     }

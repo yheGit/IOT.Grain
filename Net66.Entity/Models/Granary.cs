@@ -20,6 +20,7 @@ namespace Net66.Entity.Models
         public Nullable<decimal> MinTemperature { get; set; }//
         public Nullable<int> UserId { get; set; }
         public Nullable<int> IsActive { get; set; }
+        public string StampTime { get; set; }
 
     }
 }

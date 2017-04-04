@@ -17,7 +17,9 @@ namespace Net66.Entity.IO_Model
         public string Location { get; set; }
         public Nullable<int> Type { get; set; }
         public string UserId { get; set; }
-
+        public Nullable<int> Width { get; set; }
+        public Nullable<int> Height { get; set; }
+        public Nullable<int> depth { get; set; }
         public Nullable<int> IsActive { get; set; }
 
     }

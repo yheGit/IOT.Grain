@@ -14,6 +14,8 @@ namespace Net66.Core.Interface
 
         bool UpdateGranary(Granary _entity);
 
+        bool UpdateList(List<Granary> _list);
+
         bool DeleteGranary(List<Granary> _delList);
 
         bool IsExist(Granary _entity);
@@ -34,6 +36,8 @@ namespace Net66.Core.Interface
         List<Temperature> GetSensorsChart(string number, int type = 0);
 
         bool AddList2(List<Granary> _addList);
+
+        bool IsExist2(List<string> _params);
 
         #endregion
 

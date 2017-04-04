@@ -94,10 +94,10 @@ namespace Net66.Core
         {
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
-            var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
+            var temp = Convert.ToDecimal(_entity.temp);//Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
             var addEntity = new Humidity()
             {
-                Humility = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
+                Humility = Convert.ToDecimal(_entity.hum),//Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
                 Temp = temp,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
                 ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
                 StampTime = datenowStr
@@ -106,7 +106,7 @@ namespace Net66.Core
             var ttype = 2;
             if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
                 ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
-           var reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
+            var reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
                     {
                         PId = _entity.c_cpuid,
                         StampTime = datenowStr,

@@ -28,6 +28,12 @@ namespace Net66.Service
                defaults: new { controller = "Granary", actton = "GetSensorsChart", sensorId = RouteParameter.Optional, type = RouteParameter.Optional }
            );
 
+            config.Routes.MapHttpRoute(
+              name: "DefaultApi2",
+              routeTemplate: "api/Granary/IsExist2/{number}/{type}",
+              defaults: new { controller = "Granary", actton = "IsExist2", number = RouteParameter.Optional, type = RouteParameter.Optional }
+          );
+
            config.Routes.MapHttpRoute(
                name: "DefaultApi3",
                routeTemplate: "api/Granary/GetHeapTempChart/{number}/{type}",

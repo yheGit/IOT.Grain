@@ -46,6 +46,19 @@ namespace Net66.Service.Controllers
 
         [HttpPost]
         [System.Web.Mvc.Route("PostArray")]
+        public MobiResult UpdateList(List<Granary> _list)
+        {
+            if (_list == null||_list.Count<0)
+                return new MobiResult(1009);
+            var reBit = granaryCore.UpdateList(_list);
+            if (reBit == true)
+                return new MobiResult(1000, "成功");
+            else
+                return new MobiResult(1011);
+        }
+
+        [HttpPost]
+        [System.Web.Mvc.Route("PostArray")]
         public MobiResult Delete(List<Granary> _delList)
         {
             if (_delList == null || _delList.Count < 0)
@@ -65,6 +78,18 @@ namespace Net66.Service.Controllers
             if (_entity == null)
                 return new MobiResult(1009);
             var reBit = granaryCore.IsExist(_entity);
+            if (reBit == true)
+                return new MobiResult(1000, "存在");
+            else
+                return new MobiResult(1011, "不存在");
+        }
+
+        [HttpPost]
+        public MobiResult IsExist2(List<string> param)
+        {
+            if (param==null||!param.Any())
+                return new MobiResult(1009);
+            var reBit = granaryCore.IsExist2(param);
             if (reBit == true)
                 return new MobiResult(1000, "存在");
             else

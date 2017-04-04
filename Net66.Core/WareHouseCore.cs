@@ -23,6 +23,7 @@ namespace Net66.Core
         private static IGrainRepository<Collector> cRepository;
         private static string endash = StaticClass.Endash;
 
+        //粮仓类型(1楼房L、2平方P、3浅圆仓Q、4筒仓T)
         public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository
             , IGrainRepository<Temperature> _tRepository, IGrainRepository<Collector> _cRepository)
         {
@@ -36,9 +37,6 @@ namespace Net66.Core
         /// <summary>
         /// 查寻粮仓信息 2017-03-13 05:35:36
         /// </summary>
-        /// <param name="_search"></param>
-        /// <param name="_params"></param>
-        /// <returns></returns>
         public List<OWareHouse> GetPageLists(ISearch _search, List<string> _params)
         {
             #region //条件查询
@@ -156,13 +154,18 @@ namespace Net66.Core
                 Location = _entity.Location,
                 Name = _entity.Name,
                 Number = _entity.Number,
-                Type = _entity.Type,//1(L)loufang、2(T)pingfang、3(Q)jiantong
+                Type = _entity.Type,//1(L)楼房仓、2(P)平顶仓、3(Q)浅圆筒仓、4（T）筒仓
                 UserId = _entity.UserId,
                 StampTime = datenow,
                 AverageTemperature = 0,
                 Maximumemperature = 0,
-                MinimumTemperature = 0
+                MinimumTemperature = 0,
+                Width=_entity.Width,
+                depth=_entity.depth,
+                Height=_entity.Height
             };
+
+
             var reInt = Repository.Add(model, f => f.Number == model.Number);
             if (reInt > 0 && model.Type != 1)
             {
@@ -186,20 +189,40 @@ namespace Net66.Core
             return reInt > 0;
         }
 
+        /// <summary>
+        /// 修改粮仓 2017-03-14 21:40:06
+        /// </summary>
         public bool UpdateWareHouse(WareHouse _entity)
         {
+            if (string.IsNullOrEmpty(_entity.Number)
+                ||_entity.IsActive==null||_entity.Type==null)
+                return false;
+            //_entity.StampTime = Utils.GetServerDateTime();
             //var model = Repository.Get(g => g.ID == _entity.ID);
             var fieldArr = new string[] { "IsActive", "Location", "Name", "Type", "UserId" };
             var reInt = Repository.Update(new List<WareHouse>() { _entity }, new string[] { "Number" }, fieldArr, "StampTime");
             return reInt > 0;
         }
 
+        /// <summary>
+        /// 批量删除粮仓 2017-03-14 21:39:06
+        /// </summary>
         public bool DeleteWareHouse(List<WareHouse> _delList)
         {
-            var reInt = Repository.Delete(_delList, new string[] { "Number" });
+            var delList=new List <WareHouse>();
+            foreach (var info in _delList)
+            {
+                if (string.IsNullOrEmpty(info.Number))
+                    continue;
+                delList.Add(info);
+            }
+            var reInt = Repository.Delete(delList, new string[] { "Number" });
             return reInt > 0;
         }
 
+        /// <summary>
+        /// 验证粮仓是否存在 2017-03-10 21:45:10
+        /// </summary>
         public bool HasExist(string _code)
         {
             var ifno = Repository.Get(g => g.Number == _code);
@@ -209,6 +232,9 @@ namespace Net66.Core
 
         }
 
+        /// <summary>
+        /// IOT设备获取粮仓及结构信息 2017-03-14 01:45:58
+        /// </summary>
         public Dictionary<string, object[]> GetBBDList()
         {
             var rList = Repository.GetList(p => p.IsActive == 1);
@@ -240,7 +266,7 @@ namespace Net66.Core
         }
 
         /// <summary>
-        /// huoqu suoyou liangcang wendu
+        /// 手机端获取所有的粮仓温度 2017-03-18 12:01:52
         /// </summary>
         public List<OGrainsReport> GetGrainsTemp(string userId = "0")
         {
@@ -267,9 +293,8 @@ namespace Net66.Core
         }
 
         /// <summary>
-        /// tong guo langcang bioanhao huoqu duiwei wendu 
+        /// 通过粮仓编号获取堆位温度报表 2017-03-24 22:04:15
         /// </summary>
-        /// <param name="number">L1</param>
         public List<OHeapReport> getHeapsTemp(string number)
         {
             var heapList = gRepository.GetList(g => g.WH_Number == number && g.Type == 0 && g.IsActive == 1);

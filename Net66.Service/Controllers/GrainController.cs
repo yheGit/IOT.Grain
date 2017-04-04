@@ -22,6 +22,9 @@ namespace Net66.Service.Controllers
             wareHouseCore = _wareHouseCore;
         }
 
+        /// <summary>
+        /// 查寻粮仓信息（包涵楼层、廒间信息）
+        /// </summary>
         [HttpPost]
         //[System.Web.Mvc.Route("PostArray")]  
         public MobiResult GetList(ISearch _search)
@@ -30,9 +33,6 @@ namespace Net66.Service.Controllers
             if (_params == null) return new MobiResult(1009, "参数不合法，请用可选参数占位，如TextValue", null, "'DicList': [ ],");
             if (!_params.Exists(e => e.Contains("UserId^")) || !_params.Exists(e => e.Contains("Type^")))
                 return new MobiResult(1009);
-            //if (!_search.Dic.Any() || !_search.Dic.ContainsKey("UserId") || !_search.Dic.ContainsKey("Type"))
-            //    return new MobiResult(1009);
-            //IWareHouseCore wareHouseCore = new WareHouseCore();
             var reList = wareHouseCore.GetPageLists(_search, _params);
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
@@ -40,6 +40,9 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1012);
         }
 
+        /// <summary>
+        /// 添加粮仓信息 
+        /// </summary>
         [HttpPost]
         [System.Web.Mvc.Route("PostArray")]
         public MobiResult Add(IWareHouse _entity)
@@ -47,9 +50,6 @@ namespace Net66.Service.Controllers
             //var jsonStr=JsonConvertHelper.SerializeObject(_entity);
             if (_entity == null)
                 return new MobiResult(1009);
-            //var hasExist = wareHouseCore.HasExist(_entity.Number);
-            //if (hasExist)
-            //    return new MobiResult(1015, "该粮仓已存在", null, _entity.Number);
             var reBit = wareHouseCore.AddWareHouse(_entity);
             if (reBit == true)
                 return new MobiResult(1000, "成功");
@@ -57,7 +57,9 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
-
+        /// <summary>
+        /// 修改粮仓信息
+        /// </summary>
         [HttpPost]
         [System.Web.Mvc.Route("PostArray")]
         public MobiResult Modify(WareHouse _entity)
@@ -65,9 +67,6 @@ namespace Net66.Service.Controllers
             //var jsonStr=JsonConvertHelper.SerializeObject(_entity);
             if (_entity == null)
                 return new MobiResult(1009);
-            //var hasExist = wareHouseCore.HasExist(_entity.Number);
-            //if (!hasExist)
-            //    return new MobiResult(1015, "该粮仓不存在", null, _entity.Number);
             var reBit = wareHouseCore.UpdateWareHouse(_entity);
             if (reBit == true)
                 return new MobiResult(1000, "成功");
@@ -75,7 +74,9 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
-
+        /// <summary>
+        /// 批量删除粮仓信息
+        /// </summary>
         [HttpPost]
         [System.Web.Mvc.Route("PostArray")]
         public MobiResult Delete(List<WareHouse> _delList)
@@ -90,6 +91,9 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011);
         }
 
+        /// <summary>
+        /// 验证粮仓是否已经存在
+        /// </summary>
         [HttpGet]
         //[System.Web.Mvc.Route("Grain/IsExist/{_code}")]
         public MobiResult IsExist(string id)
@@ -105,6 +109,10 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1011,"不存在");
         }
 
+        /// <summary>
+        /// 移动设备展示粮仓bao'qiao
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {

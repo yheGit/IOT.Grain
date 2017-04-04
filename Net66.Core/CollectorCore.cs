@@ -51,7 +51,7 @@ namespace Net66.Core
                     InstallDate = datenow,
                     HeapNumber=Utils.StrSequenConcat(rnumber,endash,_entity.heap),
                     R_Code=c_short,
-                    Sublayer= _entity.sublayer,
+                    Sublayer=TypeParse.StrToInt(_entity.sublayer,0),
                     UserId=0,
                     //Voltage=null,
                     //SensorIdArr=null,
@@ -108,7 +108,7 @@ namespace Net66.Core
                     var sublayer = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);
                     if (sublayer == null)
                         continue;
-                    var sblist = sbRepository.GetList(g => sensorList.Contains(g.SCpu));
+                    var sblist = sbRepository.GetList(g => sensorList.Contains(g.SCpu));//传感器的基础信息表，用于定位
                     Dictionary<string, int> linelist = new Dictionary<string, int>();
                     foreach (var f in sensorList)
                     {

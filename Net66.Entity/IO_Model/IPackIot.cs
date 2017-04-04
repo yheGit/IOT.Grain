@@ -56,7 +56,7 @@ public class IReceiver
     /// <summary>
     /// 0更新数据， 1是采集器安装，2是收集器安装,
     /// </summary>
-    public int type { get; set; }
+    public string type { get; set; }
 
     /// <summary>
     /// 收集器短编号 ，与采集器安装相关
@@ -85,7 +85,7 @@ public class IReceiver
     /// <summary>
     /// 第二个采集器（码层）
     /// </summary>
-    public int sublayer { get; set; }
+    public string sublayer { get; set; }
     /// <summary>
     /// 收集器自己的湿度值无小数
     /// </summary>
