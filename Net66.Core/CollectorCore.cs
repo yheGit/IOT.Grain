@@ -205,7 +205,7 @@ namespace Net66.Core
                             PId = cmodel.m_cpuid,
                             StampTime = datenowStr,
                             UpdateTime = datenow,
-                            Type = 1,//0chuanganqi、1caijiqi、2shoujiqi
+                            Type = 1,//0传感器、1采集器、2收集器（室内）、3收集器（室外）
                             RealHeart = 0,
                             Temp = cjqTemp,
                             WH_Number = wh_number
@@ -217,7 +217,7 @@ namespace Net66.Core
                 #endregion
 
                 #region 更新坏点
-                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0&& badhots.Contains(p.SensorId), "SensorId", 1, "");//biaoji yijing huailede chaungganqi
+                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0&& badhots.Contains(p.SensorId), "SensorId", 1, "");//标记已经坏了的传感器
                 if (rebad > 0)
                 {
                     dicBadhots.Add(cmodel.m_cpuid, rebad);

@@ -96,7 +96,7 @@ namespace Net66.Service.Controllers
         public string PostPack2(string _pack)
         {
             if (string.IsNullOrEmpty(_pack))
-                return "203";
+                return string.Empty;
             var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);
             bool rebit = false;
 
@@ -128,7 +128,7 @@ namespace Net66.Service.Controllers
                 if (rebit == false)
                     return string.Empty;
                 else
-                    return !string.IsNullOrEmpty(c_short) ? c_short.PadLeft(4, '0') : string.Empty;
+                    return !string.IsNullOrEmpty(c_short) ? ("BBD,"+c_short.PadLeft(4, '0')+",") : string.Empty;
             }
             #endregion
 
