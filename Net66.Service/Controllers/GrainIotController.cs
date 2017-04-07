@@ -128,7 +128,7 @@ namespace Net66.Service.Controllers
                 if (rebit == false)
                     return string.Empty;
                 else
-                    return !string.IsNullOrEmpty(c_short) ? ("BBD,"+c_short.PadLeft(4, '0')+",") : string.Empty;
+                    return !string.IsNullOrEmpty(c_short) ? ("BSN,"+c_short.PadLeft(4, '0')+",") : string.Empty;
             }
             #endregion
 
