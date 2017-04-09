@@ -13,6 +13,7 @@ namespace Net66.Entity.Models
         public Nullable<int> RealHeart { get; set; }
         public Nullable<int> Type { get; set; }
         public string WH_Number { get; set; }
+        public string G_Number { get; set; }
 
     }
 }

@@ -91,7 +91,7 @@ public class IReceiver
     /// </summary>
     public string hum { get; set; }
     /// <summary>
-    /// 收集器自己的温度值
+    /// 收集器自己的温度值（仓外温度）
     /// </summary>
     public string temp { get; set; }
 }
@@ -102,8 +102,7 @@ public class IReceiver
 public class IAlarm
 {
     /// <summary>
-    /// /** 类别为温度0：temp, 还有湿1：humi, 低:2：voltage---格式不变, 可能相应的某些的参数不适用:湿度与tempid,m_cpuid无关.**/
-    /// 类别为温度temp, 还有湿度humi, 低压voltage---格式不变, 可能相应的某些的参数不适用:湿度与tempid,m_cpuid无关
+    ///电池低电报警
     /// </summary>
     public int type2 { get; set; }
     /// <summary>
@@ -123,4 +122,5 @@ public class IAlarm
     /// </summary>
     public string data { get; set; }
 }
+
 

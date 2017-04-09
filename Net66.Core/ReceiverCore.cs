@@ -87,6 +87,7 @@ namespace Net66.Core
 
         /// <summary>
         /// 更新收集器自身的温湿度
+        /// 温度为粮仓仓外温度
         /// </summary>
         /// <param name="_entity"></param>
         /// <returns></returns>
@@ -95,29 +96,51 @@ namespace Net66.Core
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
             var temp = Convert.ToDecimal(_entity.temp);//Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
-            var addEntity = new Humidity()
+            var reint = 0;
+            var c_short = TypeParse._16NAC_To_10NSC(_entity.c_short);
+            var rInfo = rRepository.Get(g => g.ID == c_short);
+            if (rInfo != null)
             {
-                Humility = Convert.ToDecimal(_entity.hum),//Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
-                Temp = temp,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
-                ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
-                StampTime = datenowStr
-            };
+                var wh_number = rInfo.W_Number;
+                var g_number = rInfo.Number;
+                #region  仓内、外湿度
+                var ttype = 0;//仓内湿度
+                if (string.IsNullOrEmpty(_entity.layer)
+                    || (!string.IsNullOrEmpty(_entity.layer) && _entity.layer.Equals("0")))//约定楼层为零时，为仓外湿度
+                    ttype = 1;// 仓外湿度
+                              //0仓内湿度，1仓外湿度
+                var addEntity = new Humidity()
+                {
+                    Humility = Convert.ToDecimal(_entity.hum),//Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
+                    Temp = temp,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
+                    ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
+                    StampTime = datenowStr,
+                    Type = ttype,
+                    G_Number = "0",
+                    WH_Number = wh_number
+                };
+                reint = hRepository.Add(addEntity);
+                #endregion
 
-            var ttype = 2;
-            if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
-                ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
-            var reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
+                #region 仓外温度
+                reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
                     {
-                        PId = _entity.c_cpuid,
+                        PId = string.IsNullOrEmpty(_entity.c_cpuid)?rInfo.CPUId:_entity.c_cpuid,
                         StampTime = datenowStr,
-                        UpdateTime=datenow, 
-                        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
+                        UpdateTime=datenow,
+                        Type = 2,//0传感器、1采集器、2收集器（室外）
                         RealHeart = 0,
                         Temp = temp,
-                        WH_Number=_entity.building
+                        G_Number="0",
+                        WH_Number=wh_number//
                     } }, p => (p.RealHeart == 0 && p.Type == ttype && p.PId == _entity.c_cpuid), "RealHeart", 1, "StampTime");
 
-            return hRepository.Add(addEntity) > 0;
+                #endregion
+
+                return 1 > 0;
+            }
+
+            return 0 > 0;
         }
 
 

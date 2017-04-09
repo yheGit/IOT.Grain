@@ -16,6 +16,10 @@ namespace Net66.Entity.Models.Mapping
 
             this.Property(t => t.StampTime)
                 .HasMaxLength(50);
+            this.Property(t => t.G_Number)
+              .HasMaxLength(50);
+            this.Property(t => t.WH_Number)
+              .HasMaxLength(50);
 
             // Table & Column Mappings
             this.ToTable("Humidity");
@@ -24,6 +28,10 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Temp).HasColumnName("Temp");
             this.Property(t => t.StampTime).HasColumnName("StampTime");
             this.Property(t => t.ReceiverId).HasColumnName("ReceiverId");
+            this.Property(t => t.Type).HasColumnName("Type");
+            this.Property(t => t.G_Number).HasColumnName("G_Number");
+            this.Property(t => t.WH_Number).HasColumnName("WH_Number");
+            this.Property(t => t.RealHeart).HasColumnName("RealHeart");
         }
     }
 }

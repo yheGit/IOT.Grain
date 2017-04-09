@@ -72,6 +72,7 @@
     <Compile Include="DR_Model\UserInfo.cs" />
     <Compile Include="DR_Model\WareHouse.cs" />
     <Compile Include="DR_Model\WareHouse_Log.cs" />
+    <Compile Include="IO_Model\OGranaryReport.cs" />
     <Compile Include="IO_Model\OGrainsReport.cs" />
     <Compile Include="IO_Model\IPackIot.cs" />
     <Compile Include="IO_Model\IResultClass.cs" />

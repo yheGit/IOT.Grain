@@ -18,20 +18,23 @@ namespace Net66.Core
     {
         private static IGrainRepository<WareHouse> Repository;
         private static IGrainRepository<Temperature> tRepository;
-        //private static IGrainRepository<Floor> fRepository;
+        private static IGrainRepository<Humidity> hRepository;
         private static IGrainRepository<Granary> gRepository;
         private static IGrainRepository<Collector> cRepository;
+        private static IGrainRepository<Sensor> sRepository;
         private static string endash = StaticClass.Endash;
 
         //粮仓类型(1楼房L、2平方P、3浅圆仓Q、4筒仓T)
         public WareHouseCore(IGrainRepository<WareHouse> _Repository, IGrainRepository<Granary> _gRepository
-            , IGrainRepository<Temperature> _tRepository, IGrainRepository<Collector> _cRepository)
+            , IGrainRepository<Temperature> _tRepository, IGrainRepository<Collector> _cRepository
+            , IGrainRepository<Humidity> _hRepository, IGrainRepository<Sensor> _sRepository)
         {
             Repository = _Repository;
-            //fRepository = _fRepository;
+            hRepository = _hRepository;
             cRepository = _cRepository;
             gRepository = _gRepository;
             tRepository = _tRepository;
+            sRepository = _sRepository;
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace Net66.Core
             var granaryList = fg_List.Where(w => w.Type == 2).ToList();
             try
             {
-                var ofList = floorList.OrderBy(o=>o.Code).Select(s => new OFloor()
+                var ofList = floorList.OrderBy(o => o.Code).Select(s => new OFloor()
                 {
                     ID = s.ID,
                     IsActive = s.IsActive,
@@ -160,9 +163,9 @@ namespace Net66.Core
                 AverageTemperature = 0,
                 Maximumemperature = 0,
                 MinimumTemperature = 0,
-                Width=_entity.Width,
-                depth=_entity.depth,
-                Height=_entity.Height
+                Width = _entity.Width,
+                depth = _entity.depth,
+                Height = _entity.Height
             };
 
 
@@ -195,7 +198,7 @@ namespace Net66.Core
         public bool UpdateWareHouse(WareHouse _entity)
         {
             if (string.IsNullOrEmpty(_entity.Number)
-                ||_entity.IsActive==null||_entity.Type==null)
+                || _entity.IsActive == null || _entity.Type == null)
                 return false;
             //_entity.StampTime = Utils.GetServerDateTime();
             //var model = Repository.Get(g => g.ID == _entity.ID);
@@ -209,7 +212,7 @@ namespace Net66.Core
         /// </summary>
         public bool DeleteWareHouse(List<WareHouse> _delList)
         {
-            var delList=new List <WareHouse>();
+            var delList = new List<WareHouse>();
             foreach (var info in _delList)
             {
                 if (string.IsNullOrEmpty(info.Number))
@@ -272,44 +275,61 @@ namespace Net66.Core
         {
             var rList = Repository.GetList(p => p.IsActive == 1) ?? new List<WareHouse>();
             var temps = tRepository.GetList(g => g.RealHeart == 0) ?? new List<Temperature>();
-
-            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0); //huaidianshu
+            var humtys = hRepository.GetList(g => g.RealHeart == 0) ?? new List<Humidity>();
+            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0); //坏点数
 
             return rList.Select(s => new OGrainsReport(temps.Where(w => w.WH_Number == s.Number).ToList()
+                , humtys.Where(w => w.WH_Number == s.Number).ToList()
                 , badlist.Where(w => w.HeapNumber.IndexOf(s.Number) > -1).ToList())
             {
-                //Maximumemperature = null,//zuigaowendu
-                //MinimumTemperature = null,//zuidiwendu
-                //AverageTemperature = null,//pingjunwendu
-                //InSideTemperature = null,
-                //OutSideTemperature = null,
-                //BadPoints = null,
                 Number = s.Number,
-                Type=s.Type??0,
-                //Location=
-                //StampTime,
+                Type = s.Type ?? 0,
                 UserId = s.UserId
             }).ToList();
         }
 
         /// <summary>
-        /// 通过粮仓编号获取堆位温度报表 2017-03-24 22:04:15
+        /// 通过粮仓编号获取廒间温度报表 2017-4-8 17:35:48
+        /// 粮仓编号
+        /// </summary>
+        public List<OGranaryReport> getGranaryTemp(string number)
+        {
+            var granaryList = gRepository.GetList(g => g.WH_Number == number && g.Type == 2 && g.IsActive == 1);
+            var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
+            var outtemp = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2).Temp;
+            var humtys = hRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Humidity>();
+            var outhumty = humtys.FirstOrDefault(w => w.Type == 1 && w.G_Number == "0").Humility;
+            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
+            return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()
+                , humtys.Where(w => w.G_Number == s.Number).ToList()
+                , badlist.Where(w => w.HeapNumber.IndexOf(s.Number) > -1).ToList())
+            {
+                Number = s.Number,
+                OutSideTemperature = outtemp,
+                OutSideHumidity = outhumty,
+                //BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
+                UserId = s.UserId.ToString()
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 通过廒间编号获取堆位温度报表 2017-03-24 22:04:15
+        /// 廒间编号
         /// </summary>
         public List<OHeapReport> getHeapsTemp(string number)
         {
-            var heapList = gRepository.GetList(g => g.WH_Number == number && g.Type == 0 && g.IsActive == 1);
-            var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
-            var maxTemp = temps.Max(m => m.Temp);//zuigaowendu
-            var minTemp = temps.Min(m => m.Temp);//zuidiwendu
-            var avrg = Math.Round(temps.Average(a => a.Temp) ?? 0, 2);//pingjunwendu
-            //int badhot = 0;//huaidianshu
-            var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
+            var heapList = gRepository.GetList(g => g.Number.Contains(number) && g.Type == 0 && g.IsActive == 1);
+            var temps = tRepository.GetList(g => number.Contains(g.WH_Number)&&( g.G_Number == number||g.G_Number=="0" )&& g.RealHeart == 0) ?? new List<Temperature>();
+            var outtemp = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2).Temp;
+            //var intemp = temps.Average(a => a.Temp);//堆位的仓内温度取，所在廒间的所有温度的平均值
+            var ck_fenji = cRepository.GetList(g => g.IsActive == 1 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();//廒间里所有堆位的采集器
+            var badlist = ck_fenji.Where(g => g.BadPoints > 0) ?? new List<Collector>();
 
-            return heapList.Select(s => new OHeapReport()
+            var ck_fjIdList = ck_fenji.Select(s => s.CPUId).ToList();
+            var chuanganqi = sRepository.GetList(g => ck_fjIdList.Contains(g.Collector));
+            return heapList.Select(s => new OHeapReport(ck_fenji.Where(w=>w.HeapNumber==s.Number).Select(e=>e.CPUId).ToList(), chuanganqi, temps)
             {
-                AverageTemperature = avrg,
-                Maximumemperature = maxTemp,
-                MinimumTemperature = minTemp,
+                OutSideTemperature=outtemp,
                 Number = s.Number,
                 BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
                 UserId = s.UserId.ToString()

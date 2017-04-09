@@ -20,6 +20,9 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.WH_Number)
               .HasMaxLength(50);
 
+            this.Property(t => t.G_Number)
+            .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("Temperature");
             this.Property(t => t.ID).HasColumnName("ID");
@@ -30,6 +33,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.RealHeart).HasColumnName("RealHeart");
             this.Property(t => t.Type).HasColumnName("Type");
             this.Property(t => t.WH_Number).HasColumnName("WH_Number");
+            this.Property(t => t.G_Number).HasColumnName("G_Number");
         }
     }
 }

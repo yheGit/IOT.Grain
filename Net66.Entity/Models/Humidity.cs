@@ -10,5 +10,9 @@ namespace Net66.Entity.Models
         public Nullable<decimal> Temp { get; set; }
         public string StampTime { get; set; }
         public int ReceiverId { get; set; }
+        public Nullable<int> Type { get; set; }
+        public string WH_Number { get; set; }
+        public string G_Number { get; set; }
+        public Nullable<int> RealHeart { get; set; }
     }
 }

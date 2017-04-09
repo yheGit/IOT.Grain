@@ -147,6 +147,7 @@ namespace Net66.Core
                     var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
                     var rInfo = rRepository.Get(g => g.ID == c_short) ?? new Receiver();
                     var wh_number = rInfo.W_Number;
+                    var g_number = rInfo.Number;
 
                     if (sensorList == null || sensorList.Count <= 0)
                     {
@@ -193,7 +194,8 @@ namespace Net66.Core
                                 Temp = temp,
                                 RealHeart = 0,
                                 Type = 0,
-                                WH_Number = wh_number
+                                WH_Number = wh_number,
+                                G_Number= g_number
                             });
                         }
                         cjqTemp = cjqTemp / i;
@@ -205,12 +207,14 @@ namespace Net66.Core
                             PId = cmodel.m_cpuid,
                             StampTime = datenowStr,
                             UpdateTime = datenow,
-                            Type = 1,//0传感器、1采集器、2收集器（室内）、3收集器（室外）
+                            Type = 1,//0传感器、1采集器、2收集器（室外）
                             RealHeart = 0,
                             Temp = cjqTemp,
-                            WH_Number = wh_number
+                            WH_Number = wh_number,
+                            G_Number=g_number
                         });
                         #endregion
+
                     }
                 }
                 sensorIdList.AddRange(sensorList);

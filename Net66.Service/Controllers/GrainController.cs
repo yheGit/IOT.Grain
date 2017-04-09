@@ -123,6 +123,26 @@ namespace Net66.Service.Controllers
                 return new MobiResult(1012);
         }
 
+        /// <summary>
+        /// 廒间温度报表
+        /// </summary>
+        [HttpGet]
+        public MobiResult GranaryTemp_GetList(string id)
+        {
+            string number = id;
+            if (string.IsNullOrEmpty(number))
+                return new MobiResult(1009);
+            var reList = wareHouseCore.getGranaryTemp(number);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1012);
+        }
+
+
+        /// <summary>
+        /// 堆位温度报表
+        /// </summary>
         [HttpGet]
         public MobiResult HeapsTemp_GetList(string id)
         {
