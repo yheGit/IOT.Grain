@@ -320,7 +320,10 @@ namespace Net66.Core
         {
             var heapList = gRepository.GetList(g => g.Number.Contains(number) && g.Type == 0 && g.IsActive == 1);
             var temps = tRepository.GetList(g => number.Contains(g.WH_Number)&&( g.G_Number == number||g.G_Number=="0" )&& g.RealHeart == 0) ?? new List<Temperature>();
-            var outtemp = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2).Temp;
+            decimal outtemp = 0;
+            var tempInfo=temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2);
+            if (tempInfo != null)
+                outtemp = tempInfo.Temp??0;
             //var intemp = temps.Average(a => a.Temp);//堆位的仓内温度取，所在廒间的所有温度的平均值
             var ck_fenji = cRepository.GetList(g => g.IsActive == 1 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();//廒间里所有堆位的采集器
             var badlist = ck_fenji.Where(g => g.BadPoints > 0) ?? new List<Collector>();

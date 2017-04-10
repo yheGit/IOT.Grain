@@ -428,6 +428,18 @@ namespace Net66.Comm
         }
 
         /// <summary>
+        /// 随手打印消息 by yhw 2017-3-18 09:11:14
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="methodName"></param>
+        public static void PrintLog(string message, string methodName = "未知方法名", string logType = "Log")
+        {
+            var msg = string.Format("\r\n====================【{0}】\r\n", methodName);
+            msg += string.Format("\r\n---msg:{0}", message);
+            WriteLog("Exception", LocalAddress + logType, msg);
+        }
+
+        /// <summary>
         /// 打印异常消息 by yhw 2016-11-10 16:39:05
         /// </summary>
         /// <param name="ex"></param>

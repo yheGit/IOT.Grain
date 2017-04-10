@@ -29,6 +29,7 @@ namespace Net66.Service.Controllers
         //[System.Web.Mvc.Route("PostArray")]  
         public MobiResult GetList(ISearch _search)
         {
+            Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             var _params = _search.DicList;
             if (_params == null) return new MobiResult(1009, "参数不合法，请用可选参数占位，如TextValue", null, "'DicList': [ ],");
             if (!_params.Exists(e => e.Contains("UserId^")) || !_params.Exists(e => e.Contains("Type^")))
@@ -82,7 +83,7 @@ namespace Net66.Service.Controllers
         public MobiResult Delete(List<WareHouse> _delList)
         {
             //var jsonStr=JsonConvertHelper.SerializeObject(_entity);
-            if (_delList == null|| _delList.Count<0)
+            if (_delList == null || _delList.Count < 0)
                 return new MobiResult(1009);
             var reBit = wareHouseCore.DeleteWareHouse(_delList);
             if (reBit == true)
@@ -98,7 +99,7 @@ namespace Net66.Service.Controllers
         //[System.Web.Mvc.Route("Grain/IsExist/{_code}")]
         public MobiResult IsExist(string id)
         {
-           string _code = id;
+            string _code = id;
             //var jsonStr=JsonConvertHelper.SerializeObject(_entity);
             if (string.IsNullOrEmpty(_code))
                 return new MobiResult(1009);
@@ -106,7 +107,7 @@ namespace Net66.Service.Controllers
             if (reBit == true)
                 return new MobiResult(1000, "存在");
             else
-                return new MobiResult(1011,"不存在");
+                return new MobiResult(1011, "不存在");
         }
 
         /// <summary>
@@ -116,11 +117,14 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {
+
             var reList = wareHouseCore.GetGrainsTemp();
+            Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
                 return new MobiResult(1012);
+
         }
 
         /// <summary>

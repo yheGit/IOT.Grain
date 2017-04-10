@@ -21,7 +21,7 @@ namespace Net66.Entity.IO_Model
             //var snmodel = temps.Where(w => w.Type == 2).Average(a => a.Temp);
             //InSideTemperature = Math.Round(snmodel ?? 0,2);
             InSideHumidity = humtys.Where(w => w.Type == 0).Max(m=>m.Humility);////0仓内湿度，1仓外湿度
-            OutSideHumidity = humtys.FirstOrDefault(w => w.Type == 1).Humility;
+            OutSideHumidity = humtys.FirstOrDefault(w => w.Type == 1)==null?0:humtys.FirstOrDefault(w => w.Type == 1).Humility;
             var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
             OutSideTemperature = swmodel.Temp;
             if (collectors != null)

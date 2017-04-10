@@ -98,6 +98,7 @@ namespace Net66.Service.Controllers
             if (string.IsNullOrEmpty(_pack))
                 return string.Empty;
             var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);
+            Utils.PrintLog("pkentity" + pkentity, "PostPack2");
             bool rebit = false;
 
             #region 批量采集温度
