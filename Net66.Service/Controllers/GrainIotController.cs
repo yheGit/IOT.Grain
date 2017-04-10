@@ -34,6 +34,8 @@ namespace Net66.Service.Controllers
         [HttpPost]
         public string PostPackTest(IPacks _pack)
         {
+            var pkentity = JsonConvertHelper.SerializeObjectNo(_pack);
+            Utils.PrintLog("pkentity" + pkentity, "PostPack2");
             if (_pack == null)
                 return string.Empty;
             bool rebit = false;
@@ -98,7 +100,7 @@ namespace Net66.Service.Controllers
             if (string.IsNullOrEmpty(_pack))
                 return string.Empty;
             var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);
-            Utils.PrintLog("pkentity" + pkentity, "PostPack2");
+            Utils.PrintLog("pkentity" + _pack, "PostPack2");
             bool rebit = false;
 
             #region 批量采集温度
@@ -151,44 +153,47 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public string PostPack([FromUri]IPacks _pack)
         {
-            if (_pack == null)
-                return "203";
-            bool rebit = false;
-            //var datenow = Utils.GetServerDateTime();
-            #region 采集温度
-            var clist = _pack.Measurers;
-            if (clist != null && clist.Count > 0)
-                rebit = collectorCore.AddTemp(clist);
-            #endregion
+            #region 测试URi
+            //if (_pack == null)
+            //    return "203";
+            //bool rebit = false;
+            ////var datenow = Utils.GetServerDateTime();
+            //#region 采集温度
+            //var clist = _pack.Measurers;
+            //if (clist != null && clist.Count > 0)
+            //    rebit = collectorCore.AddTemp(clist);
+            //#endregion
 
-            #region 安装
-            var rmodel = _pack.Collector;
-            var c_short = string.Empty;
-            if (rmodel != null)
-            {
-                var type = TypeParse.StrToInt(rmodel.type, 0);
-                if (type == 2)
-                    rebit = receiverCore.Install(rmodel, out c_short);
-                else if (type == 1)
-                    rebit = collectorCore.Install(rmodel);
-                else if (type == 0)//更新湿度
-                {
-                    rebit = receiverCore.AddHum(rmodel);
-                }
-                else // 外网安装用，或者以备后续推行消息指令
-                { }
-            }
-            #endregion
+            //#region 安装
+            //var rmodel = _pack.Collector;
+            //var c_short = string.Empty;
+            //if (rmodel != null)
+            //{
+            //    var type = TypeParse.StrToInt(rmodel.type, 0);
+            //    if (type == 2)
+            //        rebit = receiverCore.Install(rmodel, out c_short);
+            //    else if (type == 1)
+            //        rebit = collectorCore.Install(rmodel);
+            //    else if (type == 0)//更新湿度
+            //    {
+            //        rebit = receiverCore.AddHum(rmodel);
+            //    }
+            //    else // 外网安装用，或者以备后续推行消息指令
+            //    { }
+            //}
+            //#endregion
 
-            #region 报警
-            var alist = _pack.Alarms;
-            rebit = alarmCore.Add(alist);
-            #endregion
+            //#region 报警
+            //var alist = _pack.Alarms;
+            //rebit = alarmCore.Add(alist);
+            //#endregion
 
-            if (rebit == false)
-                return "203";
-            else
-                return "200+" + c_short;
+            //if (rebit == false)
+            //    return "203";
+            //else
+            //    return "200+" + c_short;
+            #endregion
+            return "";
         }
 
         /// <summary>

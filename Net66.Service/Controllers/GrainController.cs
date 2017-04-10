@@ -29,6 +29,7 @@ namespace Net66.Service.Controllers
         //[System.Web.Mvc.Route("PostArray")]  
         public MobiResult GetList(ISearch _search)
         {
+            
             Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             var _params = _search.DicList;
             if (_params == null) return new MobiResult(1009, "参数不合法，请用可选参数占位，如TextValue", null, "'DicList': [ ],");
@@ -133,7 +134,7 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GranaryTemp_GetList(string id)
         {
-            string number = id;
+            string number = id;//粮仓编号
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getGranaryTemp(number);
@@ -150,7 +151,7 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult HeapsTemp_GetList(string id)
         {
-            string number = id;
+            string number = id;//廒间编号
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getHeapsTemp(number);

@@ -86,9 +86,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Net66.Comm">
-      <HintPath>..\Net66.Comm\obj\Debug\Net66.Comm.dll</HintPath>
-    </Reference>
     <Reference Include="Net66.Data">
       <HintPath>..\Net66.Data\bin\Debug\Net66.Data.dll</HintPath>
     </Reference>
@@ -221,6 +218,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Net66.Comm\Net66.Comm.csproj">
+      <Project>{4bc4ac6d-e048-49bd-b775-ec48cdc3aff0}</Project>
+      <Name>Net66.Comm</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Net66.Core\Net66.Core.csproj">
       <Project>{4A61CFD6-D871-4629-BF9E-E9DC5285BDF6}</Project>
       <Name>Net66.Core</Name>
