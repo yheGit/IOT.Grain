@@ -296,9 +296,15 @@ namespace Net66.Core
         {
             var granaryList = gRepository.GetList(g => g.WH_Number == number && g.Type == 2 && g.IsActive == 1);
             var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
-            var outtemp = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2).Temp;
+            var tempInfo = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2);
+            decimal outtemp =0;
+            if (tempInfo != null)
+                outtemp = tempInfo.Temp??0;
             var humtys = hRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Humidity>();
-            var outhumty = humtys.FirstOrDefault(w => w.Type == 1 && w.G_Number == "0").Humility;
+            var humtyInfo = humtys.FirstOrDefault(w => w.Type == 1 && w.G_Number == "0");
+            decimal outhumty =0;
+            if (humtyInfo != null)
+                outhumty = humtyInfo.Humility??0;
             var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
             return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()
                 , humtys.Where(w => w.G_Number == s.Number).ToList()
