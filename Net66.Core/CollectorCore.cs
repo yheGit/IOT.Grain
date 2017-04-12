@@ -39,29 +39,32 @@ namespace Net66.Core
             var reint = 0;
             var datenow = Utils.GetServerTime();
             var c_short = TypeParse._16NAC_To_10NSC(_entity.c_short);
-            var guidKey = c_short + "_" + _entity.heap + "_" + _entity.sublayer;
-            var guid = Utils.MD5(guidKey);
-            var rInfo = rRepository.Get(g => g.ID == c_short);
-            if (rInfo == null)
-                return false;
-            var rnumber = rInfo.Number;
-            var addCollecters = new List<Collector>() {new Collector(){
+            var slayer = TypeParse.StrToInt(_entity.sublayer, 0);
+            if (slayer > 0)
+            {
+                var guidKey = c_short + "_" + _entity.heap + "_" + _entity.sublayer;
+                var guid = Utils.MD5(guidKey);
+                var rInfo = rRepository.Get(g => g.ID == c_short);
+                if (rInfo == null)
+                    return false;
+                var rnumber = rInfo.Number;
+                var addCollecters = new List<Collector>() {new Collector(){
                     GuidID=guid,
                     CPUId = _entity.c_cpuid,
                     InstallDate = datenow,
                     HeapNumber=Utils.StrSequenConcat(rnumber,endash,_entity.heap),
                     R_Code=c_short,
-                    Sublayer=TypeParse.StrToInt(_entity.sublayer,0),
+                    Sublayer=slayer,
                     UserId=0,
                     //Voltage=null,
                     //SensorIdArr=null,
                     BadPoints=0,
                     IsActive = 1
                 } };
-
-            var selectKey = new string[] { "GuidID" };
-            var updateKey = new string[] { "CPUId", "IsActive" };
-            reint = cRepository.AddUpdate(addCollecters, selectKey, updateKey, "InstallDate");
+                var selectKey = new string[] { "GuidID" };
+                var updateKey = new string[] { "CPUId", "IsActive" };
+                reint = cRepository.AddUpdate(addCollecters, selectKey, updateKey, "InstallDate");
+            }
 
             return reint > 0;
 
@@ -76,6 +79,7 @@ namespace Net66.Core
         {
             if (_list == null || _list.Count < 0)
                 return false;
+            var reint = 0;
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
             var addTemp = new List<Temperature>();
@@ -87,23 +91,21 @@ namespace Net66.Core
             var dicBadhots = new Dictionary<string, int>();
             foreach (var cmodel in _list)
             {
-                #region 更新采集器
-                if (cmodel.SensorId != null && cmodel.SensorId.Count > 0)
+                int depth = 0;
+                List<string> sensorList = new List<string>();
+
+                #region  添加传感器
+                if (cmodel.SensorId != null && cmodel.SensorId.Count > 0 && string.IsNullOrEmpty(cmodel.temp))
                 {
+                    #region 更新采集器
                     updateList.Add(new Collector()
                     {
                         CPUId = cmodel.m_cpuid,
                         InstallDate = datenowStr,
                         SensorIdArr = cmodel.sum > 0 ? string.Join(",", cmodel.SensorId) : null
                     });
-                }
-                #endregion
+                    #endregion
 
-                List<string> sensorList = new List<string>();
-
-                #region  添加传感器
-                if (cmodel.SensorId != null && cmodel.SensorId.Count > 0)
-                {
                     sensorList = cmodel.SensorId;
                     var sublayer = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);
                     if (sublayer == null)
@@ -112,17 +114,20 @@ namespace Net66.Core
                     Dictionary<string, int> linelist = new Dictionary<string, int>();
                     foreach (var f in sensorList)
                     {
+                        var sequen = ++depth;
+                        string lineCode="Unkwon";
                         var baseinfo = sblist.FirstOrDefault(d => d.SCpu == f);
-                        if (baseinfo == null)
-                            continue;
-                        var lineCode = baseinfo.SLineCode;
-                        if (linelist == null || !linelist.ContainsKey(lineCode))
+                        if (baseinfo != null)
                         {
-                            var count = linelist == null ? 0 : linelist.Count;
-                            linelist.Add(lineCode, count + 1);
+                            lineCode = baseinfo.SLineCode;
+                            if (linelist == null || !linelist.ContainsKey(lineCode))
+                            {
+                                var count = linelist == null ? 0 : linelist.Count;
+                                linelist.Add(lineCode, count + 1);
+                            }
+                            sequen = baseinfo.SSequen ?? 0;
                         }
-
-                        var sequen = baseinfo.SSequen;
+                        
                         var guidKey = cmodel.m_cpuid + "_" + lineCode + "_" + sequen;
                         var guid = Utils.MD5(guidKey);
                         addSensors.Add(new Sensor()
@@ -132,17 +137,30 @@ namespace Net66.Core
                             Collector = cmodel.m_cpuid,
                             Label = lineCode,
                             Direction_X = sequen,
-                            Direction_Y = linelist.FirstOrDefault(d => d.Key == lineCode).Value,
+                            Direction_Y = baseinfo==null?1:linelist.FirstOrDefault(d => d.Key == lineCode).Value,
                             Direction_Z = sublayer.Sublayer,
                             Sequen = sequen,
+                            IsBad=0,
                             GuidID = guid
                         });
                     }
+
+                    //添加传感器
+                    var sKey = new string[] { "GuidID" };
+                    var uKey = new string[] { "Collector", "GuidID" };
+                    reint = sRepository.AddUpdate(addSensors, sKey, uKey);
+
+                    //批量添加采集器
+                    var selectKey = new string[] { "CPUId" };
+                    var updateKey = new string[] { "SensorIdArr", "InstallDate" };
+                    reint = cRepository.AddUpdate(updateList, selectKey, updateKey);
+
+
                 }
                 #endregion
 
-                #region 温度
-                if (!string.IsNullOrEmpty(cmodel.c_short))
+                #region 收集温度
+                if (!string.IsNullOrEmpty(cmodel.c_short) && !string.IsNullOrEmpty(cmodel.temp))
                 {
                     var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
                     var rInfo = rRepository.Get(g => g.ID == c_short) ?? new Receiver();
@@ -165,7 +183,7 @@ namespace Net66.Core
                         {
                             var f = sensorList[i];
                             var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
-                            if (temp == 255)//坏点
+                            if (temp == (decimal)63.75)//坏点
                             {
                                 badhots.Add(f);
                                 continue;
@@ -180,7 +198,7 @@ namespace Net66.Core
                                 RealHeart = 0,
                                 Type = 0,
                                 WH_Number = wh_number,
-                                G_Number= g_number
+                                G_Number = g_number
                             });
                         }
                         cjqTemp = cjqTemp / i;
@@ -196,43 +214,36 @@ namespace Net66.Core
                             RealHeart = 0,
                             Temp = cjqTemp,
                             WH_Number = wh_number,
-                            G_Number=g_number
+                            G_Number = g_number
                         });
                         #endregion
 
                     }
                 }
                 sensorIdList.AddRange(sensorList);
+
+                #region 批量插入温度
+                reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && sensorIdList.Contains(p.PId) && p.Type == 0
+                    , "RealHeart", 1, "StampTime");
+
+                //同时更新采集器的温度
+                var cpuIds = _list.Select(s => s.m_cpuid).ToList();
+                reint = tRepository.AddUpdate(add_CTemp, p => p.RealHeart == 0 && cpuIds.Contains(p.PId) && p.Type == 1
+                    , "RealHeart", 1, "");
+
+                #endregion
+
                 #endregion
 
                 #region 更新坏点
-                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0&& badhots.Contains(p.SensorId), "SensorId", 1, "");//标记已经坏了的传感器
+                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0 && badhots.Contains(p.SensorId), "IsBad", 1, "");//标记已经坏了的传感器
                 if (rebad > 0)
                 {
                     dicBadhots.Add(cmodel.m_cpuid, rebad);
                 }
                 #endregion
 
-            }
-            
-            //批量添加采集器
-            var selectKey = new string[] { "CPUId" };
-            var updateKey = new string[] { "SensorIdArr", "InstallDate" };
-            var reint = cRepository.AddUpdate(updateList, selectKey, updateKey);
-            
-            //批量插入温度
-            reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && sensorIdList.Contains(p.PId) && p.Type == 0
-                , "RealHeart", 1, "StampTime");
-
-            //同时更新采集器的温度
-            var cpuIds = _list.Select(s => s.m_cpuid).ToList();
-            reint = tRepository.AddUpdate(add_CTemp, p => p.RealHeart == 0 && cpuIds.Contains(p.PId) && p.Type == 1
-                , "RealHeart", 1, "");
-
-            //添加传感器
-            var sKey = new string[] { "GuidID" };
-            var uKey = new string[] { "Collector", "GuidID" };
-            reint = sRepository.AddUpdate(addSensors, sKey, uKey); 
+            }             
 
             //跟新采集器的坏点数
             new Data.Context.DbEntity().UpdateCollectorBadHot(dicBadhots);

@@ -15,15 +15,15 @@ namespace Net66.Entity.IO_Model
         {
             //0传感器、1采集器、2收集器（室内）、3收集器（室外）
             var clist = temps.Where(w => w.Type == 0).ToList();
-            Maximumemperature = clist.Max(m => m.Temp);//最高温度（整个粮仓）
-            MinimumTemperature = clist.Min(m => m.Temp);//最低温度（整个粮仓）
+            Maximumemperature = Math.Round(clist.Max(m => m.Temp)??0,2);//最高温度（整个粮仓）
+            MinimumTemperature = Math.Round(clist.Min(m => m.Temp)??0,2);//最低温度（整个粮仓）
             //AverageTemperature = Math.Round(clist.Average(a => a.Temp)??0,2);//pingjunwendu
             //var snmodel = temps.Where(w => w.Type == 2).Average(a => a.Temp);
             //InSideTemperature = Math.Round(snmodel ?? 0,2);
-            InSideHumidity = humtys.Where(w => w.Type == 0).Max(m=>m.Humility);////0仓内湿度，1仓外湿度
-            OutSideHumidity = humtys.FirstOrDefault(w => w.Type == 1)==null?0:humtys.FirstOrDefault(w => w.Type == 1).Humility;
+            InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0).Max(m=>m.Humility)??2);////0仓内湿度，1仓外湿度
+            OutSideHumidity = Math.Round(humtys.FirstOrDefault(w => w.Type == 1)==null?0:humtys.FirstOrDefault(w => w.Type == 1).Humility??0,2);
             var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
-            OutSideTemperature = swmodel.Temp;
+            OutSideTemperature = Math.Round(swmodel.Temp??0,2);
             if (collectors != null)
                 BadPoints = collectors.Sum(s => s.BadPoints);
         }

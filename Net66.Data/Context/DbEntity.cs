@@ -10,7 +10,7 @@ namespace Net66.Data.Context
     public class DbEntity
     {
         /// <summary>
-        /// gengxin shoujiqi huaidian
+        /// 更新收集器坏点 2017-04-12 21:17:05
         /// </summary>
         public bool UpdateCollectorBadHot(Dictionary<string,int> dic)
         {

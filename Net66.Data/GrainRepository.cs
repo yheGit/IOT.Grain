@@ -526,7 +526,7 @@ namespace Net66.Data
             {
                 try
                 {
-                    var plist = db.Set<T>().Where(predicate);
+                    var plist = db.Set<T>().Where(predicate).ToList();
                     if (plist != null)
                     {
                         foreach (var current in plist)

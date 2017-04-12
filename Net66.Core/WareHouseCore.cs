@@ -311,8 +311,8 @@ namespace Net66.Core
                 , badlist.Where(w => w.HeapNumber.IndexOf(s.Number) > -1).ToList())
             {
                 Number = s.Number,
-                OutSideTemperature = outtemp,
-                OutSideHumidity = outhumty,
+                OutSideTemperature = Math.Round(outtemp,2),
+                OutSideHumidity = Math.Round(outhumty,2),
                 //BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
                 UserId = s.UserId.ToString()
             }).ToList();
@@ -338,7 +338,7 @@ namespace Net66.Core
             var chuanganqi = sRepository.GetList(g => ck_fjIdList.Contains(g.Collector));
             return heapList.Select(s => new OHeapReport(ck_fenji.Where(w=>w.HeapNumber==s.Number).Select(e=>e.CPUId).ToList(), chuanganqi, temps)
             {
-                OutSideTemperature=outtemp,
+                OutSideTemperature=Math.Round(outtemp,2),
                 Number = s.Number,
                 BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
                 UserId = s.UserId.ToString()
