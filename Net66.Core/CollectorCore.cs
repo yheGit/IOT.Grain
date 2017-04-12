@@ -161,21 +161,6 @@ namespace Net66.Core
                     {
                         #region chuanganqi temp
                         int i = 0;
-                        //sensorList.ForEach(f =>
-                        //{
-                        //    var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
-                        //    cjqTemp += temp;
-                        //    addTemp.Add(new Temperature()
-                        //    {
-                        //        PId = f,
-                        //        StampTime = datenowStr,
-                        //        UpdateTime= datenow,
-                        //        Temp = temp,
-                        //        RealHeart = 0,
-                        //        Type = 0,
-                        //        WH_Number=wh_number
-                        //    }); i++;
-                        //});
                         for (; i < sensorList.Count; i++)
                         {
                             var f = sensorList[i];

@@ -118,7 +118,7 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {
-
+            Utils.PrintLog("获取粮仓报表" , "PostPack2");
             var reList = wareHouseCore.GetGrainsTemp();
             Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             if (reList != null)
@@ -134,7 +134,12 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GranaryTemp_GetList(string id)
         {
+<<<<<<< HEAD
             string number = id;//粮仓编号
+=======
+            Utils.PrintLog("获取廒间报表" + id, "PostPack2");
+            string number = id;
+>>>>>>> a328a652f7f3099679319ca062aeb6a5eb773047
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getGranaryTemp(number);
@@ -151,7 +156,12 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult HeapsTemp_GetList(string id)
         {
+<<<<<<< HEAD
             string number = id;//廒间编号
+=======
+            Utils.PrintLog("获取堆位报表" + id, "PostPack2");
+            string number = id;
+>>>>>>> a328a652f7f3099679319ca062aeb6a5eb773047
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getHeapsTemp(number);

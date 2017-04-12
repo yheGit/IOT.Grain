@@ -12,7 +12,7 @@ namespace Net66.Comm.SysApi
         /// </summary>
         public static decimal ConvertTemp(int _temp)
         {
-            decimal num = _temp / 4;
+            decimal num = (decimal)_temp / 4;
             var re= Math.Round(num, 2);
             return re;
         }
