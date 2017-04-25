@@ -19,16 +19,18 @@ namespace Net66.Core
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Receiver> rRepository;
         private static IGrainRepository<Sensor> sRepository;
+        private static IGrainRepository<HeapLine> hlRepository;
         private static string endash = StaticClass.Endash;
 
         public GranaryCore(IGrainRepository<Granary> _gRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository,
-            IGrainRepository<Sensor> _sRepository, IGrainRepository<Receiver> _rRepository)
+            IGrainRepository<Sensor> _sRepository, IGrainRepository<Receiver> _rRepository, IGrainRepository<HeapLine> _hlRepository)
         {
             gRepository = _gRepository;
             cRepository = _cRepository;
             tRepository = _tRepository;
             sRepository = _sRepository;
             rRepository = _rRepository;
+            hlRepository = _hlRepository;
         }
 
         #region old
@@ -218,6 +220,8 @@ namespace Net66.Core
 
             var clist = cRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
             var cIds = clist.Select(s => s.CPUId).ToList();
+            //var hllist=chl
+
             var sList = sRepository.GetList(g => cIds.Contains(g.Collector)) ?? new List<Sensor>();
             var sIds = sList.Select(s => s.SensorId).ToList();
             var tempList = tRepository.GetList(g => g.Type == 0 && sIds.Contains(g.PId) && g.RealHeart == 0) ?? new List<Temperature>();
