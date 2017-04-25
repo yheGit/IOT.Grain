@@ -16,9 +16,10 @@ namespace Net66.Entity.IO_Model
             var curSensors = sensors.Where(w => ckfenji.Contains(w.Collector)).Select(s => s.SensorId).ToList();
             var headTemps = temps.Where(a => curSensors.Contains(a.PId) && a.Type == 0).ToList();
             //Type 0传感器、1采集器、2收集器（仓外）
-            var intemp = Math.Round(headTemps.Average(v => v.Temp)??0,2);//0、堆位的平均温度， 1、堆位的仓内温度取，所在廒间的所有温度的平均值            
-            var maxTemp = Math.Round(headTemps.Max(m => m.Temp)??0,2);//堆位的最高温度，也就是传感器的最高温度
-            var minTemp = Math.Round(headTemps.Min(m => m.Temp)??0,2);//最低温度
+            var intemp = Math.Round(headTemps.Average(v => v.Temp) ?? 0, 2);//0、堆位的平均温度， 1、堆位的仓内温度取，所在廒间的所有温度的平均值            
+            var maxTemp = Math.Round(headTemps.Max(m => m.Temp) ?? 0, 2);//堆位的最高温度，也就是传感器的最高温度
+            var minTemp = Math.Round(headTemps.Min(m => m.Temp) ?? 0, 2);//最低温度
+            AverageTemperature = Math.Round((decimal)((maxTemp + minTemp) / 2), 2);
             InSideTemperature = intemp;
             Maximumemperature = maxTemp;
             MinimumTemperature = minTemp;
@@ -37,6 +38,10 @@ namespace Net66.Entity.IO_Model
         /// 最低温度
         /// </summary>
         public Nullable<decimal> MinimumTemperature { get; set; }
+        /// <summary>
+        /// 平均温度
+        /// </summary>
+        public Nullable<decimal> AverageTemperature { get; set; }
         /// <summary>
         /// 坏点数
         /// </summary>

@@ -236,7 +236,7 @@ namespace Net66.Core
                 Label = s.Label,
                 MaxTemp = s.MaxTemp,
                 MinTemp = s.MinTemp,
-                //RealTemp=null,
+                IsBad=s.IsBad,
                 SensorId = s.SensorId,
                 Sequen = s.Sequen,
                 UserId = s.UserId

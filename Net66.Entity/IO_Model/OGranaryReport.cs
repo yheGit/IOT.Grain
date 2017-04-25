@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace Net66.Entity.IO_Model
 {
-   public class OGranaryReport
+    public class OGranaryReport
     {
         public OGranaryReport() { }
 
         public OGranaryReport(List<Temperature> temps, List<Humidity> humtys, List<Collector> collectors = null)
         {
             //0传感器、1采集器、2收集器（室内）、3收集器（室外）
-            var clist = temps.Where(w => w.Type == 0).ToList();
-            Maximumemperature = Math.Round(clist.Max(m => m.Temp)??0,2);//最高温度（整个粮仓）
-            MinimumTemperature = Math.Round(clist.Min(m => m.Temp)??0,2);//最低温度（整个粮仓）          
-            InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0).Max(m => m.Humility)??0,2);////0仓内湿度，1仓外湿度
+            var clist = temps.Where(w => w.Type == 0 && w.RealHeart == 0).ToList();
+            Maximumemperature = Math.Round(clist.Max(m => m.Temp) ?? 0, 2);//最高温度（整个粮仓）
+            MinimumTemperature = Math.Round(clist.Min(m => m.Temp) ?? 0, 2);//最低温度（整个粮仓）  
+            AverageTemperature = Math.Round((decimal)((Maximumemperature + MinimumTemperature) / 2), 2);
+            InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0 && w.RealHeart == 0).Max(m => m.Humility) ?? 0, 2);////0仓内湿度，1仓外湿度
             //OutSideHumidity = humtys.FirstOrDefault(w => w.Type == 1).Humility;
             //var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
             //OutSideTemperature = swmodel.Temp;
@@ -39,6 +40,10 @@ namespace Net66.Entity.IO_Model
         /// 最低温度
         /// </summary>
         public Nullable<decimal> MinimumTemperature { get; set; }
+        /// <summary>
+        /// 平均温度
+        /// </summary>
+        public Nullable<decimal> AverageTemperature { get; set; }
         /// <summary>
         /// 仓外温度
         /// </summary>

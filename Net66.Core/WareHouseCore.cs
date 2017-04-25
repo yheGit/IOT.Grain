@@ -297,22 +297,22 @@ namespace Net66.Core
             var granaryList = gRepository.GetList(g => g.WH_Number == number && g.Type == 2 && g.IsActive == 1);
             var temps = tRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Temperature>();
             var tempInfo = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2);
-            decimal outtemp =0;
+            decimal outtemp = 0;
             if (tempInfo != null)
-                outtemp = tempInfo.Temp??0;
+                outtemp = tempInfo.Temp ?? 0;
             var humtys = hRepository.GetList(g => g.WH_Number == number && g.RealHeart == 0) ?? new List<Humidity>();
             var humtyInfo = humtys.FirstOrDefault(w => w.Type == 1 && w.G_Number == "0");
-            decimal outhumty =0;
+            decimal outhumty = 0;
             if (humtyInfo != null)
-                outhumty = humtyInfo.Humility??0;
+                outhumty = humtyInfo.Humility ?? 0;
             var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
             return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()
                 , humtys.Where(w => w.G_Number == s.Number).ToList()
                 , badlist.Where(w => w.HeapNumber.IndexOf(s.Number) > -1).ToList())
             {
                 Number = s.Number,
-                OutSideTemperature = Math.Round(outtemp,2),
-                OutSideHumidity = Math.Round(outhumty,2),
+                OutSideTemperature = Math.Round(outtemp, 2),
+                OutSideHumidity = Math.Round(outhumty, 2),
                 //BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
                 UserId = s.UserId.ToString()
             }).ToList();
@@ -325,20 +325,20 @@ namespace Net66.Core
         public List<OHeapReport> getHeapsTemp(string number)
         {
             var heapList = gRepository.GetList(g => g.Number.Contains(number) && g.Type == 0 && g.IsActive == 1);
-            var temps = tRepository.GetList(g => number.Contains(g.WH_Number)&&( g.G_Number == number||g.G_Number=="0" )&& g.RealHeart == 0) ?? new List<Temperature>();
+            var temps = tRepository.GetList(g => number.Contains(g.WH_Number) && (g.G_Number == number || g.G_Number == "0") && g.RealHeart == 0) ?? new List<Temperature>();
             decimal outtemp = 0;
-            var tempInfo=temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2);
+            var tempInfo = temps.FirstOrDefault(f => f.G_Number == "0" && f.Type == 2);
             if (tempInfo != null)
-                outtemp = tempInfo.Temp??0;
+                outtemp = tempInfo.Temp ?? 0;
             //var intemp = temps.Average(a => a.Temp);//堆位的仓内温度取，所在廒间的所有温度的平均值
             var ck_fenji = cRepository.GetList(g => g.IsActive == 1 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();//廒间里所有堆位的采集器
             var badlist = ck_fenji.Where(g => g.BadPoints > 0) ?? new List<Collector>();
 
             var ck_fjIdList = ck_fenji.Select(s => s.CPUId).ToList();
             var chuanganqi = sRepository.GetList(g => ck_fjIdList.Contains(g.Collector));
-            return heapList.Select(s => new OHeapReport(ck_fenji.Where(w=>w.HeapNumber==s.Number).Select(e=>e.CPUId).ToList(), chuanganqi, temps)
+            return heapList.Select(s => new OHeapReport(ck_fenji.Where(w => w.HeapNumber == s.Number).Select(e => e.CPUId).ToList(), chuanganqi, temps)
             {
-                OutSideTemperature=Math.Round(outtemp,2),
+                OutSideTemperature = Math.Round(outtemp, 2),
                 Number = s.Number,
                 BadPoints = badlist.Where(w => w.HeapNumber == s.Number).Sum(u => u.BadPoints),
                 UserId = s.UserId.ToString()

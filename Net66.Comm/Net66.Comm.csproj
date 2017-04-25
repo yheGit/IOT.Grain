@@ -59,6 +59,7 @@
     <Compile Include="JsonConvertHelper.cs" />
     <Compile Include="Log4net.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="NetSendMsg.cs" />
     <Compile Include="NLogUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegHelper.cs" />

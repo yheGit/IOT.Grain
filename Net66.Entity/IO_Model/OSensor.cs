@@ -45,6 +45,7 @@ namespace Net66.Entity.IO_Model
         public Nullable<decimal> RealTemp { get; set; }
         public Nullable<int> UserId { get; set; }
         public Nullable<int> IsActive { get; set; }
+        public Nullable<int> IsBad { get; set; }//0否，1已坏
         public string GuidID { get; set; }
 
     }

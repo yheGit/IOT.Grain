@@ -134,9 +134,7 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GranaryTemp_GetList(string id)
         {
-
             string number = id;//粮仓编号
-
             Utils.PrintLog("获取廒间报表" + id, "PostPack2");
 
             if (string.IsNullOrEmpty(number))

@@ -38,7 +38,7 @@ namespace Net66.Service.Controllers
             Utils.PrintLog("pkentity" + pkentity, "PostPack2");
             if (_pack == null)
                 return string.Empty;
-            bool rebit = false;           
+            bool rebit = false;          
 
             #region 批量采集温度
 
@@ -86,8 +86,6 @@ namespace Net66.Service.Controllers
 
             #endregion
             return string.Empty;
-
-
         }
 
         /// <summary>
@@ -100,8 +98,7 @@ namespace Net66.Service.Controllers
                 return string.Empty;
 
             Utils.PrintLog("pkentity" + _pack, "PostPack2");
-            var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);           
-
+            var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);          
             bool rebit = false;
 
             #region 批量采集温度

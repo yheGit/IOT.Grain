@@ -307,6 +307,84 @@ namespace Net66.Comm
 
         #region  配置信息AppSettings
 
+        #region mxt短信
+
+        public static string GetMsgApiUrl
+        {
+            get
+            {
+                try
+                {
+                    return ConfigurationManager.AppSettings["MsgApiUrl"].ToString();
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+
+        public static string GetSendUserID
+        {
+            get
+            {
+                try
+                {
+                    return ConfigurationManager.AppSettings["SendUserID"].ToString();
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+
+        public static string GetSendAccount
+        {
+            get
+            {
+                try
+                {
+                    return ConfigurationManager.AppSettings["SendAccount"].ToString();
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+
+        public static string GetSendPassword
+        {
+            get
+            {
+                try
+                {
+                    return ConfigurationManager.AppSettings["SendPassword"].ToString();
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+
+        public static string GetSignature
+        {
+            get
+            {
+                try
+                {
+                    return ConfigurationManager.AppSettings["Signature"].ToString();
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+
+        #endregion
 
         public static string GetMobiAppKey
         {
@@ -325,20 +403,6 @@ namespace Net66.Comm
             }
         }
 
-        public static string GetServiceAppKeyToken
-        {
-            get
-            {
-                try
-                {
-                    return ConfigurationManager.AppSettings["KWatchAppKey"].ToString();
-                }
-                catch
-                {
-                    return "";
-                }
-            }
-        }
 
         /// <summary>
         /// 项目绝对地址 by yhw 2016-11-10 16:39:55
