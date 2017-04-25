@@ -20,12 +20,17 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.StampTime)
                 .HasMaxLength(50);
 
+            this.Property(t => t.GuidID)
+               .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("SensorBase");
             this.Property(t => t.ID).HasColumnName("ID");
             this.Property(t => t.SCpu).HasColumnName("SCpu");
             this.Property(t => t.SLineCode).HasColumnName("SLineCode");
-            this.Property(t => t.StampTime).HasColumnName("StampTime");           
+            this.Property(t => t.StampTime).HasColumnName("StampTime");
+            this.Property(t => t.LSequen).HasColumnName("LSequen");
+            this.Property(t => t.GuidID).HasColumnName("GuidID");
         }
     }
 }

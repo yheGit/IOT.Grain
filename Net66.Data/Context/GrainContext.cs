@@ -23,6 +23,7 @@ namespace Net66.Data.Context
         public DbSet<Floor> Floors { get; set; }
         public DbSet<Granary> Granaries { get; set; }
         public DbSet<Heap> Heaps { get; set; }
+        public DbSet<HeapLine> HeapLines { get; set; }
         public DbSet<Humidity> Humidities { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Receiver> Receivers { get; set; }
@@ -40,6 +41,7 @@ namespace Net66.Data.Context
             modelBuilder.Configurations.Add(new FloorMap());
             modelBuilder.Configurations.Add(new GranaryMap());
             modelBuilder.Configurations.Add(new HeapMap());
+            modelBuilder.Configurations.Add(new HeapLineMap());
             modelBuilder.Configurations.Add(new HumidityMap());
             modelBuilder.Configurations.Add(new OrganizationMap());
             modelBuilder.Configurations.Add(new ReceiverMap());

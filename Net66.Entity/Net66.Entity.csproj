@@ -72,6 +72,7 @@
     <Compile Include="DR_Model\UserInfo.cs" />
     <Compile Include="DR_Model\WareHouse.cs" />
     <Compile Include="DR_Model\WareHouse_Log.cs" />
+    <Compile Include="IO_Model\ISensorBase.cs" />
     <Compile Include="IO_Model\OGranaryReport.cs" />
     <Compile Include="IO_Model\OGrainsReport.cs" />
     <Compile Include="IO_Model\IPackIot.cs" />
@@ -93,12 +94,14 @@
     <Compile Include="Models\Floor.cs" />
     <Compile Include="Models\Grain_IOTContext.cs" />
     <Compile Include="Models\Granary.cs" />
+    <Compile Include="Models\HeapLine.cs" />
     <Compile Include="Models\Heap.cs" />
     <Compile Include="Models\Humidity.cs" />
     <Compile Include="Models\Mapping\AlarmMap.cs" />
     <Compile Include="Models\Mapping\CollectorMap.cs" />
     <Compile Include="Models\Mapping\FloorMap.cs" />
     <Compile Include="Models\Mapping\GranaryMap.cs" />
+    <Compile Include="Models\Mapping\HeapLineMap.cs" />
     <Compile Include="Models\Mapping\HeapMap.cs" />
     <Compile Include="Models\Mapping\HumidityMap.cs" />
     <Compile Include="Models\Mapping\OrganizationMap.cs" />

@@ -1,4 +1,5 @@
-﻿using Net66.Entity.Models;
+﻿using Net66.Entity.IO_Model;
+using Net66.Entity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,11 @@ namespace Net66.Core.Interface
     {
 
         List<Net66.Entity.IO_Model.OSensor> GetSensorList(string id);
+
+
+        List<int> GetHeapLineCount(string heapNumber);
+
+        bool UpdateSensorBaseList(List<ISensorBase> list);
 
     }
 }

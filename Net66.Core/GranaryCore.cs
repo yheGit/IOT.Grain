@@ -220,7 +220,8 @@ namespace Net66.Core
 
             var clist = cRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
             var cIds = clist.Select(s => s.CPUId).ToList();
-            //var hllist=chl
+            //huoqu tongcang chaunganxiandegeshu
+            var hllist = hlRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<HeapLine>();
 
             var sList = sRepository.GetList(g => cIds.Contains(g.Collector)) ?? new List<Sensor>();
             var sIds = sList.Select(s => s.SensorId).ToList();
@@ -264,7 +265,8 @@ namespace Net66.Core
                 Type = s.Type,
                 UserId = s.UserId,
                 WH_ID = s.WH_ID,
-                WH_Number = s.WH_Number
+                WH_Number = s.WH_Number,
+                LineCount = hllist.Where(w => w.HeapNumber == s.Number).OrderBy(o => o.Sort).Select(e => e.Counts.Value).ToList()
             }).ToList();
 
         }

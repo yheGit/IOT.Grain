@@ -1,5 +1,6 @@
 ﻿using Net66.Core.Interface;
 using Net66.Data.Interface;
+using Net66.Entity.IO_Model;
 using Net66.Entity.Models;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,17 @@ namespace Net66.Core
         private static IGrainRepository<Collector> cRepository;
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Sensor> sRepository;
+        private static IGrainRepository<SensorBase> sbRepository;
+        private static IGrainRepository<HeapLine> hlRepository;
 
-        public SensorCore(IGrainRepository<Sensor> _sRepository, IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository)
+        public SensorCore(IGrainRepository<Sensor> _sRepository, IGrainRepository<Collector> _cRepository
+            , IGrainRepository<Temperature> _tRepository, IGrainRepository<SensorBase> _sbRepository, IGrainRepository<HeapLine> _hlRepository)
         {
             sRepository = _sRepository;
             cRepository = _cRepository;
             tRepository = _tRepository;
+            sbRepository = _sbRepository;
+            hlRepository = _hlRepository;
         }
 
         public List<Net66.Entity.IO_Model.OSensor> GetSensorList(string id)
@@ -74,6 +80,28 @@ namespace Net66.Core
                 Sequen = s.Sequen,
                 UserId = s.UserId
             }).ToList();
+        }
+
+        /// <summary>
+        /// genju tongdui bianhao huoqu ,chuanguanxian shuliang(anzhuang zhiqian)
+        /// </summary>
+        public List<int> GetHeapLineCount(string heapNumber)
+        {
+            var hllist = hlRepository.GetList(g => heapNumber.Equals(g.HeapNumber)) ?? new List<HeapLine>();
+            return hllist.OrderBy(o => o.Sort).Select(s => s.Counts.Value).ToList();
+
+        }
+
+        /// <summary>
+        /// 更新传感线的基础信息
+        /// </summary>
+        public bool UpdateSensorBaseList(List<ISensorBase> list)
+        {
+            bool rebit = false;
+
+            rebit= new Data.Context.DbEntity().UpdateSensorBase(list);
+
+            return rebit;
         }
 
 

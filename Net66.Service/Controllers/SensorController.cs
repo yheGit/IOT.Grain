@@ -47,6 +47,39 @@ namespace Net66.Service.Controllers
         //{
         //}
 
+
+        /// <summary>
+        /// 给筒仓编号设定序号
+        /// </summary>
+        [HttpPost]
+        public MobiResult UpdateLineCodeInfo(List<ISensorBase> list)
+        {
+            if (list == null || list.Count < 0)
+                return new MobiResult(1009);
+            var reBit = sensorCore.UpdateSensorBaseList(list);
+            if (reBit == true)
+                return new MobiResult(1000, "成功");
+            else
+                return new MobiResult(1012);
+
+        }
+
+
+        /// <summary>
+        /// 获取筒仓 传感线的数量
+        /// </summary>
+        [HttpGet]
+        public MobiResult GetHeapLineCount(string id)
+        {
+            string number = id;
+            var reList = sensorCore.GetHeapLineCount(number);
+            if (reList != null)
+                return new MobiResult(1000, "成功", reList);
+            else
+                return new MobiResult(1012);
+        }
+
+
         /// <summary>
         /// 获取传感器信息
         /// number堆位编号

@@ -25,6 +25,7 @@ namespace Net66.Entity.IO_Model
         public Nullable<int> UserId { get; set; }
         public Nullable<int> IsActive { get; set; }
         public List<OSensor> SensorList { get; set; }
+        public List<int> LineCount { get; set; }
 
     }
 }

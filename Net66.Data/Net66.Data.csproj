@@ -65,6 +65,10 @@
     <Compile Include="SqlDbOperator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Net66.Comm\Net66.Comm.csproj">
+      <Project>{4BC4AC6D-E048-49BD-B775-EC48CDC3AFF0}</Project>
+      <Name>Net66.Comm</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Net66.Entity\Net66.Entity.csproj">
       <Project>{6d30047c-4baf-41f7-a2a7-8582e815c5d7}</Project>
       <Name>Net66.Entity</Name>
