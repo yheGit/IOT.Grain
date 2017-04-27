@@ -24,7 +24,7 @@ namespace Net66.Core.Interface
         List<Net66.Entity.IO_Model.OSensor> GetSensorList(string id);
 
 
-        List<int> GetHeapLineCount(string heapNumber);
+        OSensorBase GetHeapLineCount(string heapNumber);
 
         bool UpdateSensorBaseList(List<ISensorBase> list);
 

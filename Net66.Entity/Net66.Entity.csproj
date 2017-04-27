@@ -87,6 +87,7 @@
     <Compile Include="IO_Model\OHeap.cs" />
     <Compile Include="IO_Model\OHeapsReport.cs" />
     <Compile Include="IO_Model\OSensor.cs" />
+    <Compile Include="IO_Model\OSensorBase.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />
     <Compile Include="IO_Model\ReturnClass.cs" />
     <Compile Include="Models\Alarm.cs" />
@@ -106,15 +107,17 @@
     <Compile Include="Models\Mapping\HumidityMap.cs" />
     <Compile Include="Models\Mapping\OrganizationMap.cs" />
     <Compile Include="Models\Mapping\ReceiverMap.cs" />
+    <Compile Include="Models\Mapping\LineBaseMap.cs" />
     <Compile Include="Models\Mapping\SensorMap.cs" />
     <Compile Include="Models\Mapping\TemperatureMap.cs" />
     <Compile Include="Models\Mapping\UserInfoMap.cs" />
     <Compile Include="Models\Mapping\WareHouseMap.cs" />
     <Compile Include="Models\Mapping\WareHouse_LogMap.cs" />
-    <Compile Include="Models\Mapping\SensorBase.cs" />
+    <Compile Include="Models\Mapping\SensorBaseMap.cs" />
     <Compile Include="Models\Organization.cs" />
     <Compile Include="Models\Receiver.cs" />
     <Compile Include="Models\Sensor.cs" />
+    <Compile Include="Models\LineBase.cs" />
     <Compile Include="Models\Temperature.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\WareHouse.cs" />

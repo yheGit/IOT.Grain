@@ -28,7 +28,8 @@ namespace Net66.Data.Context
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Receiver> Receivers { get; set; }
         public DbSet<Sensor> Sensors { get; set; }
-        public DbSet<SensorBase> SensorBase { get; set; }//
+        public DbSet<SensorBase> SensorBase { get; set; }
+        public DbSet<LineBase> LineBase { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<UserInfo> UserInfoes { get; set; }
         public DbSet<WareHouse> WareHouses { get; set; }
@@ -47,6 +48,7 @@ namespace Net66.Data.Context
             modelBuilder.Configurations.Add(new ReceiverMap());
             modelBuilder.Configurations.Add(new SensorMap());
             modelBuilder.Configurations.Add(new SensorBaseMap());
+            modelBuilder.Configurations.Add(new LineBaseMap());
             modelBuilder.Configurations.Add(new TemperatureMap());
             modelBuilder.Configurations.Add(new UserInfoMap());
             modelBuilder.Configurations.Add(new WareHouseMap());

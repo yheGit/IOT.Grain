@@ -26,15 +26,18 @@ namespace Net66.Core
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Sensor> sRepository;
         private static IGrainRepository<SensorBase> sbRepository;
+        private static IGrainRepository<LineBase> lbRepository;
         private static IGrainRepository<HeapLine> hlRepository;
 
         public SensorCore(IGrainRepository<Sensor> _sRepository, IGrainRepository<Collector> _cRepository
-            , IGrainRepository<Temperature> _tRepository, IGrainRepository<SensorBase> _sbRepository, IGrainRepository<HeapLine> _hlRepository)
+            , IGrainRepository<Temperature> _tRepository, IGrainRepository<SensorBase> _sbRepository
+            , IGrainRepository<HeapLine> _hlRepository, IGrainRepository<LineBase> _lbRepository)
         {
             sRepository = _sRepository;
             cRepository = _cRepository;
             tRepository = _tRepository;
             sbRepository = _sbRepository;
+            lbRepository = _lbRepository;
             hlRepository = _hlRepository;
         }
 
@@ -85,10 +88,12 @@ namespace Net66.Core
         /// <summary>
         /// genju tongdui bianhao huoqu ,chuanguanxian shuliang(anzhuang zhiqian)
         /// </summary>
-        public List<int> GetHeapLineCount(string heapNumber)
+        public OSensorBase GetHeapLineCount(string heapNumber)
         {
             var hllist = hlRepository.GetList(g => heapNumber.Equals(g.HeapNumber)) ?? new List<HeapLine>();
-            return hllist.OrderBy(o => o.Sort).Select(s => s.Counts.Value).ToList();
+            var reList= hllist.OrderBy(o => o.Sort).Select(s => s.Counts.Value).ToList();
+            var lineList = lbRepository.GetList(g => g.HeapNumber == heapNumber).Select(s=>new ISensorBase() { HeapNumber=s.HeapNumber, LineCode=s.LineCode,Sort=s.LSequence??0}).ToList();
+            return new OSensorBase() { LineCount = reList,LineList= lineList };
 
         }
 

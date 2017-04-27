@@ -20,11 +20,12 @@ namespace Net66.Core
         private static IGrainRepository<Temperature> tRepository;
         private static IGrainRepository<Sensor> sRepository;
         private static IGrainRepository<SensorBase> sbRepository;
+        private static IGrainRepository<LineBase> lbRepository;
         private static string endash = StaticClass.Endash;
 
         public CollectorCore(IGrainRepository<Collector> _cRepository, IGrainRepository<Temperature> _tRepository
             , IGrainRepository<Sensor> _sRepository, IGrainRepository<SensorBase> _sbRepository
-            , IGrainRepository<Receiver> _rRepository, IGrainRepository<Granary> _gRepository)
+            , IGrainRepository<Receiver> _rRepository, IGrainRepository<Granary> _gRepository, IGrainRepository<LineBase> _lbRepository)
         {
             cRepository = _cRepository;
             tRepository = _tRepository;
@@ -32,6 +33,7 @@ namespace Net66.Core
             sbRepository = _sbRepository;
             rRepository = _rRepository;
             gRepository = _gRepository;
+            lbRepository = _lbRepository;
         }
 
         public bool Install(IReceiver _entity)
@@ -115,7 +117,7 @@ namespace Net66.Core
                     foreach (var f in sensorList)
                     {
                         var sequen = ++depth;
-                        string lineCode="Unkwon";
+                        string lineCode = "Unkwon";
                         var baseinfo = sblist.FirstOrDefault(d => d.SCpu == f);
                         if (baseinfo != null)
                         {
@@ -127,9 +129,19 @@ namespace Net66.Core
                             }
                             sequen = baseinfo.SSequen ?? 0;
                         }
-                        
+
                         var guidKey = cmodel.m_cpuid + "_" + lineCode + "_" + sequen;
                         var guid = Utils.MD5(guidKey);
+
+                        int lSequen = -1;
+
+                        if (sublayer.HeapNumber.IndexOf('T') > -1 || sublayer.HeapNumber.IndexOf('Q') > -1)
+                        {
+                            var line = lbRepository.Get(g => g.HeapNumber == sublayer.HeapNumber && g.LineCode == lineCode);
+                            if (line != null)
+                                lSequen = line.LSequence.Value;
+                        }
+
                         addSensors.Add(new Sensor()
                         {
                             SensorId = f,
@@ -137,10 +149,10 @@ namespace Net66.Core
                             Collector = cmodel.m_cpuid,
                             Label = lineCode,
                             Direction_X = sequen,
-                            Direction_Y = baseinfo==null?1:linelist.FirstOrDefault(d => d.Key == lineCode).Value,
+                            Direction_Y = lSequen != -1 ? lSequen : (baseinfo == null ? 1 : linelist.FirstOrDefault(d => d.Key == lineCode).Value),
                             Direction_Z = sublayer.Sublayer,
                             Sequen = sequen,
-                            IsBad=0,
+                            IsBad = 0,
                             GuidID = guid
                         });
                     }
@@ -243,7 +255,7 @@ namespace Net66.Core
                 }
                 #endregion
 
-            }             
+            }
 
             //跟新采集器的坏点数
             new Data.Context.DbEntity().UpdateCollectorBadHot(dicBadhots);

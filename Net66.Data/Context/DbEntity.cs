@@ -1,5 +1,6 @@
 ﻿using Net66.Comm;
 using Net66.Entity.IO_Model;
+using Net66.Entity.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -43,25 +44,30 @@ namespace Net66.Data.Context
 
                 foreach (var model in list)
                 {
-                    var guidKey = model.HeapNumber + "_" + model.Sort;
-                    var guid = Utils.MD5(guidKey);
+                    var datenow = Utils.GetServerDateTime();
+                    var datenowStr = datenow.ToString();
 
-                    var info = db.SensorBase.FirstOrDefault(f => f.GuidID == guid);
+                    var info = db.LineBase.FirstOrDefault(f => f.HeapNumber == model.HeapNumber && f.LSequence == model.Sort);
                     if (info != null)
                     {
-                        if (info.SLineCode != model.LineCode)
-                            info.SLineCode = model.LineCode;
-                        db.SensorBase.Add(info);
+                        if (info.LineCode != model.LineCode)
+                        {
+                            info.LineCode = model.LineCode;
+                            info.StampTime = datenowStr;
+                            db.LineBase.Attach(info);
+                            db.Entry(info).State = EntityState.Modified;
+                        }
                     }
                     else
                     {
-                        var info2 = db.SensorBase.FirstOrDefault(f => f.SLineCode == model.LineCode);
-                        if (info2 == null)
-                            continue;
-                        info2.GuidID = guid;
-                        info2.LSequen = model.Sort;
-                        db.SensorBase.Attach(info2);
-                        db.Entry(info2).State = EntityState.Modified;
+                       
+                        db.LineBase.Add(new LineBase()
+                        {
+                            HeapNumber = model.HeapNumber,
+                            LineCode = model.LineCode,
+                            LSequence = model.Sort,
+                            StampTime = datenowStr
+                        });
                     }
                 }
                 return db.SaveChanges() > 0;
