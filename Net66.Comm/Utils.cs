@@ -386,6 +386,27 @@ namespace Net66.Comm
 
         #endregion
 
+        /// <summary>
+        /// 调试App
+        /// </summary>
+        public static bool DebugApp
+        {
+            get
+            {
+                try
+                {
+                    var val = ConfigurationManager.AppSettings["Debug"].ToString();
+                    if (!string.IsNullOrEmpty(val) && val.ToUpper().Equals("TRUE"))
+                        return true;
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public static string GetMobiAppKey
         {
             get

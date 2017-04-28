@@ -51,12 +51,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SecRepository.cs" />
     <Compile Include="Base\EfUtils.cs" />
     <Compile Include="Base\Error.cs" />
     <Compile Include="Base\SqlComm.cs" />
     <Compile Include="Base\SqlHelper.cs" />
     <Compile Include="Context\DbEntity.cs" />
     <Compile Include="Context\DbGrain.cs" />
+    <Compile Include="Context\DbSysSEC.cs" />
     <Compile Include="Context\GrainContext.cs" />
     <Compile Include="DatabaseInitializer.cs" />
     <Compile Include="Interface\IRepository.cs" />

@@ -37,6 +37,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\Lib\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
@@ -60,6 +67,9 @@
     <Compile Include="Interface\ISensorCore.cs" />
     <Compile Include="ReceiverCore.cs" />
     <Compile Include="SensorCore.cs" />
+    <Compile Include="SysSecCore\AccountCore.cs" />
+    <Compile Include="SysSecCore\DepartmentCore.cs" />
+    <Compile Include="SysSecCore\MenuCore.cs" />
     <Compile Include="WareHouseCore.cs" />
     <Compile Include="FloorCore.cs" />
     <Compile Include="Interface\IWareHouseCore.cs" />
