@@ -93,6 +93,7 @@ namespace Net66.Core
             var dicBadhots = new Dictionary<string, int>();
             foreach (var cmodel in _list)
             {
+                //cmodel.c_short
                 int depth = 0;
                 List<string> sensorList = new List<string>();
 
