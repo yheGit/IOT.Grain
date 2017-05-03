@@ -25,7 +25,7 @@ namespace IOT.RightsSys.Entity
 		private string _iconic;
 		private string _remark;
 
-        //[Key]
+        [Key]
         [Display(Name = "主键", Order = 1)]
         public string Id
 		{

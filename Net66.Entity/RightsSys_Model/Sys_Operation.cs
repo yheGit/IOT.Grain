@@ -23,6 +23,7 @@ namespace IOT.RightsSys.Entity
 		private string _remark;
 		private string _state;
 
+        [Key]
         [Display(Name = "主键", Order = 1)]
         public string Id
 		{

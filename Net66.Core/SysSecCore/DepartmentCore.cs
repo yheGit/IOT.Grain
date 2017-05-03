@@ -2,6 +2,7 @@
 using IOT.RightsSys.Entity;
 using Net66.Comm;
 using Net66.Core.SysSecCore;
+using Net66.Data.Base;
 using Net66.Data.Context;
 using System;
 using System.Collections.Generic;
@@ -22,14 +23,69 @@ using System.Text;
 *******************************************/
 namespace Net66.Core.SysSecCore
 {
-    public class DepartmentCore:SecRepository<Sys_Department>
+    public class DepartmentCore : SecRepository<Sys_Department>
     {
-        /// <summary>
-        /// 分页获取消费记录 by yhw96160 2016-11-7 19:33:17
-        /// </summary>
-        /// <param name="skip">开始记录索引</param>
-        /// <param name="take">返回记录数量</param>
-        /// <param name="sql">sql</param>
+
+        #region 获取组织结构关系（公司-部门）
+        public List<Sys_Department> GetOrgList(List<string> _params, ref int total)
+        {
+
+            #region //条件查询
+            int pIndex = TypeParse.StrToInt(Utils.GetValue(_params, "PageIndex^"), 0);
+            int pageIndex = pIndex <= 0 ? 1 : pIndex;//页码
+            int pageSize = TypeParse.StrToInt(Utils.GetValue(_params, "PageCount^"), 0);//每页显示的行数
+            string sort = Utils.GetValue(_params, "Sort^");//排序字段
+            string order = Utils.GetValue(_params, "OrderType^").ToLower();//升序asc（默认）还是降序desc
+            string search = Utils.GetValue(_params, "Search^");
+            bool isasc = true;
+            if (order == "desc")
+                isasc = false;
+            if (pageSize <= 0)
+                return null;
+
+            Expression<Func<Sys_Department, bool>> predicate = EfUtils.True<Sys_Department>();
+            ////var wCode = TypeParse.StrToInt(wareCode, 0);
+            //where = where.And(w => w.IsActive == 1 && w.WH_Number == wareCode && w.Type == 0);
+            //if (!string.IsNullOrEmpty(granaryCode))
+            //    where = where.And(w => w.Number.Contains(granaryCode));//loufangleixing
+
+            //排序字段转换
+            Expression<Func<Sys_Department, string>> orderByLambda = p => p.Sort.ToString();//null;            
+            switch (sort)
+            {
+                case "Name": orderByLambda = p => p.Name; break;
+                case "Sort": orderByLambda = p => p.Sort.ToString(); break;
+                //default: orderByLambda = p => p.Sort.ToString(); break;
+            }
+
+            #endregion
+
+            IQueryable<Sys_Department> queryData = null;
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                ////调试模式则输出SQL
+                //if (Utils.DebugApp)
+                //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                if (isasc)
+                    queryData = dbEntity.Departments.Where(predicate).OrderBy(orderByLambda);
+                else
+                    queryData = dbEntity.Departments.Where(predicate).OrderByDescending(orderByLambda);
+                total = queryData.Count();
+                if (total > 0)
+                {
+                    if (pageIndex <= 1)
+                        queryData = queryData.Take(pageSize);
+                    else
+                        queryData = queryData.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+                }
+                return queryData.ToList();
+            }
+            
+        }
+
+        #endregion
+
+
         public List<Sys_Department> GetConsumRecordBySql(int _skip, int _take, string _sql)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
@@ -53,9 +109,7 @@ namespace Net66.Core.SysSecCore
             }
         }
 
-        /// <summary>
-        /// 获取当前用户未报销消费记录总数 by yhw96160 2017-3-3 17:37:56
-        /// </summary>
+
         public int GetConsumRecordCount(string _userId)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
@@ -65,14 +119,12 @@ namespace Net66.Core.SysSecCore
                 //string sql = sbSql.ToString().ToLower();
                 //var result = dbEntity.Database.SqlQuery<int>(sql).FirstOrDefault();
                 //return result;
-                return dbEntity.Departments.Where(w => w.Id == _userId ).Count();
+                return dbEntity.Departments.Where(w => w.Id == _userId).Count();
             }
         }
 
 
-        /// <summary>
-        /// 获取消费记录的集合 by yhw96160 2016-11-9 09:58:03
-        /// </summary>
+
         public List<Sys_Department> GetPageListConsumRecord(Expression<Func<Sys_Department, bool>> where, Expression<Func<Sys_Department, string>> orderBy
             , bool ascending, int pageIndex, int pageSize, ref int rows)
         {
@@ -109,11 +161,7 @@ namespace Net66.Core.SysSecCore
             }
         }
 
-            
 
-        /// <summary>
-        /// 添加消费记录 by yhw96160 2016-11-7 20:32:53
-        /// </summary>
         public bool AddConsumRecord(Sys_Department _entity)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
@@ -125,12 +173,7 @@ namespace Net66.Core.SysSecCore
             }
         }
 
-    
-        /// <summary>
-        /// 更新消费记录的报销状态 by yhw96160 2016-11-15 17:21:36
-        /// </summary>
-        /// <param name="_consumIdList">已报销的消费记录Id</param>
-        /// <param name="_receiptsId">报销单号ID</param>
+
         public bool UpdateConsumRecordIsCost(List<string> _consumIdList, string _receiptsId)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
@@ -147,11 +190,8 @@ namespace Net66.Core.SysSecCore
             }
         }
 
-        #region //消费金额详细
+        #region 
 
-        /// <summary>
-        /// 添加消费金额详细 by yhw96160 2016-11-14 15:37:21
-        /// </summary>
         public int AddListCaDetail(List<Sys_Department> _cadList)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))

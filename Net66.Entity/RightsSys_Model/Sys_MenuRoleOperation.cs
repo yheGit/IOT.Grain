@@ -20,6 +20,7 @@ namespace IOT.RightsSys.Entity
 		private string _operationid;
 		private string _roleid;
 
+        [Key]
         [Display(Name = "主键", Order = 1)]
         public string GuidID
 		{

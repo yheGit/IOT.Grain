@@ -1,4 +1,8 @@
 ﻿using IOT.RightsSys.Entity;
+using Net66.Comm;
+using Net66.Core.SysSecCore;
+using Net66.Data.Base;
+using Net66.Entity.IO_Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,33 +23,39 @@ namespace Net66.Service.Controllers.SysSec
         /// <summary>
         /// 异步加载数据
         /// </summary>
-        /// <param name="page">页码</param>
-        /// <param name="rows">每页显示的行数</param>
-        /// <param name="order">排序字段</param>
-        /// <param name="sort">升序asc（默认）还是降序desc</param>
-        /// <param name="search">查询条件</param>
-        /// <returns></returns>
         [HttpPost]
-        public List<Sys_Department> GetData(string id, int page, int rows, string order, string sort, string search)
+        public ReturnData GetData(List<string> _params)
         {
-
+            if (_params == null)
+                return new ReturnData(1009);
             int total = 0;
-            List<Sys_Department> queryData = null;// m_BLL.GetByParam(id, page, rows, order, sort, search, ref total);
-            return queryData.Select(s => new Sys_Department
+            List<Sys_Department> queryData = new DepartmentCore().GetOrgList(_params, ref total);
+            var reList = new datagrid
             {
-                Id = s.Id
+                total = total,
+                rows = queryData.Select(s => new Sys_Department
+                {
+                    Id = s.Id
                     ,
-                Name = s.Name
-                    ,
-                ParentId = s.ParentId
-                    ,
-                Address = s.Address
-                    ,
-                Sort = s.Sort
-                    ,
-                Remark = s.Remark
+                    Code = s.Code
+                     ,
+                    Name = s.Name
+                     ,
+                    ParentId = s.ParentId
+                     ,
+                    Address = s.Address
+                     ,
+                    Sort = s.Sort
+                     ,
+                    Remark = s.Remark
 
-            } ).ToList();
+                })
+            };
+            if (total > 0 && reList.rows != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+
         }
 
 

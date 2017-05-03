@@ -91,6 +91,7 @@
     <Compile Include="IO_Model\OSensorBase.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />
     <Compile Include="IO_Model\ReturnClass.cs" />
+    <Compile Include="IO_Model\ReturnData.cs" />
     <Compile Include="Models\Alarm.cs" />
     <Compile Include="Models\Collector.cs" />
     <Compile Include="Models\Floor.cs" />

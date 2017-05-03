@@ -23,7 +23,7 @@ namespace IOT.RightsSys.Entity
 		private int? _sort;
 		private string _remark;
 
-        //[Key]
+        [Key]
         [Display(Name = "主键", Order = 1)]
         public string Id
 		{

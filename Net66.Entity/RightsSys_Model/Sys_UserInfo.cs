@@ -29,6 +29,7 @@ namespace IOT.RightsSys.Entity
 		private string _address;
 		private decimal? _remark;
 
+        [Key]
         [Display(Name = "主键", Order = 1)]
         public string Id
 		{
