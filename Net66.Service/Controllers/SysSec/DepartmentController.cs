@@ -62,44 +62,68 @@ namespace Net66.Service.Controllers.SysSec
         /// <summary>
         /// 查看详细
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Sys_Department Details(string id)
+        public ReturnData Details(string id)
         {
-            Sys_Department item = null;// m_BLL.GetById(id);
-            return item;
+            if (string.IsNullOrEmpty(id))
+                return new ReturnData(1009);
+            Sys_Department item =new DepartmentCore().GetOrgInfo(id);
+            if (item != null)
+                return new ReturnData(1000,"成功", new datagrid(item));
+            return new ReturnData(1012);
 
         }
 
-
+        /// <summary>
+        /// 添加org
+        /// </summary>
         [HttpPost]
-        public bool Create(Sys_Department entity)
+        public ReturnData Create(Sys_Department entity)
         {
+            bool rebit = false;
             if (entity != null)
             {
-
+                rebit = new DepartmentCore().IsExistOrg(entity);
+                if (rebit == true)
+                    return new ReturnData(1008, "已经存在该Code");
+                entity.Id = Utils.GetNewId();
+                rebit = new DepartmentCore().AddOrg(entity);
             }
-
-            return false;
+            if (rebit == true)
+                return new ReturnData(1000, "添加成功");
+            return new ReturnData(1011);
         }
 
 
         /// <summary>
         /// 提交编辑信息
         /// </summary>
-        /// <param name="id">主键</param>
-        /// <param name="collection">客户端传回的集合</param>
-        /// <returns></returns>
         [HttpPost]
-        public bool Edit(string id, Sys_Department entity)
+        public ReturnData Edit(Sys_Department entity)
         {
-            if (entity != null)
-            {   //数据校验
+            bool rebit = false;
+            if (entity == null || string.IsNullOrEmpty(entity.Id))
+                return new ReturnData(1009);
+            rebit = new DepartmentCore().UpdateOrg(entity);
+            if (rebit == true)
+                return new ReturnData(1000, "编辑成功");
+            return new ReturnData(1011);
 
+        }
 
-            }
-            return false;
-
+        /// <summary>
+        /// 删除
+        /// 删除前由前端判断是否有依附数据存在（若存在，则提示）
+        /// </summary>
+        [HttpPost]
+        public ReturnData Delete(List<Sys_Department> _list)
+        {
+            bool rebit = false;
+            if (_list == null || _list.Count <= 0)
+                return new ReturnData(1009);
+            rebit = new DepartmentCore().DeleteOrg(_list);
+            if (rebit == true)
+                return new ReturnData(1000, "编辑成功");
+            return new ReturnData(1011);
         }
 
 

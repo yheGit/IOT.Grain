@@ -21,6 +21,7 @@ namespace IOT.RightsSys.Entity
 		private string _parentid;
 		private string _address;
 		private int? _sort;
+        private int? _isshow;
 		private string _remark;
 
         [Key]
@@ -79,8 +80,14 @@ namespace IOT.RightsSys.Entity
 			set{ _remark=value;}
 			get{return _remark;}
 		}
-		#endregion Model
 
-	}
+        public int? IsShow
+        {
+            set;get;
+        }
+
+        #endregion Model
+
+    }
 }
 

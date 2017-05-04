@@ -44,6 +44,7 @@ namespace Net66.Core.SysSecCore
                 return null;
 
             Expression<Func<Sys_Department, bool>> predicate = EfUtils.True<Sys_Department>();
+            predicate = p => p.IsShow == 0; ;
             ////var wCode = TypeParse.StrToInt(wareCode, 0);
             //where = where.And(w => w.IsActive == 1 && w.WH_Number == wareCode && w.Type == 0);
             //if (!string.IsNullOrEmpty(granaryCode))
@@ -55,7 +56,7 @@ namespace Net66.Core.SysSecCore
             {
                 case "Name": orderByLambda = p => p.Name; break;
                 case "Sort": orderByLambda = p => p.Sort.ToString(); break;
-                //default: orderByLambda = p => p.Sort.ToString(); break;
+                    //default: orderByLambda = p => p.Sort.ToString(); break;
             }
 
             #endregion
@@ -80,8 +81,98 @@ namespace Net66.Core.SysSecCore
                 }
                 return queryData.ToList();
             }
-            
+
         }
+
+        /// <summary>
+        /// 通过主键获取该组织的详细信息
+        /// </summary>
+        public Sys_Department GetOrgInfo(string guid)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                ////调试模式则输出SQL
+                //if (Utils.DebugApp)
+                //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                return dbEntity.Departments.Where(w => w.Id == guid).FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// 添加组织结构
+        /// </summary>
+        public bool AddOrg(Sys_Department _entity)
+        {
+            int recordsAffected;
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                dbEntity.Departments.Add(_entity);
+                recordsAffected = dbEntity.SaveChanges();
+                return recordsAffected > 0;
+            }
+        }
+
+        /// <summary>
+        /// 是否存在该组织
+        /// </summary>
+        public bool IsExistOrg(Sys_Department _entity)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                var info = dbEntity.Departments.FirstOrDefault(f => f.Code == _entity.Code);
+                if (info != null)
+                    return true;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 修改组织信息
+        /// </summary>
+        public bool UpdateOrg(Sys_Department _entity)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                var info = dbEntity.Departments.FirstOrDefault(f => f.Id == _entity.Id);
+                if (info != null)
+                {
+                    //if (!string.IsNullOrEmpty(_entity.Code))
+                    info.Code = _entity.Code;
+                    info.Address = _entity.Address;
+                    info.Name = _entity.Name;
+                    info.ParentId = _entity.ParentId;
+                    info.Remark = _entity.Remark;
+                    info.Sort = _entity.Sort;
+
+                }
+                dbEntity.Set<Sys_Department>().Attach(info);
+                dbEntity.Entry(info).State = EntityState.Modified;
+                return dbEntity.SaveChanges() > 0;
+            }
+        }
+
+        /// <summary>
+        /// 删除组织信息
+        /// 参数实为 主键集合
+        /// </summary>
+        public bool DeleteOrg(List<Sys_Department> _list)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {               
+                foreach (var model in _list)
+                {
+                    var info = dbEntity.Departments.FirstOrDefault(f => f.Id == model.Id);
+                    if (info == null)
+                        continue;
+                    info.IsShow = -4;
+                    dbEntity.Set<Sys_Department>().Attach(info);
+                    dbEntity.Entry(info).State = EntityState.Modified;
+                }
+                return dbEntity.SaveChanges() > 0;
+            }
+        }
+
+
 
         #endregion
 
@@ -158,35 +249,6 @@ namespace Net66.Core.SysSecCore
             {
                 var list = dbEntity.Departments.Where(s => s.Id == _receiptId).ToList();
                 return list;
-            }
-        }
-
-
-        public bool AddConsumRecord(Sys_Department _entity)
-        {
-            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
-            {
-                dbEntity.Departments.Add(_entity);
-                int recordsAffected;
-                recordsAffected = dbEntity.SaveChanges();
-                return recordsAffected > 0;
-            }
-        }
-
-
-        public bool UpdateConsumRecordIsCost(List<string> _consumIdList, string _receiptsId)
-        {
-            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
-            {
-                var list = dbEntity.Departments.Where(w => _consumIdList.Contains(w.Id)).ToList();
-                foreach (var mode in list)
-                {
-                    mode.Sort = 1;
-                    mode.Name = _receiptsId;
-                    dbEntity.Set<Sys_Department>().Attach(mode);
-                    dbEntity.Entry(mode).State = EntityState.Modified;
-                }
-                return dbEntity.SaveChanges() > 0;
             }
         }
 

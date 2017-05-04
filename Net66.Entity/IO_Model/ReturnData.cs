@@ -105,6 +105,15 @@ namespace Net66.Entity.IO_Model
         /// 行数据集
         /// </summary>
         public dynamic rows;
+
+        public datagrid() { }
+
+        public datagrid(dynamic data=null)
+        {
+            total = 1;
+            rows = data;
+        }
+
     }
 
 
