@@ -97,8 +97,16 @@ namespace IOT.RightsSys.Entity
 			set{ _remark=value;}
 			get{return _remark;}
 		}
-		#endregion Model
 
-	}
+        private int? _isshow;
+        public int? IsShow
+        {
+            set { _isshow = value; }
+            get { return _isshow; }
+        }
+
+        #endregion Model
+
+    }
 }
 

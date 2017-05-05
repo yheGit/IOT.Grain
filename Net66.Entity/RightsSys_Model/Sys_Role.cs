@@ -70,8 +70,16 @@ namespace IOT.RightsSys.Entity
 			set{ _updatetime=value;}
 			get{return _updatetime;}
 		}
-		#endregion Model
 
-	}
+        private int? _isshow;
+        public int? IsShow
+        {
+            set { _isshow = value; }
+            get { return _isshow; }
+        }
+
+        #endregion Model
+
+    }
 }
 

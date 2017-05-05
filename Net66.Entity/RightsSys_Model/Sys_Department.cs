@@ -83,7 +83,7 @@ namespace IOT.RightsSys.Entity
 
         public int? IsShow
         {
-            set;get;
+            set { _isshow = value; }get { return _isshow; }
         }
 
         #endregion Model

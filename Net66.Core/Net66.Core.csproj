@@ -70,6 +70,8 @@
     <Compile Include="SysSecCore\AccountCore.cs" />
     <Compile Include="SysSecCore\DepartmentCore.cs" />
     <Compile Include="SysSecCore\MenuCore.cs" />
+    <Compile Include="SysSecCore\OperationCore.cs" />
+    <Compile Include="SysSecCore\RoleCore.cs" />
     <Compile Include="WareHouseCore.cs" />
     <Compile Include="FloorCore.cs" />
     <Compile Include="Interface\IWareHouseCore.cs" />

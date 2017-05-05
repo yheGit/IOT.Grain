@@ -122,7 +122,7 @@ namespace Net66.Service.Controllers.SysSec
                 return new ReturnData(1009);
             rebit = new DepartmentCore().DeleteOrg(_list);
             if (rebit == true)
-                return new ReturnData(1000, "编辑成功");
+                return new ReturnData(1000, "删除成功");
             return new ReturnData(1011);
         }
 
