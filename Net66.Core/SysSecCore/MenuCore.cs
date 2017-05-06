@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Net66.Core.SysSecCore
 {
@@ -48,6 +49,25 @@ namespace Net66.Core.SysSecCore
 
             }
         }
+
+
+        /// <summary>
+        /// 通过用户角色ID获取相应的菜单
+        /// </summary>
+        public List<Sys_Menu> GetMenuListByRole(string RoleID)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                //调试模式则输出SQL
+                if (Utils.DebugApp)
+                    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                var menuIdList = dbEntity.MenuRoleOperations.Where(m => m.RoleId == RoleID && m.OperationId == null).Select(s => s.MenuId);
+                var queryData = dbEntity.Menus.Where(w => menuIdList.Contains(w.Id)).OrderBy(d => d.Sort);
+                return queryData.ToList();
+            }
+        }
+
+
 
 
         #region 菜单管理
@@ -155,25 +175,85 @@ namespace Net66.Core.SysSecCore
         /// </summary>
         public bool UpdateMenu(Sys_Menu _entity)
         {
+            var rebit = false;
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                var info = dbEntity.Menus.FirstOrDefault(f => f.Id == _entity.Id);
-                if (info != null)
+                using (TransactionScope transactionScope = new TransactionScope())
                 {
-                    info.Name = _entity.Name;
-                    info.Iconic = _entity.Iconic;
-                    info.State = _entity.State;
-                    info.IsLeaf = _entity.IsLeaf;
-                    info.Sort = _entity.Sort;
-                    info.IsShow = _entity.IsShow;
-                    info.LinkUrl = _entity.LinkUrl;
-                    info.ParentId = _entity.ParentId;
-                    info.Remark = _entity.Remark;
+                    try
+                    {
+                        #region  //更新实体
+                        var info = dbEntity.Menus.FirstOrDefault(f => f.Id == _entity.Id);
+                        if (info != null)
+                        {
+                            info.Name = _entity.Name;
+                            info.Iconic = _entity.Iconic;
+                            info.State = _entity.State;
+                            info.IsLeaf = _entity.IsLeaf;
+                            info.Sort = _entity.Sort;
+                            info.IsShow = _entity.IsShow;
+                            info.LinkUrl = _entity.LinkUrl;
+                            info.ParentId = _entity.ParentId;
+                            info.Remark = _entity.Remark;
+                        }
+                        dbEntity.Set<Sys_Menu>().Attach(info);
+                        dbEntity.Entry(info).State = EntityState.Modified;
+                        #endregion////更新实体
+                                          
+                        int count = 0;
+                        List<string> addSysOperationId = new List<string>();
+                        List<string> deleteSysOperationId = new List<string>();
+                        if (_entity.SysOperationId != null)
+                        {
+                            addSysOperationId = _entity.SysOperationId.Split(',').ToList();
+                        }
+                        if (_entity.SysOperationIdOld != null)
+                        {
+                            deleteSysOperationId = _entity.SysOperationIdOld.Split(',').ToList();
+                        }
+                        DataOfDiffrent.GetDiffrent(addSysOperationId, deleteSysOperationId, ref addSysOperationId, ref deleteSysOperationId);
 
+                        if (addSysOperationId != null && addSysOperationId.Count() > 0)
+                        {
+                            foreach (var item in addSysOperationId)
+                            {
+                                Sys_MenuOperation sys = new Sys_MenuOperation
+                                {
+                                    GuidID = Utils.GetNewId(),
+                                    Menu_Id = item,
+                                    Operation_Id = _entity.Id
+                                };
+                                dbEntity.MenuOperations.Add(sys);
+                                count++;
+                            }
+                        }
+                        if (deleteSysOperationId != null && deleteSysOperationId.Count() > 0)
+                        {
+                            //数据库设置级联关系，自动删除子表的内容   
+                            IQueryable<Sys_MenuOperation> collection = from f in dbEntity.MenuOperations
+                                                                       where deleteSysOperationId.Contains(f.Operation_Id)
+                                                                       select f;
+                            foreach (var deleteItem in collection)
+                            {
+                                dbEntity.Entry<Sys_MenuOperation>(deleteItem).State = EntityState.Deleted;
+                            }
+                            count += dbEntity.SaveChanges();
+                        }
+
+                        if (count > 0)
+                        {
+                            transactionScope.Complete();
+                            rebit = true;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Transaction.Current.Rollback();
+                    }
                 }
-                dbEntity.Set<Sys_Menu>().Attach(info);
-                dbEntity.Entry(info).State = EntityState.Modified;
-                return dbEntity.SaveChanges() > 0;
+
+                return rebit;
             }
         }
 

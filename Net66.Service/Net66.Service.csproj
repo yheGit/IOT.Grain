@@ -199,7 +199,7 @@
     <Compile Include="Controllers\SysSec\AccountController.cs" />
     <Compile Include="Controllers\SysSec\DepartmentController.cs" />
     <Compile Include="Controllers\SysSec\MenuController.cs" />
-    <Compile Include="Controllers\SysSec\Menu_Role_OperationController.cs" />
+    <Compile Include="Controllers\SysSec\MenuRoleOperationController.cs" />
     <Compile Include="Controllers\SysSec\OperationController.cs" />
     <Compile Include="Controllers\SysSec\RoleController.cs" />
     <Compile Include="Controllers\SysSec\UserInfoController.cs" />

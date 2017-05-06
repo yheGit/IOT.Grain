@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataOfDiffrent.cs" />
     <Compile Include="ExportExcel.cs" />
     <Compile Include="JsonConvertHelper.cs" />
     <Compile Include="Log4net.cs" />

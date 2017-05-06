@@ -9,11 +9,101 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Net66.Core.SysSecCore
 {
     public class OperationCore : SecRepository<Sys_Operation>
     {
+
+        /// <summary>
+        /// 设置一个菜单
+        /// </summary>
+        public bool SetSysMenu(Sys_Operation entity)
+        {
+
+            bool bResult = false;
+            int count = 0;
+
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                using (TransactionScope transactionScope = new TransactionScope())
+                {
+                    try
+                    {
+                        Sys_Operation editEntity = dbEntity.Operations.SingleOrDefault(s => s.Id == entity.Id);
+                        List<string> addSysMenuId = new List<string>();
+                        List<string> deleteSysMenuId = new List<string>();
+                        if (entity.SysMenuId != null)
+                        {
+                            addSysMenuId = entity.SysMenuId.Split(',').ToList();
+                        }
+                        if (entity.SysMenuIdOld != null)
+                        {
+                            deleteSysMenuId = entity.SysMenuIdOld.Split(',').ToList();
+                        }
+                        DataOfDiffrent.GetDiffrent(addSysMenuId, deleteSysMenuId, ref addSysMenuId, ref deleteSysMenuId);
+
+                        if (addSysMenuId != null && addSysMenuId.Count() > 0)
+                        {
+                            foreach (var item in addSysMenuId)
+                            {
+                                Sys_MenuOperation sys = new Sys_MenuOperation
+                                {
+                                    GuidID = Utils.GetNewId(),
+                                    Menu_Id = item,
+                                    Operation_Id = entity.Id
+                                };
+                                dbEntity.MenuOperations.Add(sys);
+                                count++;
+                            }
+                        }
+                        if (deleteSysMenuId != null && deleteSysMenuId.Count() > 0)
+                        {
+                            //数据库设置级联关系，自动删除子表的内容   
+                            IQueryable<Sys_MenuOperation> collection = from f in dbEntity.MenuOperations
+                                                                       where deleteSysMenuId.Contains(f.Menu_Id)
+                                                                       select f;
+                            foreach (var deleteItem in collection)
+                            {
+                                dbEntity.Entry<Sys_MenuOperation>(deleteItem).State = EntityState.Deleted;
+                            }
+                            count += dbEntity.SaveChanges();
+                        }
+
+                        if (count > 0)
+                        {
+                            transactionScope.Complete();
+                            bResult = true;
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Transaction.Current.Rollback();
+                    }
+                }
+            }
+
+            return bResult;
+        }
+
+        /// <summary>
+        /// 获取角色RoleID下菜单MenuID的操作
+        /// </summary>
+        public List<Sys_Operation> GetOperationByMenuRole(string MenuID, string RoleID)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                ////调试模式则输出SQL
+                //if (Utils.DebugApp)
+                //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                var operationIdList = dbEntity.MenuRoleOperations.Where(m => m.MenuId == MenuID && m.RoleId == RoleID).Select(s => s.OperationId);
+                var queryData = dbEntity.Operations.Where(w => operationIdList.Contains(w.Id)).OrderBy(d => d.Sort);
+                return queryData.ToList();
+            }
+        }
+
 
         #region 操作管理
         public List<Sys_Operation> GetOperationList(List<string> _params, ref int total)

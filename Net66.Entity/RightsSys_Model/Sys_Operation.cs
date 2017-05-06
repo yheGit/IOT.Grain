@@ -87,6 +87,16 @@ namespace IOT.RightsSys.Entity
             get { return _isshow; }
         }
 
+        #region 自定义属性，即由数据实体扩展的实体
+
+        [Display(Name = "菜单")]
+        [NotMapped]
+        public string SysMenuId { get; set; }
+        [Display(Name = "old菜单")]
+        [NotMapped]
+        public string SysMenuIdOld { get; set; }
+        #endregion
+
         #endregion Model
 
     }

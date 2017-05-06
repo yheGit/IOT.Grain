@@ -46,6 +46,13 @@ namespace Net66.Service
               defaults: new { controller = "Grain", actton = "HeapsTemp_GetList", number = RouteParameter.Optional }
             );
 
+            config.Routes.MapHttpRoute(
+           name: "DefaultApi5",
+           routeTemplate: "api/MenuRoleOperation/GetOperationData/{RoleID}/{MenuID}",
+           defaults: new { controller = "MenuRoleOperation", actton = "GetOperationData", RoleID = RouteParameter.Optional, MenuID = RouteParameter.Optional }
+         );
+
+
 
 
         }

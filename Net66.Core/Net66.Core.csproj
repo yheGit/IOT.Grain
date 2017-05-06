@@ -47,6 +47,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,8 +72,10 @@
     <Compile Include="SysSecCore\AccountCore.cs" />
     <Compile Include="SysSecCore\DepartmentCore.cs" />
     <Compile Include="SysSecCore\MenuCore.cs" />
+    <Compile Include="SysSecCore\MenuRoleOperationCore.cs" />
     <Compile Include="SysSecCore\OperationCore.cs" />
     <Compile Include="SysSecCore\RoleCore.cs" />
+    <Compile Include="SysSecCore\UserInfoCore.cs" />
     <Compile Include="WareHouseCore.cs" />
     <Compile Include="FloorCore.cs" />
     <Compile Include="Interface\IWareHouseCore.cs" />

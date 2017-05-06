@@ -105,7 +105,27 @@ namespace IOT.RightsSys.Entity
             get { return _isshow; }
         }
 
+        private string _code;
+        public string Code
+        {
+            set { _code = value; }
+            get { return _code; }
+        }
+
         #endregion Model
+
+
+        #region 自定义属性，即由数据实体扩展的实体
+        [NotMapped]
+        [Display(Name = "父模块")]
+        public string ParentIdOld { get; set; }
+        [NotMapped]
+        [Display(Name = "操作")]
+        public string SysOperationId { get; set; }
+        [Display(Name = "操作")]
+        [NotMapped]
+        public string SysOperationIdOld { get; set; }
+        #endregion
 
     }
 }
