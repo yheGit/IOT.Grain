@@ -18,6 +18,45 @@ namespace Net66.Service.Controllers.SysSec
             return false;
         }
 
+
+        /// <summary>
+        /// 通过菜单ID和角色ID获取操作列表
+        /// </summary>
+        public ReturnData GetToolbar(string menuid,string roleid)
+        {
+            if(string.IsNullOrEmpty(menuid)||string.IsNullOrEmpty(roleid))
+                return new ReturnData(1009);
+            List<Sys_Operation> queryData = new OperationCore().GetOperationByMenuRole(menuid, roleid);
+
+            var reList = new datagrid
+            {
+                total = queryData.Count,
+                rows = queryData.Select(s => new Sys_Operation
+                {
+                    Id = s.Id
+                     ,
+                    Name = s.Name
+                     ,
+                    Function = s.Function
+                     ,
+                    IsShow = s.IsShow
+                     ,
+                    Sort = s.Sort
+                     ,
+                    State = s.State
+                      ,
+                    Iconic = s.Iconic
+                    ,
+                    Remark = s.Remark
+
+                })
+            };
+            if (reList.total > 0 && reList.rows != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+        }
+
         /// <summary>
         /// 异步加载数据
         /// </summary>

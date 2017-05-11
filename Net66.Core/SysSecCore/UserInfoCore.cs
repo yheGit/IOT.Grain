@@ -53,9 +53,9 @@ namespace Net66.Core.SysSecCore
             IQueryable<Sys_UserInfo> queryData = null;
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                ////调试模式则输出SQL
-                //if (Utils.DebugApp)
-                //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                //调试模式则输出SQL
+                if (Utils.DebugApp)
+                    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
                 if (isasc)
                     queryData = dbEntity.UserInfos.Where(predicate).OrderBy(orderByLambda);
                 else

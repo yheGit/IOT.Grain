@@ -108,7 +108,6 @@ namespace Net66.Core.SysSecCore
         #region 操作管理
         public List<Sys_Operation> GetOperationList(List<string> _params, ref int total)
         {
-
             #region //条件查询
             int pIndex = TypeParse.StrToInt(Utils.GetValue(_params, "PageIndex^"), 0);
             int pageIndex = pIndex <= 0 ? 1 : pIndex;//页码

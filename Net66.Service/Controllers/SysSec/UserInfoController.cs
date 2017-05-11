@@ -25,7 +25,7 @@ namespace Net66.Service.Controllers.SysSec
         /// 验证用户名是否存在
         /// </summary>
         /// <param name="name">用户名</param>
-        /// <returns></returns>
+        [HttpGet]
         public ReturnData CheckName(string id)
         {
             var entity = new Sys_UserInfo() { LoginID=id};
@@ -116,6 +116,7 @@ namespace Net66.Service.Controllers.SysSec
                 if (rebit == true)
                     return new ReturnData(1008, "已经存在该Code");
                 entity.Id = Utils.GetNewId();
+                entity.Password = EncryptAndDecrypte.EncryptString(entity.Password);
                 rebit = new UserInfoCore().AddUser(entity);
             }
             if (rebit == true)
@@ -133,6 +134,7 @@ namespace Net66.Service.Controllers.SysSec
             bool rebit = false;
             if (entity == null || string.IsNullOrEmpty(entity.Id))
                 return new ReturnData(1009);
+            entity.Password = EncryptAndDecrypte.EncryptString(entity.Password);
             rebit = new UserInfoCore().UpdateUser(entity);
             if (rebit == true)
                 return new ReturnData(1000, "编辑成功");

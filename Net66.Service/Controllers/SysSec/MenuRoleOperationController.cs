@@ -19,7 +19,7 @@ namespace Net66.Service.Controllers.SysSec
 
 
         /// <summary>
-        /// 异步加载数据
+        /// 异步加载菜单
         /// </summary>
         public ReturnData GetData(string id)
         {

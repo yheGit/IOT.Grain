@@ -74,6 +74,7 @@
     <Compile Include="DR_Model\WareHouse_Log.cs" />
     <Compile Include="IO_Model\Account.cs" />
     <Compile Include="IO_Model\ISensorBase.cs" />
+    <Compile Include="IO_Model\OEasyUi.cs" />
     <Compile Include="IO_Model\OGranaryReport.cs" />
     <Compile Include="IO_Model\OGrainsReport.cs" />
     <Compile Include="IO_Model\IPackIot.cs" />

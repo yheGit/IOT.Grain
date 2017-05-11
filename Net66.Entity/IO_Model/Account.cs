@@ -47,6 +47,10 @@ namespace Net66.Entity.IO_Model
 
     public class ChangePasswordModel
     {
+        //[Required(ErrorMessage = "请填写用户名")]
+        [DisplayName("用户名")]
+        public string LoginName { get; set; }
+
         //[Required(ErrorMessage = "请填写当前密码")]
         //[DataType(DataType.Password)]
         [DisplayName("当前密码")]
@@ -68,7 +72,7 @@ namespace Net66.Entity.IO_Model
     {
         //[Required(ErrorMessage = "请填写用户名")]
         [DisplayName("用户名")]
-        public string PersonName { get; set; }
+        public string LoginName { get; set; }//PersonName
 
         //[StringLength(100, ErrorMessage = "{0} 必须至少包含 {2} 个字符。", MinimumLength = 6)]
         //[Required(ErrorMessage = "请填写密码")]

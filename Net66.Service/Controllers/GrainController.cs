@@ -112,7 +112,7 @@ namespace Net66.Service.Controllers
         }
 
         /// <summary>
-        /// 移动设备展示粮仓bao'qiao
+        /// 移动设备展示粮仓bao'biao
         /// </summary>
         /// <returns></returns>
         [HttpGet]

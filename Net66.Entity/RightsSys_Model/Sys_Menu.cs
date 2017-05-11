@@ -116,15 +116,29 @@ namespace IOT.RightsSys.Entity
 
 
         #region 自定义属性，即由数据实体扩展的实体
+        private string _parentidold;
         [NotMapped]
         [Display(Name = "父模块")]
-        public string ParentIdOld { get; set; }
+        public string ParentIdOld {
+            set { _parentidold = value; }
+            get { return _parentidold; }
+        }
+
+        private string _sysoperationid;
         [NotMapped]
         [Display(Name = "操作")]
-        public string SysOperationId { get; set; }
-        [Display(Name = "操作")]
-        [NotMapped]
-        public string SysOperationIdOld { get; set; }
+        public string SysOperationId {
+            set { _sysoperationid = value; }
+            get { return _sysoperationid; }
+        }
+
+        private string _sysoperationidold;
+        [Display(Name = "操作")]       
+        [NotMapped]       
+        public string SysOperationIdOld {
+            set { _sysoperationidold = value; }
+            get { return _sysoperationidold; }
+        }
         #endregion
 
     }

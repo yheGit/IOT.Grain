@@ -20,6 +20,7 @@ namespace Net66.Entity.IO_Model
             AverageTemperature = Math.Round((decimal)((Maximumemperature + MinimumTemperature) / 2), 2);
             InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0 && w.RealHeart == 0).Max(m => m.Humility) ?? 0, 2);////0仓内湿度，1仓外湿度
             OutSideHumidity = Math.Round(humtys.FirstOrDefault(w => w.Type == 1 && w.RealHeart == 0) == null ? 0 : humtys.FirstOrDefault(w => w.Type == 1 && w.RealHeart == 0).Humility ?? 0, 2);
+            InSideTemperature = 0;
             var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
             OutSideTemperature = Math.Round(swmodel.Temp ?? 0, 2);
             if (collectors != null)
@@ -43,6 +44,10 @@ namespace Net66.Entity.IO_Model
         /// 平均温度
         /// </summary>
         public Nullable<decimal> AverageTemperature { get; set; }
+        /// <summary>
+        /// 仓内温度
+        /// </summary>
+        public Nullable<decimal> InSideTemperature { get; set; }
         /// <summary>
         /// 仓外温度
         /// </summary>

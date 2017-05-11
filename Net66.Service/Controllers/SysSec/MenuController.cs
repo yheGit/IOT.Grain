@@ -19,6 +19,42 @@ namespace Net66.Service.Controllers.SysSec
         }
 
         /// <summary>
+        /// 根据角色获取菜单树中的权限
+        /// </summary>
+        [HttpGet]
+        public ReturnData GetMenuRights(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return new ReturnData(1009);
+            var iList = new MenuCore().GetMenuRights(id);
+            if (iList != null&&iList.Count>0)
+                return new ReturnData(1000, "成功", new datagrid() { total=iList.Count,rows=iList});
+            return new ReturnData(1012);
+
+        }
+
+        /// <summary>
+        /// 获取菜单树
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ReturnData GetMenuTree()
+        {
+            var queryData = new MenuCore().GetMenuTree();
+            var reList = new datagrid
+            {
+                total = -1,
+                rows = queryData
+            };
+            if (reList.rows != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+        }
+
+
+
+        /// <summary>
         /// 异步加载数据
         /// </summary>
         [HttpPost]

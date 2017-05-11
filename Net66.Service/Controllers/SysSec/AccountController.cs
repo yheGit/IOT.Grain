@@ -1,4 +1,6 @@
 ﻿using IOT.RightsSys.Entity;
+using Net66.Comm;
+using Net66.Core.SysSecCore;
 using Net66.Entity.IO_Model;
 using System;
 using System.Collections.Generic;
@@ -23,9 +25,8 @@ namespace Net66.Service.Controllers.SysSec
         /// 点击 登录系统 后返回
         /// </summary>
         /// <param name="model">登录信息</param>
-        /// <returns></returns>
         [HttpPost]
-        public bool LogIn(LogOnModel model)
+        public ReturnData LogIn(LogOnModel model)
         {
             #region 验证码验证
 
@@ -34,12 +35,36 @@ namespace Net66.Service.Controllers.SysSec
             //    ModelState.AddModelError("PersonName", "验证码错误！"); //return "";
             //    return false;
             //}
+            if (model == null)
+                return new ReturnData(1009); 
+
             #endregion
 
-            //Sys_UserInfo person = accountBLL.ValidateUser(model.PersonName, EncryptAndDecrypte.EncryptString(model.Password));
+            Sys_UserInfo person = new AccountCore().ValidateUser(model.LoginName, EncryptAndDecrypte.EncryptString(model.Password));
+            if (person == null)
+                return new ReturnData(1011,"账号或密码不正确");
 
+            #region //登陆成功，根据角色获取菜单列表
+            var id = person.RoleId;
+            List<Sys_Menu> queryData = new MenuCore().GetMenuListByRole(id);
+            int total = queryData.Count();
+            var reList = new datagrid
+            {
+                total = total,
+                rows = queryData
+            };
+            if (total > 0 && reList.rows != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+            #endregion//登陆成功，根据角色获取菜单列表
+        }
 
-            return false;
+        [HttpGet]
+        public LogOnModel GetDate()
+        {
+
+            return new LogOnModel();
         }
 
 
@@ -61,11 +86,13 @@ namespace Net66.Service.Controllers.SysSec
         /// <returns></returns>
         public bool ChangePassword(ChangePasswordModel model)
         {
-            return false;
-            
+            var rebit = new AccountCore().ChangePassword(model.LoginName, 
+                EncryptAndDecrypte.EncryptString(model.OldPassword), EncryptAndDecrypte.EncryptString(model.NewPassword));
+            return rebit;
+
         }
-       
-       
+
+
 
 
     }

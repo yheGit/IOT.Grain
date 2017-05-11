@@ -67,6 +67,47 @@ namespace Net66.Core.SysSecCore
             }
         }
 
+        /// <summary>
+        /// 分配权限时加载菜单树
+        /// </summary>
+        /// <returns></returns>
+        public treegrid GetMenuTree()
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                //调试模式则输出SQL
+                if (Utils.DebugApp)
+                    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                var rows = (from tpb in dbEntity.Menus
+                            join tea in dbEntity.MenuOperations
+                            on tpb.Id equals tea.Menu_Id
+                            join tpo in dbEntity.Operations
+                            on tea.Operation_Id equals tpo.Id
+                            select new { tpb, tea, tpo }).ToList();
+                var reData = rows.Select(s => new
+                {
+                    Id = s.tpb.Id,
+                    Name = s.tpb.Name,
+                    ParentId = s.tpb.ParentId,
+                    isCheck = string.Join(",", s.tpo.Id + "^" + s.tpo.Name),
+                    Iconic = s.tpb.Iconic
+                });
+                return new treegrid() { rows = reData };
+            }
+        }
+
+        /// <summary>
+        /// 获取这个角色已拥有的菜单及操作
+        /// </summary>
+        public List<string> GetMenuRights(string id)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+
+                var roleMenus = dbEntity.MenuRoleOperations.Where(w => w.RoleId == id).ToList();
+                return roleMenus.Select(s => (s.OperationId == null) ? s.MenuId : s.MenuId + "^" + s.OperationId).ToList();
+            }
+        }
 
 
 
@@ -129,7 +170,7 @@ namespace Net66.Core.SysSecCore
         }
 
         /// <summary>
-        /// 通过主键获取角色的详细信息
+        /// 通过主键获取菜单的详细信息
         /// </summary>
         public Sys_Menu GetMenuInfo(string guid)
         {
@@ -143,7 +184,7 @@ namespace Net66.Core.SysSecCore
         }
 
         /// <summary>
-        /// 添加角色
+        /// 添加菜单
         /// </summary>
         public bool AddMenu(Sys_Menu _entity)
         {
@@ -157,7 +198,7 @@ namespace Net66.Core.SysSecCore
         }
 
         /// <summary>
-        /// 是否存在改角色
+        /// 是否存在该菜单
         /// </summary>
         public bool IsExistMenu(Sys_Menu _entity)
         {
@@ -171,7 +212,7 @@ namespace Net66.Core.SysSecCore
         }
 
         /// <summary>
-        /// 修改角色信息
+        /// 修改菜单信息
         /// </summary>
         public bool UpdateMenu(Sys_Menu _entity)
         {
@@ -199,7 +240,7 @@ namespace Net66.Core.SysSecCore
                         dbEntity.Set<Sys_Menu>().Attach(info);
                         dbEntity.Entry(info).State = EntityState.Modified;
                         #endregion////更新实体
-                                          
+
                         int count = 0;
                         List<string> addSysOperationId = new List<string>();
                         List<string> deleteSysOperationId = new List<string>();
@@ -258,7 +299,7 @@ namespace Net66.Core.SysSecCore
         }
 
         /// <summary>
-        /// 删除角色信息
+        /// 删除菜单信息
         /// 参数实为 主键集合
         /// </summary>
         public bool DeleteMenu(List<Sys_Menu> _list)

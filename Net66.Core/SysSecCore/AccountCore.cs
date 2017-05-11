@@ -45,21 +45,15 @@ namespace Net66.Core.SysSecCore
         {
             if (!string.IsNullOrWhiteSpace(personName) && !string.IsNullOrWhiteSpace(oldPassword) && !string.IsNullOrWhiteSpace(newPassword))
             {
-                try
+                using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
                 {
-                    using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
-                    {
-                        var person = dbEntity.UserInfos.FirstOrDefault(p => (p.LoginID == personName) && (p.Password == oldPassword));
-                        person.Password = newPassword;
-                        dbEntity.SaveChanges();
-                        return true;
-                    }
+                    var person = dbEntity.UserInfos.FirstOrDefault(p => p.LoginID == personName && p.Password == oldPassword);
+                    if (person == null)
+                        return false;
+                    person.Password = newPassword;
+                    dbEntity.SaveChanges();
+                    return true;
                 }
-                catch (Exception ex)
-                {
-                    //ExceptionsHander.WriteExceptions(ex);
-                }
-
             }
             return false;
         }
