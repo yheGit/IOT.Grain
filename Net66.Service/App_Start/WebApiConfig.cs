@@ -52,6 +52,12 @@ namespace Net66.Service
            defaults: new { controller = "MenuRoleOperation", actton = "GetOperationData", RoleID = RouteParameter.Optional, MenuID = RouteParameter.Optional }
          );
 
+            config.Routes.MapHttpRoute(
+        name: "DefaultApi6",
+        routeTemplate: "api/Operation/GetToolbar/{MenuID}/{RoleID}",
+        defaults: new { controller = "MenuRoleOperation", actton = "GetOperationData", RoleID = RouteParameter.Optional, MenuID = RouteParameter.Optional }
+        );
+
 
 
 

@@ -22,5 +22,8 @@ namespace Net66.Entity.Models
         public Nullable<int> Width { get; set; }
         public Nullable<int> Height { get; set; }
         public Nullable<int> depth { get; set; }
+        public string OrgId { get; set; }
+        public string OrgCode { get; set; }
+
     }
 }

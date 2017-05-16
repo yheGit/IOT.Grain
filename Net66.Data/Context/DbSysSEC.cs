@@ -70,6 +70,11 @@ namespace Net66.Data.Context
         /// </summary>
         public DbSet<Sys_UserInfo> UserInfos { get; set; }
 
+        /// <summary>
+        /// 用户-仓储结构表
+        /// </summary>
+        public DbSet<UserGranaryRights> UserGranaryRights { get; set; }
+
 
 
 

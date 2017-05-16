@@ -134,9 +134,18 @@ namespace Net66.Core.SysSecCore
                     info.RoleId = _entity.RoleId;
                     info.Sex = _entity.Sex;
                     info.TelPhone = _entity.TelPhone;
-                    info.Address = _entity.Address;
-                    info.DepartmentId = _entity.DepartmentId;
+                    info.Address = _entity.Address;                    
                     info.EmailAddress = _entity.EmailAddress;
+                    if (!string.IsNullOrEmpty(_entity.DepartmentId)&&_entity.DepartmentId!=info.DepartmentId)
+                    {
+                        var orgInfo = new DepartmentCore().GetOrgInfo(_entity.DepartmentId);
+                        if (orgInfo != null)
+                        {
+                            info.DepartmentId = _entity.DepartmentId;
+                            info.OrgId = orgInfo.Id;
+                            info.OrgCode = orgInfo.Code;
+                        }
+                    }
                 }
                 dbEntity.Set<Sys_UserInfo>().Attach(info);
                 dbEntity.Entry(info).State = EntityState.Modified;

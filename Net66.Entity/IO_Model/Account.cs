@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using IOT.RightsSys.Entity;
 
 namespace Net66.Entity.IO_Model
 {
@@ -32,15 +33,25 @@ namespace Net66.Entity.IO_Model
         /// <summary>
         /// 角色的集合
         /// </summary>
-        [DataMember]
+        //[DataMember]
         public List<string> RoleIds { get; set; }
 
         /// <summary>
         /// 菜单的集合
         /// </summary>
-        [DataMember]
+        //[DataMember]
         public List<string> MenuIds { get; set; }
+        /// <summary>
+        /// 菜单的集合
+        /// </summary>
+        [DataMember]
+        public List<Sys_Menu> MenuList { get; set; }
 
+        /// <summary>
+        /// 角色的集合
+        /// </summary>
+        [DataMember]
+        public List<Sys_Role> RoleIdList { get; set; }
 
     }
 

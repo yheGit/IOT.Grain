@@ -144,6 +144,17 @@ namespace IOT.RightsSys.Entity
             get { return _isshow; }
         }
 
+        private string _orgid;
+        public string OrgId {
+            set { _orgid = value; }
+            get { return _orgid; }
+        }
+        private string _orgcode;
+        public string OrgCode {
+            set { _orgcode = value; }
+            get { return _orgcode; }
+        }
+
         #endregion Model
 
     }

@@ -19,6 +19,31 @@ namespace Net66.Service.Controllers.SysSec
             return false;
         }
 
+        [HttpGet]
+        public dynamic test(string id)
+        {
+            var type = TypeParse.StrToInt(id, 0);
+            return new DepartmentCore().GetOrgSelectList(type);
+        }
+
+        /// <summary>
+        /// 获取组织结构SelectList
+        /// </summary>
+        [HttpGet]
+        public ReturnData GetOrgSelectList(string id)
+        {
+            var type = TypeParse.StrToInt(id, 0);
+            var queryData = new DepartmentCore().GetOrgSelectList(type);
+            var reList = new datagrid()
+            {
+                total = -1,
+                rows = queryData
+            };
+            if (queryData != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+        }
 
         /// <summary>
         /// 异步加载数据
@@ -66,9 +91,9 @@ namespace Net66.Service.Controllers.SysSec
         {
             if (string.IsNullOrEmpty(id))
                 return new ReturnData(1009);
-            Sys_Department item =new DepartmentCore().GetOrgInfo(id);
+            Sys_Department item = new DepartmentCore().GetOrgInfo(id);
             if (item != null)
-                return new ReturnData(1000,"成功", new datagrid(item));
+                return new ReturnData(1000, "成功", new datagrid(item));
             return new ReturnData(1012);
 
         }

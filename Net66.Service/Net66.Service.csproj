@@ -203,6 +203,7 @@
     <Compile Include="Controllers\SysSec\OperationController.cs" />
     <Compile Include="Controllers\SysSec\RoleController.cs" />
     <Compile Include="Controllers\SysSec\UserInfoController.cs" />
+    <Compile Include="Controllers\UserGranaryRightsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -234,6 +235,7 @@
     <Folder Include="Views\Menu_Role_Operation\" />
     <Folder Include="Views\Operation\" />
     <Folder Include="Views\Role\" />
+    <Folder Include="Views\UserGranaryRights\" />
     <Folder Include="Views\UserInfo\" />
   </ItemGroup>
   <ItemGroup>

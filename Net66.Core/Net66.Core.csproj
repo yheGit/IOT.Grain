@@ -76,6 +76,7 @@
     <Compile Include="SysSecCore\OperationCore.cs" />
     <Compile Include="SysSecCore\RoleCore.cs" />
     <Compile Include="SysSecCore\UserInfoCore.cs" />
+    <Compile Include="SysSecCore\UserGranaryRightsCore.cs" />
     <Compile Include="WareHouseCore.cs" />
     <Compile Include="FloorCore.cs" />
     <Compile Include="Interface\IWareHouseCore.cs" />

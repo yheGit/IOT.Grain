@@ -36,24 +36,33 @@ namespace Net66.Service.Controllers.SysSec
             //    return false;
             //}
             if (model == null)
-                return new ReturnData(1009); 
+                return new ReturnData(1009);
 
             #endregion
 
             Sys_UserInfo person = new AccountCore().ValidateUser(model.LoginName, EncryptAndDecrypte.EncryptString(model.Password));
             if (person == null)
-                return new ReturnData(1011,"账号或密码不正确");
+                return new ReturnData(1011, "账号或密码不正确");
 
             #region //登陆成功，根据角色获取菜单列表
-            var id = person.RoleId;
-            List<Sys_Menu> queryData = new MenuCore().GetMenuListByRole(id);
-            int total = queryData.Count();
+            var roleid = person.RoleId;
+            List<Sys_Menu> menus = new MenuCore().GetMenuListByRole(roleid);
+            List<Sys_Role> roles = new List<Sys_Role>() { new RoleCore().GetById(roleid) };
+
+            Account queryData = new Account()
+            {
+                Id = person.Id,
+                LoginID = person.LoginID,
+                UserName = person.NickName,
+                MenuList = menus,
+                RoleIdList = roles
+            };
             var reList = new datagrid
             {
-                total = total,
+                total = -1,
                 rows = queryData
             };
-            if (total > 0 && reList.rows != null)
+            if (reList.rows != null)
                 return new ReturnData(1000, "成功", reList);
             else
                 return new ReturnData(1012);
@@ -86,7 +95,7 @@ namespace Net66.Service.Controllers.SysSec
         /// <returns></returns>
         public bool ChangePassword(ChangePasswordModel model)
         {
-            var rebit = new AccountCore().ChangePassword(model.LoginName, 
+            var rebit = new AccountCore().ChangePassword(model.LoginName,
                 EncryptAndDecrypte.EncryptString(model.OldPassword), EncryptAndDecrypte.EncryptString(model.NewPassword));
             return rebit;
 

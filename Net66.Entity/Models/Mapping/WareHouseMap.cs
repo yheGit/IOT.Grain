@@ -23,6 +23,12 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.UserId)
                 .HasMaxLength(50);
 
+            this.Property(t => t.OrgId)
+               .HasMaxLength(36);
+
+            this.Property(t => t.OrgCode)
+               .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("WareHouse");
             this.Property(t => t.ID).HasColumnName("ID");
@@ -42,6 +48,8 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Width).HasColumnName("Width");
             this.Property(t => t.Height).HasColumnName("Height");
             this.Property(t => t.depth).HasColumnName("depth");
+            this.Property(t => t.OrgId).HasColumnName("OrgId");
+            this.Property(t => t.OrgCode).HasColumnName("OrgCode");
         }
     }
 }

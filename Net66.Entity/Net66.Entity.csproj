@@ -135,6 +135,7 @@
     <Compile Include="RightsSys_Model\Sys_Role.cs" />
     <Compile Include="RightsSys_Model\Sys_RoleUser.cs" />
     <Compile Include="RightsSys_Model\Sys_UserInfo.cs" />
+    <Compile Include="RightsSys_Model\UserGranaryRights.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

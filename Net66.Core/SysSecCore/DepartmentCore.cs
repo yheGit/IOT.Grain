@@ -26,6 +26,41 @@ namespace Net66.Core.SysSecCore
     public class DepartmentCore : SecRepository<Sys_Department>
     {
 
+        /// <summary>
+        /// 获取组织信息
+        /// 0获取前三级，1获取第三级
+        /// </summary>
+        public dynamic GetOrgSelectList(int type = 0)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+
+                var list = dbEntity.Departments.Where(w => System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S______", w.Code) > 0
+                 || System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S____", w.Code) > 0
+                 || System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S__", w.Code) > 0).AsEnumerable();
+                if (type == 1)
+                    return list.Where(w => w.Code.Length > 6).Select(s => new { s.Id, s.Code, s.Name, s.ParentId }).ToList();
+                else
+                    return list.Select(s => new { s.Id, s.Code, s.Name, s.ParentId }).ToList();
+            }
+        }
+
+
+        /// <summary>
+        /// 通过用户Id获取组织信息
+        /// </summary>
+        public Sys_Department GetUserOrgInfo(string userid)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                var uInfo = dbEntity.UserInfos.SingleOrDefault(s => s.Id == userid);
+                var departmentid = uInfo.DepartmentId;
+                var dInfo = dbEntity.Departments.FirstOrDefault(f => f.Id == departmentid);
+                return dInfo;
+            }
+        }
+
+
         #region 获取组织结构关系（公司-部门）
         public List<Sys_Department> GetOrgList(List<string> _params, ref int total)
         {
@@ -158,7 +193,7 @@ namespace Net66.Core.SysSecCore
         public bool DeleteOrg(List<Sys_Department> _list)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
-            {               
+            {
                 foreach (var model in _list)
                 {
                     var info = dbEntity.Departments.FirstOrDefault(f => f.Id == model.Id);

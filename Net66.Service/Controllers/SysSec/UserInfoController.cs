@@ -117,6 +117,15 @@ namespace Net66.Service.Controllers.SysSec
                     return new ReturnData(1008, "已经存在该Code");
                 entity.Id = Utils.GetNewId();
                 entity.Password = EncryptAndDecrypte.EncryptString(entity.Password);
+                if (!string.IsNullOrEmpty(entity.DepartmentId))
+                {
+                   var orgInfo= new DepartmentCore().GetOrgInfo(entity.DepartmentId);
+                    if (orgInfo != null)
+                    {
+                        entity.OrgId = orgInfo.Id;
+                        entity.OrgCode = orgInfo.Code;
+                    }
+                }
                 rebit = new UserInfoCore().AddUser(entity);
             }
             if (rebit == true)

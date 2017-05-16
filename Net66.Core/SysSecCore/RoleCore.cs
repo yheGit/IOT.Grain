@@ -18,6 +18,7 @@ namespace Net66.Core.SysSecCore
     /// </summary>
     public class RoleCore : SecRepository<Sys_Role>
     {
+
         public bool SaveCollection(string[] ids, string RoleID)
         {
             #region //获取传入的菜单

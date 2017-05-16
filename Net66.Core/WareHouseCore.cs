@@ -37,6 +37,57 @@ namespace Net66.Core
             sRepository = _sRepository;
         }
 
+
+        /// <summary>
+        /// 通过组织id获取对应的liangcang结构信息
+        /// </summary>
+        public dynamic GetGrainTree(string departid)
+        {
+            var grainList = Repository.GetList(g => g.OrgId == departid);
+            var grainNumbers = grainList.Select(s => s.Number);
+            var granaryList = gRepository.GetList(g => grainNumbers.Contains(g.WH_Number) && g.IsActive == 1);
+
+            var grainArr = grainList.Select(p => new
+            {
+                ID = p.ID,
+                Name = p.Name,
+                Number = p.Number,
+                Type = p.Type,
+                UserId = p.UserId,
+                OrgCode = p.OrgCode,
+                OrgId = p.OrgId,
+                #region louceng
+                loucengArr = granaryList.Where(w => w.Type == 1 && w.WH_Number.Equals(p.Number)).Select(s => new
+                {
+                    ID = s.ID,
+                    Number = s.Number,
+                    #region aojian
+                    aojianArr = granaryList.Where(w => w.Type == 2 && w.Number.Contains(s.Number)).Select(l => new
+                    {
+                        ID = l.ID,
+                        Number = l.Number,
+                        #region duiwei
+                        duiweiArr = granaryList.Where(w => w.Type == 0 && w.Number.Contains(l.Number)).Select(c => new
+                        {
+                            ID = c.ID,
+                            Number = c.Number
+                        }).AsEnumerable()
+                        #endregion
+                    }).AsEnumerable()
+                    #endregion
+                }).AsEnumerable()
+                #endregion
+            }).ToList();
+
+            return grainArr;
+        }
+
+        //public dynamic GetGrainList(string departcode)
+        //{
+        //    var grainList = Repository.GetList(g => g.OrgCode.IndexOf(departcode)>-1);
+        //    return null;
+        //}
+
         /// <summary>
         /// 查寻粮仓信息 2017-03-13 05:35:36
         /// </summary>
@@ -92,6 +143,15 @@ namespace Net66.Core
             //{
             //    where = where.And(p => p.IsCost == type);
             //}
+
+            //拉取该用户所在组织的所有粮仓
+            if (!string.IsNullOrEmpty(userId) && !userId.Equals("0"))//兼容前期的测试!userId.Equals("0")
+            {
+                var uInfo = new SysSecCore.DepartmentCore().GetUserOrgInfo(userId);
+                var orgcode = uInfo.Code;
+                where = where.And(p => p.OrgCode.IndexOf(orgcode) > -1);//S01->S010101
+            }
+
             #endregion
 
             #endregion
@@ -273,7 +333,16 @@ namespace Net66.Core
         /// </summary>
         public List<OGrainsReport> GetGrainsTemp(string userId = "0")
         {
-            var rList = Repository.GetList(p => p.IsActive == 1) ?? new List<WareHouse>();
+            List<WareHouse> rList;
+            //拉取该用户所在组织的所有粮仓
+            if (!userId.Equals("0"))//兼容前期的测试!userId.Equals("0")
+            {
+                var uInfo = new SysSecCore.DepartmentCore().GetUserOrgInfo(userId);
+                var orgcode = uInfo.Code;
+                rList = Repository.GetList(g => g.OrgCode.IndexOf(orgcode) > -1)??new List<WareHouse>();
+            }
+            else           
+             rList = Repository.GetList(p => p.IsActive == 1) ?? new List<WareHouse>();
             var temps = tRepository.GetList(g => g.RealHeart == 0) ?? new List<Temperature>();
             var humtys = hRepository.GetList(g => g.RealHeart == 0) ?? new List<Humidity>();
             var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0); //坏点数
