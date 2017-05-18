@@ -18,6 +18,47 @@ namespace Net66.Service.Controllers.SysSec
             return false;
         }
 
+
+        [HttpPost]
+        public ReturnData SaveRoleRights(IMenuOperation collection)
+        {
+            bool rebit = false;
+            if (collection == null || string.IsNullOrEmpty(collection.roleid))
+                return new ReturnData(1009);
+            string[] ids = collection.ids.Split(',');
+            rebit = new RoleCore().SaveCollection(ids, collection.roleid);
+            if (rebit == true)
+                return new ReturnData(1000, "操作成功");
+            return new ReturnData(1011);
+
+        }
+
+        [HttpGet]
+        public IMenuOperation test(string id)
+        {
+            return new IMenuOperation();
+        }
+
+        /// <summary>
+        /// 获取组织中的角色SelectList
+        /// </summary>
+        [HttpGet]
+        public ReturnData GetRoleSelectList(string id)
+        {
+
+            var queryData = new RoleCore().GetRoleList(id);
+            var reList = new datagrid()
+            {
+                total = -1,
+                rows = queryData
+            };
+            if (queryData != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+        }
+
+
         /// <summary>
         /// 异步加载数据
         /// </summary>
@@ -33,7 +74,7 @@ namespace Net66.Service.Controllers.SysSec
                 total = total,
                 rows = queryData.Select(s => new Sys_Role
                 {
-                    Id = s.Id                    
+                    Id = s.Id
                      ,
                     Name = s.Name
                      ,
@@ -84,6 +125,7 @@ namespace Net66.Service.Controllers.SysSec
                 if (rebit == true)
                     return new ReturnData(1008, "已经存在该Code");
                 entity.Id = Utils.GetNewId();
+                entity.IsShow = 0;
                 rebit = new RoleCore().AddRole(entity);
             }
             if (rebit == true)

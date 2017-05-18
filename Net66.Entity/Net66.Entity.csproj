@@ -73,7 +73,9 @@
     <Compile Include="DR_Model\WareHouse.cs" />
     <Compile Include="DR_Model\WareHouse_Log.cs" />
     <Compile Include="IO_Model\Account.cs" />
+    <Compile Include="IO_Model\IMenuOperation.cs" />
     <Compile Include="IO_Model\ISensorBase.cs" />
+    <Compile Include="IO_Model\MenuTree.cs" />
     <Compile Include="IO_Model\OEasyUi.cs" />
     <Compile Include="IO_Model\OGranaryReport.cs" />
     <Compile Include="IO_Model\OGrainsReport.cs" />
@@ -127,6 +129,7 @@
     <Compile Include="Models\WareHouse_Log.cs" />
     <Compile Include="Models\SensorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RightsSys_Model\SendMsg.cs" />
     <Compile Include="RightsSys_Model\Sys_Department.cs" />
     <Compile Include="RightsSys_Model\Sys_Menu.cs" />
     <Compile Include="RightsSys_Model\Sys_MenuOperation.cs" />

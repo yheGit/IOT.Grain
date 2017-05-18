@@ -78,19 +78,25 @@ namespace Net66.Core.SysSecCore
                 //调试模式则输出SQL
                 if (Utils.DebugApp)
                     dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
-                var rows = (from tpb in dbEntity.Menus
-                            join tea in dbEntity.MenuOperations
-                            on tpb.Id equals tea.Menu_Id
-                            join tpo in dbEntity.Operations
-                            on tea.Operation_Id equals tpo.Id
-                            select new { tpb, tea, tpo }).ToList();
+                //var rows = (from tpb in dbEntity.Menus
+                //            join tea in dbEntity.MenuOperations
+                //            on tpb.Id equals tea.Menu_Id
+                //            join tpo in dbEntity.Operations
+                //            on tea.Operation_Id equals tpo.Id
+                //            select new { tpb, tea, tpo }).ToList();
+
+                string sql = "select m.*,o.Id OperationId,o.Name OperationName from dbo.Sys_Menu m";
+                sql += " left outer join dbo.Sys_MenuOperation mo on mo.Menu_Id=m.Id";
+                sql += " left outer join dbo.Sys_Operation o on o.Id=mo.Operation_Id";//where m.IsShow<>-4
+                sql += " where m.IsShow<>-4";
+                var rows = dbEntity.Database.SqlQuery<MenuTree>(sql).ToList();
                 var reData = rows.Select(s => new
                 {
-                    Id = s.tpb.Id,
-                    Name = s.tpb.Name,
-                    ParentId = s.tpb.ParentId,
-                    isCheck = string.Join(",", s.tpo.Id + "^" + s.tpo.Name),
-                    Iconic = s.tpb.Iconic
+                    Id = s.Id,
+                    Name = s.Name,
+                    ParentId = s.ParentId,
+                    isCheck = string.Join(",", s.OperationId + "^" + s.OperationName),
+                    Iconic = s.Iconic
                 });
                 return new treegrid() { rows = reData };
             }
@@ -179,7 +185,10 @@ namespace Net66.Core.SysSecCore
                 ////调试模式则输出SQL
                 //if (Utils.DebugApp)
                 //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
-                return dbEntity.Menus.Where(w => w.Id == guid).FirstOrDefault();
+                var info = dbEntity.Menus.Where(w => w.Id == guid).FirstOrDefault();
+                if (info != null)
+                    info.SysOperationIdList = dbEntity.MenuOperations.Where(w => w.Menu_Id == guid).Select(s => s.Operation_Id).ToList().ToArray();
+                return info;
             }
         }
 
@@ -188,12 +197,72 @@ namespace Net66.Core.SysSecCore
         /// </summary>
         public bool AddMenu(Sys_Menu _entity)
         {
-            int recordsAffected;
+            int recordsAffected = 0;
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                dbEntity.Menus.Add(_entity);
-                recordsAffected = dbEntity.SaveChanges();
-                return recordsAffected > 0;
+                using (TransactionScope transactionScope = new TransactionScope())
+                {
+                    dbEntity.Menus.Add(_entity);
+
+                    #region SetSysMenuOperations
+                    try
+                    {
+                        int count = 0;
+                        List<string> addSysOperationId = new List<string>();
+                        List<string> deleteSysOperationId = new List<string>();
+                        if (_entity.SysOperationId != null)
+                        {
+                            addSysOperationId = _entity.SysOperationId.Split(',').ToList();
+                        }
+                        if (_entity.SysOperationIdOld != null)
+                        {
+                            deleteSysOperationId = _entity.SysOperationIdOld.Split(',').ToList();
+                        }
+                        DataOfDiffrent.GetDiffrent(addSysOperationId, deleteSysOperationId, ref addSysOperationId, ref deleteSysOperationId);
+
+                        if (addSysOperationId != null && addSysOperationId.Count() > 0)
+                        {
+                            foreach (var item in addSysOperationId)
+                            {
+                                Sys_MenuOperation sys = new Sys_MenuOperation
+                                {
+                                    GuidID = Utils.GetNewId(),
+                                    Menu_Id = _entity.Id,
+                                    Operation_Id = item
+                                };
+                                dbEntity.MenuOperations.Add(sys);
+                                count++;
+                            }
+                        }
+                        if (deleteSysOperationId != null && deleteSysOperationId.Count() > 0)
+                        {
+                            //数据库设置级联关系，自动删除子表的内容   
+                            IQueryable<Sys_MenuOperation> collection = from f in dbEntity.MenuOperations
+                                                                       where deleteSysOperationId.Contains(f.Operation_Id)
+                                                                       select f;
+                            foreach (var deleteItem in collection)
+                            {
+                                dbEntity.Entry<Sys_MenuOperation>(deleteItem).State = EntityState.Deleted;
+                            }
+
+                        }
+
+                        count += dbEntity.SaveChanges();
+                        if (count > 0)
+                        {
+                            transactionScope.Complete();
+                            return count > 0;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Transaction.Current.Rollback();
+                    }
+                    #endregion SetSysMenuOperations
+
+                    //recordsAffected = dbEntity.SaveChanges();
+                    return recordsAffected > 0;
+                }
             }
         }
 
@@ -204,7 +273,7 @@ namespace Net66.Core.SysSecCore
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                var info = dbEntity.Menus.FirstOrDefault(f => f.Name == _entity.Name.Trim());
+                var info = dbEntity.Menus.FirstOrDefault(f => f.Code == _entity.Code.Trim());
                 if (info != null)
                     return true;
                 return false;
@@ -232,7 +301,7 @@ namespace Net66.Core.SysSecCore
                             info.State = _entity.State;
                             info.IsLeaf = _entity.IsLeaf;
                             info.Sort = _entity.Sort;
-                            info.IsShow = _entity.IsShow;
+                            //info.IsShow = _entity.IsShow;
                             info.LinkUrl = _entity.LinkUrl;
                             info.ParentId = _entity.ParentId;
                             info.Remark = _entity.Remark;
@@ -261,8 +330,8 @@ namespace Net66.Core.SysSecCore
                                 Sys_MenuOperation sys = new Sys_MenuOperation
                                 {
                                     GuidID = Utils.GetNewId(),
-                                    Menu_Id = item,
-                                    Operation_Id = _entity.Id
+                                    Menu_Id = _entity.Id,
+                                    Operation_Id = item
                                 };
                                 dbEntity.MenuOperations.Add(sys);
                                 count++;
@@ -278,9 +347,9 @@ namespace Net66.Core.SysSecCore
                             {
                                 dbEntity.Entry<Sys_MenuOperation>(deleteItem).State = EntityState.Deleted;
                             }
-                            count += dbEntity.SaveChanges();
-                        }
 
+                        }
+                        count += dbEntity.SaveChanges();
                         if (count > 0)
                         {
                             transactionScope.Complete();

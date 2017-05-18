@@ -126,6 +126,7 @@ namespace Net66.Service.Controllers.SysSec
                         entity.OrgCode = orgInfo.Code;
                     }
                 }
+                //entity.State = "关闭";
                 rebit = new UserInfoCore().AddUser(entity);
             }
             if (rebit == true)

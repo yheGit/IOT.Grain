@@ -75,6 +75,11 @@ namespace Net66.Data.Context
         /// </summary>
         public DbSet<UserGranaryRights> UserGranaryRights { get; set; }
 
+        /// <summary>
+        /// 发送短信记录
+        /// </summary>
+        public DbSet<SendMsg> SendMsgs { get; set; }
+
 
 
 

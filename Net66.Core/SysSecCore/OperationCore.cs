@@ -197,7 +197,7 @@ namespace Net66.Core.SysSecCore
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                var info = dbEntity.Operations.FirstOrDefault(f => f.Name == _entity.Name.Trim());
+                var info = dbEntity.Operations.FirstOrDefault(f => f.Function == _entity.Function.Trim());
                 if (info != null)
                     return true;
                 return false;

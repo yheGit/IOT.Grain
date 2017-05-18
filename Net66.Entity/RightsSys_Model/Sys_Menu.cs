@@ -139,6 +139,16 @@ namespace IOT.RightsSys.Entity
             set { _sysoperationidold = value; }
             get { return _sysoperationidold; }
         }
+
+        private string[] _sysoperationidlist;
+        [Display(Name = "操作")]
+        [NotMapped]
+        public string[] SysOperationIdList
+        {
+            set { _sysoperationidlist = value; }
+            get { return _sysoperationidlist; }
+        }
+
         #endregion
 
     }

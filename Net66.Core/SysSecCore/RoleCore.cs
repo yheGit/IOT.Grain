@@ -101,6 +101,18 @@ namespace Net66.Core.SysSecCore
 
         }
 
+        /// <summary>
+        /// 获取角色列表
+        /// </summary>
+        public dynamic GetRoleList(string orgid)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                return dbEntity.Roles.Where(w => w.IsShow == 0).ToList();
+            }
+        }
+
+
         #region 角色管理
         public List<Sys_Role> GetRoleList(List<string> _params, ref int total)
         {

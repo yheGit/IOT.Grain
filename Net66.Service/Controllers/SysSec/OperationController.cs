@@ -123,8 +123,9 @@ namespace Net66.Service.Controllers.SysSec
             {
                 rebit = new OperationCore().IsExistOperation(entity);
                 if (rebit == true)
-                    return new ReturnData(1008, "已经存在该Code");
+                    return new ReturnData(1008, "已经存在该Funcfion");
                 entity.Id = Utils.GetNewId();
+                entity.IsShow = 0;
                 rebit = new OperationCore().AddOperation(entity);
             }
             if (rebit == true)

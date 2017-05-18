@@ -102,6 +102,7 @@ namespace Net66.Service.Controllers.SysSec
         /// <summary>
         /// 查看详细
         /// </summary>
+        [HttpGet]
         public ReturnData Details(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -126,6 +127,7 @@ namespace Net66.Service.Controllers.SysSec
                 if (rebit == true)
                     return new ReturnData(1008, "已经存在该Code");
                 entity.Id = Utils.GetNewId();
+                entity.IsShow = 0;
                 rebit = new MenuCore().AddMenu(entity);
             }
             if (rebit == true)

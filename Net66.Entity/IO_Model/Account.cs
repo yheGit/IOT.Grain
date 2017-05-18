@@ -97,6 +97,38 @@ namespace Net66.Entity.IO_Model
 
         [DisplayName("记住我?")]
         public bool RememberMe { get; set; }
+
+        [DisplayName("手机硬件信息")]
+        public string PhoneInfo { get; set; }
+    }
+
+
+    public class SigninModel
+    {
+        [DisplayName("用户账号")]
+        public string LoginName { get; set; }
+
+        [DisplayName("用户名")]
+        public string UserName { get; set; }
+
+        [DisplayName("密码")]
+        public string Password { get; set; }
+
+        [DisplayName("验证码")]
+        public string ValidateCode { get; set; }
+
+        [DisplayName("手机硬件信息")]
+        public string PhoneInfo { get; set; }        
+
+        //[DisplayName("组织ID")]
+        //public string OrgId { get; set; }
+
+        //[DisplayName("组织码")]
+        //public string OrgCode { get; set; }
+
+        //[DisplayName("角色ID")]
+        //public string RoleId { get; set; }
+
     }
 
 

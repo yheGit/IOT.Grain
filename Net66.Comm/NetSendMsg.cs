@@ -42,7 +42,7 @@ namespace Net66.Comm
             string rtustr = "";
             string posurl = "DirectSend?UserID=" + userID + "&Account=" + account + "&Password=" + password + "&Phones=" + Phones + "&Content=" + Content + "&SendTime=" + SendTime + "&SendType=" + SendType + "&PostFixNumber=" + PostFixNumber;
             MsgApiUsl += posurl;
-            string RtuContent = GetWebResponse(MsgApiUsl);
+            string RtuContent = WebHelper.Get(MsgApiUsl, ""); //GetWebResponse(MsgApiUsl);
             if (RtuContent != "")
             {
                 XmlDocument doc = new XmlDocument();
@@ -54,6 +54,7 @@ namespace Net66.Comm
                 XmlNode SendFlag = doc.SelectSingleNode("//sms:RetCode", nsmgr);
                 if (SendFlag.InnerText == "Sucess")
                 {
+                    
                     rtustr = "发送成功!";
                 }
                 else
