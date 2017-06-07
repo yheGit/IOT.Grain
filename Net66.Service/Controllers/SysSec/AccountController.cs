@@ -110,6 +110,47 @@ namespace Net66.Service.Controllers.SysSec
         }
 
         /// <summary>
+        /// 点击 登录系统 后返回
+        /// </summary>
+        /// <param name="model">登录信息</param>
+        [HttpGet]
+        public ReturnData LogIn2(string id)
+        {
+            string userid = id;
+            if (string.IsNullOrEmpty(userid))
+                return new ReturnData(1009);
+
+            Sys_UserInfo person = new AccountCore().GetUserInfoById(userid);
+            if (person == null)
+                return new ReturnData(1011, "账号或密码不正确");
+
+            #region //登陆成功，根据角色获取菜单列表
+            var roleid = person.RoleId;
+            List<Sys_Menu> menus = new MenuCore().GetMenuListByRole(roleid);
+            List<Sys_Role> roles = new List<Sys_Role>() { new RoleCore().GetById(roleid) };
+
+            Account queryData = new Account()
+            {
+                Id = person.Id,
+                LoginID = person.LoginID,
+                UserName = person.NickName,
+                MenuList = menus,
+                RoleIdList = roles
+            };
+            var reList = new datagrid
+            {
+                total = -1,
+                rows = queryData
+            };
+            if (reList.rows != null)
+                return new ReturnData(1000, "成功", reList);
+            else
+                return new ReturnData(1012);
+            #endregion//登陆成功，根据角色获取菜单列表
+        }
+
+
+        /// <summary>
         /// 注册
         /// </summary>
         [HttpPost]

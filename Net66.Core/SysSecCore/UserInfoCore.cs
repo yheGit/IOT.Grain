@@ -69,6 +69,44 @@ namespace Net66.Core.SysSecCore
                         queryData = queryData.Skip((pageIndex - 1) * pageSize).Take(pageSize);
                 }
                 return queryData.ToList();
+
+                //var roleidlist = queryData.Select(s => s.RoleId).ToList();
+                //var rolelist = dbEntity.Roles.Where(w => roleidlist.Contains(w.Id)).ToList();
+                //var orgidlist = queryData.Select(s => s.OrgId).ToList();
+                //var orglist = dbEntity.Departments.Where(w => orgidlist.Contains(w.Id)).ToList();
+
+                //return queryData.Select(s => new Sys_UserInfo()
+                //{
+                //    Id = s.Id
+                //     ,
+                //    NickName = s.NickName
+                //     ,
+                //    LoginID = s.LoginID
+                //     ,
+                //    IsShow = s.IsShow
+                //     ,
+                //    Address = s.Address
+                //     ,
+                //    State = s.State
+                //      ,
+                //    DepartmentId = s.DepartmentId
+                //    ,
+                //    Remark = s.Remark
+                //     ,
+                //    EmailAddress = s.EmailAddress
+                //     ,
+                //    Password = s.Password
+                //      ,
+                //    PhoneNumber = s.PhoneNumber
+                //     ,
+                //    RoleId = s.RoleId
+                //      ,
+                //    Sex = s.Sex
+                //       ,
+                //    TelPhone = s.TelPhone
+                //    //RoleName = rolelist.FirstOrDefault(f => f.Id == s.RoleId) == null ? "" : rolelist.FirstOrDefault(f => f.Id == s.RoleId).Name,
+                //    //OrgName = orglist.FirstOrDefault(f => f.Id == s.OrgId) == null ? "" : orglist.FirstOrDefault(f => f.Id == s.OrgId).Name
+                //}).ToList();
             }
 
         }

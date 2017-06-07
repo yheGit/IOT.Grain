@@ -23,6 +23,7 @@ namespace Net66.Entity.IO_Model
         public Nullable<int> IsActive { get; set; }
         public List<OFloor> Floors { get; set; }
         public Nullable<int> BadPoints { get; set; }
+        public int Sort { get; set; }//排序
 
     }
 }

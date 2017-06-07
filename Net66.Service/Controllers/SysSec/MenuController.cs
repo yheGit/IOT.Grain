@@ -87,7 +87,8 @@ namespace Net66.Service.Controllers.SysSec
                      ,
                     LinkUrl = s.LinkUrl
                      ,
-                    ParentId = s.ParentId
+                    ParentId = s.ParentId,
+                    Code=s.Code
 
                 })
             };

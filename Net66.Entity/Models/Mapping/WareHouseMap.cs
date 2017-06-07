@@ -50,6 +50,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.depth).HasColumnName("depth");
             this.Property(t => t.OrgId).HasColumnName("OrgId");
             this.Property(t => t.OrgCode).HasColumnName("OrgCode");
+            this.Property(t => t.Sort).HasColumnName("Sort");
         }
     }
 }

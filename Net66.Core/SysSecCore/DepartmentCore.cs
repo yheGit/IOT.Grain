@@ -28,18 +28,23 @@ namespace Net66.Core.SysSecCore
 
         /// <summary>
         /// 获取组织信息
-        /// 0获取前三级，1获取第三级
+        /// 0获取前三级，1获取最低阶节点
         /// </summary>
         public dynamic GetOrgSelectList(int type = 0)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-
-                var list = dbEntity.Departments.Where(w => System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S______", w.Code) > 0
+                var list = dbEntity.Departments.Where(w =>
+                    System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S__________", w.Code) > 0
+                 || System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S________", w.Code) > 0
+                 ||System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S______", w.Code) > 0
                  || System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S____", w.Code) > 0
                  || System.Data.Entity.SqlServer.SqlFunctions.PatIndex("S__", w.Code) > 0).AsEnumerable();
                 if (type == 1)
-                    return list.Where(w => w.Code.Length > 6).Select(s => new { s.Id, s.Code, s.Name, s.ParentId }).ToList();
+                {
+                    var relsit= list.Where(w => w.Code.Length > 10).Select(s => new { s.Id, s.Code, s.Name, s.ParentId }).ToList();
+                    return relsit;
+                }
                 else
                     return list.Select(s => new { s.Id, s.Code, s.Name, s.ParentId }).ToList();
             }

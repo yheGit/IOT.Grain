@@ -66,6 +66,16 @@ namespace Net66.Core.SysSecCore
             }
         }
 
+
+        public Sys_UserInfo GetUserInfoById(string userid)
+        {
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                return dbEntity.UserInfos.FirstOrDefault(f => f.Id == userid && f.State == "开启");
+
+            }
+        }
+
         /// <summary>
         /// 注册用户（最好先验证）
         /// </summary>
@@ -73,6 +83,9 @@ namespace Net66.Core.SysSecCore
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
+                var psd="123456";
+                if (!string.IsNullOrEmpty(model.Password))
+                    psd = model.Password;
                 var entity = new Sys_UserInfo()
                 {
                     Id = Utils.GetNewId(),
@@ -85,7 +98,7 @@ namespace Net66.Core.SysSecCore
                     IsShow = 0,
                     NickName = model.UserName,
                     PhoneNumber = model.LoginName,
-                    Password = EncryptAndDecrypte.EncryptString(model.Password),
+                    Password = EncryptAndDecrypte.EncryptString(psd),
                     State = "开启",
                     PhoneInfo = EncryptAndDecrypte.EncryptString(model.PhoneInfo)
                 };

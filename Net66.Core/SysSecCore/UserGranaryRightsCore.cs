@@ -20,7 +20,7 @@ namespace Net66.Core.SysSecCore
         /// 获取组织信息
         /// 0获取前三级，1获取第三级
         /// </summary>
-        public dynamic GetOrgSelectList(string departid)
+        public dynamic XXXGetOrgSelectList(string departid)
         {
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {

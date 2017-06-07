@@ -92,6 +92,7 @@
     <Compile Include="IO_Model\OHeapsReport.cs" />
     <Compile Include="IO_Model\OSensor.cs" />
     <Compile Include="IO_Model\OSensorBase.cs" />
+    <Compile Include="IO_Model\OUserInfo.cs" />
     <Compile Include="IO_Model\OWareHouse.cs" />
     <Compile Include="IO_Model\ReturnClass.cs" />
     <Compile Include="IO_Model\ReturnData.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Models\WareHouse_Log.cs" />
     <Compile Include="Models\SensorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RightsSys_Model\PushAlarmMsg.cs" />
     <Compile Include="RightsSys_Model\SendMsg.cs" />
     <Compile Include="RightsSys_Model\Sys_Department.cs" />
     <Compile Include="RightsSys_Model\Sys_Menu.cs" />

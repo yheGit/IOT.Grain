@@ -80,6 +80,11 @@ namespace Net66.Data.Context
         /// </summary>
         public DbSet<SendMsg> SendMsgs { get; set; }
 
+        /// <summary>
+        /// 报警通知列表
+        /// </summary>
+        public DbSet<PushAlarmMsg> PushAlarmMsgs { get; set; }
+
 
 
 

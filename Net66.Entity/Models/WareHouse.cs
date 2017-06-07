@@ -24,6 +24,7 @@ namespace Net66.Entity.Models
         public Nullable<int> depth { get; set; }
         public string OrgId { get; set; }
         public string OrgCode { get; set; }
+        public int? Sort { get; set; }//≈≈–Ú
 
     }
 }

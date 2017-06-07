@@ -52,6 +52,8 @@ namespace Net66.Data.Interface
         /// </summary>
         int AddUpdate(List<T> list, Expression<Func<T, bool>> predicate, string updateKey, int updateValue, string defDate);
 
+        int AddDelete(List<T> list, string[] selectKey, string defDate);
+
         #endregion
 
 

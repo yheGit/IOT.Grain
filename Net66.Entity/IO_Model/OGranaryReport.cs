@@ -11,7 +11,7 @@ namespace Net66.Entity.IO_Model
     {
         public OGranaryReport() { }
 
-        public OGranaryReport(List<Temperature> temps, List<Humidity> humtys, List<Collector> collectors = null)
+        public OGranaryReport(List<Temperature> temps, List<Humidity> humtys,decimal outtemp,decimal outhum)
         {
             //0传感器、1采集器、2收集器（室内）、3收集器（室外）
             var clist = temps.Where(w => w.Type == 0 && w.RealHeart == 0).ToList();
@@ -19,18 +19,27 @@ namespace Net66.Entity.IO_Model
             MinimumTemperature = Math.Round(clist.Min(m => m.Temp) ?? 0, 2);//最低温度（整个粮仓）  
             AverageTemperature = Math.Round((decimal)((Maximumemperature + MinimumTemperature) / 2), 2);
             InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0 && w.RealHeart == 0).Max(m => m.Humility) ?? 0, 2);////0仓内湿度，1仓外湿度
-            //OutSideHumidity = humtys.FirstOrDefault(w => w.Type == 1).Humility;
-            //var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
-            //OutSideTemperature = swmodel.Temp;
-            if (collectors != null)
-                BadPoints = collectors.Sum(s => s.BadPoints);
+            InSideTemperature = Math.Round(temps.Where(w => w.Type == 2 && w.RealHeart == 0).Average(a => a.Temp) ?? 0, 2);
+            //if (collectors != null)
+            //    BadPoints = collectors.Sum(s => s.BadPoints);
+            if (clist == null || clist.Count <= 0)
+            {
+                OutSideTemperature = 0;
+                OutSideHumidity = 0;
+            }
+            else
+            {
+                OutSideTemperature = Math.Round(outtemp,2);
+                OutSideHumidity = Math.Round(outhum,2);
+            }
+            
         }
 
         /// <summary>
         /// 廒间编号
         /// </summary>
         public string Number { get; set; }
-        //public string Location { get; set; }
+        public string Name { get; set; }
         public string UserId { get; set; }
         /// <summary>
         /// 最高温度
@@ -44,6 +53,10 @@ namespace Net66.Entity.IO_Model
         /// 平均温度
         /// </summary>
         public Nullable<decimal> AverageTemperature { get; set; }
+        /// <summary>
+        /// 仓内温度
+        /// </summary>
+        public Nullable<decimal> InSideTemperature { get; set; }
         /// <summary>
         /// 仓外温度
         /// </summary>
@@ -61,6 +74,7 @@ namespace Net66.Entity.IO_Model
         /// 坏点数
         /// </summary>
         public Nullable<int> BadPoints { get; set; }
+        public int Sort { get; set; }//排序
 
     }
 }

@@ -45,11 +45,11 @@ namespace Net66.Service.Controllers.SysSec
             if (_params == null)
                 return new ReturnData(1009);
             int total = 0;
-            List<Sys_UserInfo> queryData = new UserInfoCore().GetUserList(_params, ref total);
+           var queryData = new UserInfoCore().GetUserList(_params, ref total);
             var reList = new datagrid
             {
                 total = total,
-                rows = queryData.Select(s => new Sys_UserInfo
+                rows = queryData.Select(s => new Sys_UserInfo()
                 {
                     Id = s.Id
                      ,
@@ -78,8 +78,9 @@ namespace Net66.Service.Controllers.SysSec
                     Sex = s.Sex
                        ,
                     TelPhone = s.TelPhone
-
-                })
+                    //RoleName = rolelist.FirstOrDefault(f => f.Id == s.RoleId) == null ? "" : rolelist.FirstOrDefault(f => f.Id == s.RoleId).Name,
+                    //OrgName = orglist.FirstOrDefault(f => f.Id == s.OrgId) == null ? "" : orglist.FirstOrDefault(f => f.Id == s.OrgId).Name
+                }).ToList()
             };
             if (total > 0 && reList.rows != null)
                 return new ReturnData(1000, "成功", reList);
@@ -126,7 +127,8 @@ namespace Net66.Service.Controllers.SysSec
                         entity.OrgCode = orgInfo.Code;
                     }
                 }
-                //entity.State = "关闭";
+                entity.State = "关闭";
+                entity.IsShow = 0;
                 rebit = new UserInfoCore().AddUser(entity);
             }
             if (rebit == true)

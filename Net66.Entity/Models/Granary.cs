@@ -8,6 +8,7 @@ namespace Net66.Entity.Models
         public int ID { get; set; }
         public string Code { get; set; }
         public string Number { get; set; }
+        public string Name { get; set; }//
         public string Location { get; set; }
         public Nullable<int> Type { get; set; }
         public Nullable<int> PID { get; set; }
@@ -21,6 +22,7 @@ namespace Net66.Entity.Models
         public Nullable<int> UserId { get; set; }
         public Nullable<int> IsActive { get; set; }
         public string StampTime { get; set; }
+        public int? Sort { get; set; }//≈≈–Ú
 
     }
 }

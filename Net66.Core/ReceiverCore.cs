@@ -35,11 +35,12 @@ namespace Net66.Core
             var datenowStr = datenow.ToString();
             var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
             var guid = Utils.MD5(guidKey);
+            var cupid = _entity.c_cpuid;
             var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
             var addList = new List<Receiver>() { new Receiver()
             {
                  GuidID=guid,
-                CPUId = _entity.c_cpuid,
+                CPUId = cupid,
                 InstallDate = datenowStr,
                 IsActive = 1,
                 W_Number=_entity.building,
@@ -51,31 +52,19 @@ namespace Net66.Core
                  Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
                 Temperature =temp// Convert.ToDecimal(_entity.temp)
             } };
-            var selectKey = new string[] { "GuidID" };
+            //var selectKey = new string[] { "GuidID" };
+            var selectKey = new string[] { "CPUId" };
             var updateKey = new string[] { "CPUId", "Humidity", "IsActive", "Temperature" };
-            reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
+            //reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
+            reint = rRepository.AddDelete(addList, selectKey, "InstallDate");
 
             if (reint > 0)
             {
-                //if (_entity.type == 0)
-                //{
-                //    var ttype = 2;
-                //    if (string.IsNullOrEmpty(_entity.layer) && string.IsNullOrEmpty(_entity.room))
-                //        ttype = 3;//louceng aojian weikongshi weiliangcangshiwaiwendu
-                //    reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
-                //    {
-                //        PId = _entity.c_cpuid,
-                //        StampTime = datenowStr,
-                //        UpdateTime=datenow, 
-                //        Type = ttype,//0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
-                //        RealHeart = 0,
-                //        Temp = temp
-                //    } }, p => (p.RealHeart == 0 && p.Type == ttype&&p.PId==_entity.c_cpuid), "RealHeart", 1, "StampTime");
-                //}
                 var reId = addList.FirstOrDefault().ID;
                 if (reId == 0)
                 {
-                    var rInfo = rRepository.Get(g => g.GuidID == guid);
+                    //var rInfo = rRepository.Get(g => g.GuidID == guid);
+                    var rInfo = rRepository.Get(g => g.CPUId == cupid);
                     if (rInfo != null)
                         reId = rInfo.ID;
                 }
@@ -95,45 +84,54 @@ namespace Net66.Core
         {
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
-            var temp = Convert.ToDecimal(_entity.temp);//Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
+            var temp = Convert.ToDecimal(_entity.temp);//Convert.ToDecimal(Convert.ToDouble(_entity.temp)*175.72/0x10000-46.85);
+            var hum = Convert.ToDecimal(_entity.hum);//Convert.ToDecimal(Convert.ToDouble(_entity.hum)*125.00/0x10000-6);
             var reint = 0;
             var c_short = TypeParse._16NAC_To_10NSC(_entity.c_short);
             var rInfo = rRepository.Get(g => g.ID == c_short);
             if (rInfo != null)
             {
                 var wh_number = rInfo.W_Number;
+                var f_number = rInfo.F_Number;
                 var g_number = rInfo.Number;
-                #region  仓内、外湿度
+                #region  仓内、外湿度              
                 var ttype = 0;//仓内湿度
-                if (string.IsNullOrEmpty(_entity.layer)
-                    || (!string.IsNullOrEmpty(_entity.layer) && _entity.layer.Equals("0")))//约定楼层为零时，为仓外湿度
+                var temptype = 2;//仓内温度
+                if (!string.IsNullOrEmpty(f_number) && f_number.Equals("0"))//约定楼层为零时，为仓外湿度
+                {
                     ttype = 1;// 仓外湿度
-                              //0仓内湿度，1仓外湿度
+                    temptype = 3;//仓外温度
+                    g_number = "0";
+                }
+
+                var receierid = TypeParse._16NAC_To_10NSC(_entity.c_short);
                 var addEntity = new Humidity()
                 {
-                    Humility = Convert.ToDecimal(_entity.hum),//Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
-                    Temp = temp,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
-                    ReceiverId = TypeParse._16NAC_To_10NSC(_entity.c_short),
+                    Humility = hum,//Comm.SysApi.Tools.GetTemp(_entity.hum, 0),
+                    Temp = hum,//Comm.SysApi.Tools.GetTemp(_entity.temp, 0),
+                    ReceiverId = receierid,
                     StampTime = datenowStr,
-                    Type = ttype,
-                    G_Number = "0",
+                    Type = ttype,  //0仓内湿度，1仓外湿度
+                    G_Number = g_number,
+                    RealHeart = 0,
                     WH_Number = wh_number
                 };
-                reint = hRepository.Add(addEntity);
+                reint = hRepository.AddUpdate(new List<Humidity>() { addEntity },p=>p.RealHeart==0&&p.Type==ttype&&p.ReceiverId== receierid
+                , "RealHeart", 1, "StampTime");
                 #endregion
 
-                #region 仓外温度
+                #region 仓内、外温度
                 reint = tRepository.AddUpdate(new List<Temperature>() { new Temperature()
                     {
-                        PId = string.IsNullOrEmpty(_entity.c_cpuid)?rInfo.CPUId:_entity.c_cpuid,
+                        PId = receierid.ToString(),
                         StampTime = datenowStr,
                         UpdateTime=datenow,
-                        Type = 2,//0传感器、1采集器、2收集器（室外）
+                        Type = temptype,//0传感器、1采集器、2收集器（仓内温度）、3收集器（室外）
                         RealHeart = 0,
                         Temp = temp,
-                        G_Number="0",
+                        G_Number=g_number,
                         WH_Number=wh_number//
-                    } }, p => (p.RealHeart == 0 && p.Type == ttype && p.PId == _entity.c_cpuid), "RealHeart", 1, "StampTime");
+                    } }, p => (p.RealHeart == 0 && p.Type == temptype && p.PId.Equals(receierid.ToString())), "RealHeart", 1, "StampTime");
 
                 #endregion
 

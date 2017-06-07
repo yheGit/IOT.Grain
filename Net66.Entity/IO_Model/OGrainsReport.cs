@@ -11,26 +11,24 @@ namespace Net66.Entity.IO_Model
     {
         public OGrainsReport() { }
 
-        public OGrainsReport(List<Temperature> temps, List<Humidity> humtys, List<Collector> collectors = null)
+        public OGrainsReport(List<Temperature> temps, List<Humidity> humtys)
         {
             //0传感器、1采集器、2收集器（室内）、3收集器（室外）
             var clist = temps.Where(w => w.Type == 0 && w.RealHeart == 0).ToList();
-            Maximumemperature = Math.Round(clist.Max(m => m.Temp) ?? 0, 2);//最高温度（整个粮仓）
-            MinimumTemperature = Math.Round(clist.Min(m => m.Temp) ?? 0, 2);//最低温度（整个粮仓）
+            Maximumemperature = Math.Round(clist.Where(w=>w.Type==0).Max(m => m.Temp) ?? 0, 2);//最高温度（整个粮仓）
+            MinimumTemperature = Math.Round(clist.Where(w => w.Type == 0).Min(m => m.Temp) ?? 0, 2);//最低温度（整个粮仓）
             AverageTemperature = Math.Round((decimal)((Maximumemperature + MinimumTemperature) / 2), 2);
             InSideHumidity = Math.Round(humtys.Where(w => w.Type == 0 && w.RealHeart == 0).Max(m => m.Humility) ?? 0, 2);////0仓内湿度，1仓外湿度
             OutSideHumidity = Math.Round(humtys.FirstOrDefault(w => w.Type == 1 && w.RealHeart == 0) == null ? 0 : humtys.FirstOrDefault(w => w.Type == 1 && w.RealHeart == 0).Humility ?? 0, 2);
             InSideTemperature = 0;
-            var swmodel = temps.Where(w => w.Type == 2).FirstOrDefault() ?? new Temperature();
+            var swmodel = temps.Where(w => w.Type == 3).FirstOrDefault() ?? new Temperature();
             OutSideTemperature = Math.Round(swmodel.Temp ?? 0, 2);
-            if (collectors != null)
-                BadPoints = collectors.Sum(s => s.BadPoints);
         }
         /// <summary>
         /// 仓号
         /// </summary>
         public string Number { get; set; }
-        //public string Location { get; set; }
+        public string Name { get; set; }//
         public string UserId { get; set; }
         /// <summary>
         /// 最高温度
@@ -69,6 +67,7 @@ namespace Net66.Entity.IO_Model
         /// 粮仓类型 1楼房仓，2平方仓，3立筒仓
         /// </summary>
         public int Type { get; set; }
+        public int Sort { get; set; }//排序
 
     }
 }

@@ -100,7 +100,7 @@ namespace Net66.Service.Controllers.SysSec
 
         /// <summary>
         /// 查看详细
-        /// </summary>
+        /// </summary>GetOrgSelectList
         public ReturnData Details(string id)
         {
             if (string.IsNullOrEmpty(id))

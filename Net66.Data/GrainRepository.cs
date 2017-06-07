@@ -557,6 +557,31 @@ namespace Net66.Data
         }
 
 
+        public int AddDelete(List<T> list, string[] selectKey,string defDate)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                try
+                {
+                    foreach (var current in list)
+                    {
+                        var t = db.Set<T>().Where(EfUtils.And<T>(selectKey, current)).FirstOrDefault<T>();
+                        if (t != null)
+                            db.Set<T>().Remove(t);
+                        current.GetType().GetProperty(defDate).SetValue(current, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), null);
+                        db.Set<T>().Add(current);
+                    }
+
+                    return db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
+
+
 
         #endregion
 

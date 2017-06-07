@@ -12,6 +12,7 @@ namespace Net66.Entity.IO_Model
         public int ID { get; set; }
         public string Code { get; set; }
         public string Number { get; set; }
+        public string Name { get; set; }
         public string Location { get; set; }
         public Nullable<int> Type { get; set; }
         public Nullable<int> PID { get; set; }
@@ -47,6 +48,13 @@ namespace Net66.Entity.IO_Model
         /// 仓外温度
         /// </summary>
         public Nullable<decimal> OutSideTemperature { get; set; }
+
+        /// <summary>
+        /// 最后一次采集时间
+        /// </summary>
+        public string LastTime { get; set; }
+
+        public int? Sort { get; set; }//排序
 
 
     }

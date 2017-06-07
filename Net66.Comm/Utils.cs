@@ -7,6 +7,8 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Net;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 
 
 /******************************************
@@ -305,6 +307,123 @@ namespace Net66.Comm
         }
 
 
+        /// <summary>
+        /// 得到当前时间（整型）（考虑时区）
+        /// </summary>
+        /// <returns></returns>
+        public static string GetNowTime()
+        {
+            DateTime timeStamp = new DateTime(1970, 1, 1);  //得到1970年的时间戳
+            long a = (DateTime.UtcNow.Ticks - timeStamp.Ticks) / 10000000;
+            return a.ToString();
+        }
+
+        public static void ResponseWrite(string strHtml, bool isEnd)
+        {
+            HttpContext.Current.Response.Write(strHtml);
+            if (isEnd)
+            {
+                HttpContext.Current.Response.Flush();
+                HttpContext.Current.Response.Clear();
+                HttpContext.Current.Response.End();
+            }
+        }
+
+        /// <summary>
+        /// 读取请求对象的内容
+        /// 只能读一次
+        /// </summary>
+        /// <param name="request">HttpRequest对象</param>
+        /// <returns>string</returns>
+        public static string ReadRequest(HttpRequest request)
+        {
+            string reqStr = string.Empty;
+            using (Stream s = request.InputStream)
+            {
+                using (StreamReader reader = new StreamReader(s, Encoding.UTF8))
+                {
+                    reqStr = reader.ReadToEnd();
+                }
+            }
+
+            return reqStr;
+        }
+
+        /// <summary>
+        /// 获得Url或表单参数的值, 先判断Url参数是否为空字符串, 如为True则返回表单参数的值
+        /// </summary>
+        /// <param name="strName">参数</param>
+        /// <returns>Url或表单参数的值</returns>
+        public static string GetString(string strName)
+        {
+            if ("".Equals(GetQueryString(strName)))
+            {
+                return GetFormString(strName);
+            }
+            else
+            {
+                return GetQueryString(strName);
+            }
+        }
+
+
+        /// <summary>
+        /// 获得指定表单参数的值
+        /// </summary>
+        /// <param name="strName">表单参数</param>
+        /// <returns>表单参数的值</returns>
+        public static string GetFormString(string strName)
+        {
+            if (HttpContext.Current.Request.Form[strName] == null)
+            {
+                return "";
+            }
+            return HttpContext.Current.Request.Form[strName].Trim().Replace("'", "");
+        }
+
+        /// <summary>
+        /// 获得指定Url参数的值
+        /// </summary>
+        /// <param name="strName">Url参数</param>
+        /// <returns>Url参数的值</returns>
+        public static string GetQueryString(string strName)
+        {
+            if (HttpContext.Current.Request.QueryString[strName] == null)
+            {
+                return "";
+            }
+            return HttpContext.Current.Request.QueryString[strName].Trim().Replace("'", "");
+        }
+
+
+        public static void SetGzip(HttpContext context)
+        {
+            try
+            {
+                var acceptEncoding = context.Request.Headers["Accept-Encoding"].ToString().ToUpperInvariant();
+                if (!String.IsNullOrEmpty(acceptEncoding))
+                {
+                    //如果头部里有包含"GZIP”,"DEFLATE",表示你浏览器支持GZIP,DEFLATE压缩
+                    if (acceptEncoding.Contains("GZIP"))
+                    {
+                        //向输出流头部添加压缩信息
+                        context.Response.AppendHeader("Content-encoding", "gzip");
+                        context.Response.Filter = new GZipStream(context.Response.Filter, CompressionMode.Compress);
+                    }
+                    else if (acceptEncoding.Contains("DEFLATE"))
+                    {
+                        //向输出流头部添加压缩信息
+                        context.Response.AppendHeader("Content-encoding", "deflate");
+                        context.Response.Filter = new DeflateStream(context.Response.Filter, CompressionMode.Compress);
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+
         #region  配置信息AppSettings
 
         #region mxt短信
@@ -466,6 +585,30 @@ namespace Net66.Comm
 
         #endregion
 
+
+        #region vxin配置
+
+
+        public static bool GetWxinQue(string result)
+        {
+            try
+            {
+                var error = JObject.Parse(result).SelectToken("errcode").ToString();
+                if (error.Equals("40001") || error.Equals("42001"))
+                    return true;
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+
+        #region 写日志
+
         public enum LogOpration
         {
             /// <summary>
@@ -552,6 +695,39 @@ namespace Net66.Comm
             //WriteLog("TargetSite : " + e.TargetSite);  
             //WriteLog("--------------------------------------[本次异常结束]--------------------------------------\r\n");  
         }
+
+        public static void WriteLog(string fileName, string msg)
+        {
+          
+            string text = LocalAddress + "Log\\";
+            text = text  + DateTime.Now.ToString("yyyy-MM-dd");
+            if (!Directory.Exists(text))
+            {
+                Directory.CreateDirectory(text);
+            }
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = "error" + DateTime.Now.Year.ToString().Trim() + DateTime.Now.Month.ToString().Trim() + DateTime.Now.Day.ToString().Trim();
+            }
+            fileName += ".txt";
+            string path = text + "\\" + fileName;
+            try
+            {
+                using (StreamWriter streamWriter = new StreamWriter(path, true))
+                {
+                    streamWriter.WriteLine("出错时间：" + DateTime.Now.ToString());
+                    streamWriter.Write(msg);
+                    streamWriter.WriteLine();
+                    streamWriter.WriteLine("*****************************************************");
+                    streamWriter.Close();
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        #endregion
 
     }
 }

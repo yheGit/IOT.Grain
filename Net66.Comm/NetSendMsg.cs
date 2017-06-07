@@ -41,8 +41,16 @@ namespace Net66.Comm
             Content += signature;
             string rtustr = "";
             string posurl = "DirectSend?UserID=" + userID + "&Account=" + account + "&Password=" + password + "&Phones=" + Phones + "&Content=" + Content + "&SendTime=" + SendTime + "&SendType=" + SendType + "&PostFixNumber=" + PostFixNumber;
-            MsgApiUsl += posurl;
-            string RtuContent = WebHelper.Get(MsgApiUsl, ""); //GetWebResponse(MsgApiUsl);
+            var url = MsgApiUsl+ posurl;
+            string RtuContent = ""; //GetWebResponse(MsgApiUsl);
+            try
+            {
+                RtuContent = WebHelper.Get(url, ""); //GetWebResponse(MsgApiUsl);
+            }
+            catch (Exception ex)
+            {
+
+            }
             if (RtuContent != "")
             {
                 XmlDocument doc = new XmlDocument();

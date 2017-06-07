@@ -259,6 +259,7 @@ namespace Net66.Core
                 OutSideTemperature=0,
                 InSideTemperature= s.AverageTemperature,
                 Code = s.Code,
+                Name=s.Name,
                 IsActive = s.IsActive,
                 Location = s.Location,               
                 Number = s.Number,
@@ -268,7 +269,9 @@ namespace Net66.Core
                 UserId = s.UserId,
                 WH_ID = s.WH_ID,
                 WH_Number = s.WH_Number,
-                LineCount = hllist.Where(w => w.HeapNumber == s.Number).OrderBy(o => o.Sort).Select(e => e.Counts.Value).ToList()
+                LineCount = hllist.Where(w => w.HeapNumber == s.Number).OrderBy(o => o.Sort).Select(e => e.Counts.Value).ToList(),
+                LastTime = tempList.OrderByDescending(d => d.UpdateTime).FirstOrDefault() == null ? "" : tempList.OrderByDescending(d => d.UpdateTime).FirstOrDefault().StampTime,
+                Sort=s.Sort
             }).ToList();
 
         }
@@ -285,7 +288,7 @@ namespace Net66.Core
             List<string> cpuIdList = cList.Select(s => s.CPUId).ToList();
             var rIdList = cList.Select(s => s.R_Code).Distinct().ToList();
             var rList = rRepository.GetList(g => rIdList.Contains(g.ID));
-            cpuIdList.AddRange(rList.Select(s => s.CPUId).ToList());
+            cpuIdList.AddRange(rList.Select(s => s.ID.ToString()).ToList());
             DateTime datenow = DateTime.Now;
             switch (type)
             {
@@ -300,8 +303,9 @@ namespace Net66.Core
             }
             //0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
             //var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId)&& string.Compare(g.StampTime,DateTime.Now.ToString())>=0);
-            //0传感器、1采集器、2收集器（室内）、3收集器（室外）
-            var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId) && g.Type != 0 && g.UpdateTime > datenow);
+            //0传感器、1采集器(粮堆温度)、2收集器（室内）、3收集器（室外）
+            var temps = tRepository.GetList(g => ((cpuIdList.Contains(g.PId) && (g.Type == 1||g.Type==2))||
+                (g.Type==3&&number.Contains(g.WH_Number))) && g.UpdateTime > datenow);
             return temps=temps.OrderBy(o => o.UpdateTime).ToList();
 
         }

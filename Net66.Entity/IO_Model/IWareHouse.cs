@@ -21,6 +21,7 @@ namespace Net66.Entity.IO_Model
         public Nullable<int> Height { get; set; }
         public Nullable<int> depth { get; set; }
         public Nullable<int> IsActive { get; set; }
+        public int Sort { get; set; }//排序
 
     }
 }

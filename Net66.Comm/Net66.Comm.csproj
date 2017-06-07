@@ -58,6 +58,7 @@
     <Compile Include="DataOfDiffrent.cs" />
     <Compile Include="EncryptAndDecrypte.cs" />
     <Compile Include="ExportExcel.cs" />
+    <Compile Include="vxin\Helper.cs" />
     <Compile Include="JsonConvertHelper.cs" />
     <Compile Include="Log4net.cs" />
     <Compile Include="Model.cs" />
@@ -71,6 +72,11 @@
     <Compile Include="TypeParse.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Verification.cs" />
+    <Compile Include="vxin\JsonMessage.cs" />
+    <Compile Include="vxin\SecurityUtility.cs" />
+    <Compile Include="vxin\Signature.cs" />
+    <Compile Include="vxin\UploadHelper.cs" />
+    <Compile Include="vxin\VxinUtils.cs" />
     <Compile Include="WebHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

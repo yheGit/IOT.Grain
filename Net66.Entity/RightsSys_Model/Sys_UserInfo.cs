@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,6 +15,7 @@ namespace IOT.RightsSys.Entity
 	{
 		public Sys_UserInfo()
 		{}
+
 		#region Model
 		private string _id;
 		private string _loginid;
@@ -164,6 +166,7 @@ namespace IOT.RightsSys.Entity
 
         
         #endregion Model
+
 
     }
 }

@@ -113,6 +113,7 @@ namespace Net66.Service.Controllers
 
         /// <summary>
         /// 移动设备展示粮仓bao'biao
+        /// 移动端首页
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -160,11 +161,19 @@ namespace Net66.Service.Controllers
 
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
-            var reList = wareHouseCore.getHeapsTemp(number);
-            if (reList != null)
-                return new MobiResult(1000, "成功", reList);
-            else
-                return new MobiResult(1012);
+            try
+            {
+                var reList = wareHouseCore.getHeapsTemp(number);
+                if (reList != null)
+                    return new MobiResult(1000, "成功", reList);
+                else
+                    return new MobiResult(1012);
+            }
+            catch(Exception ex)
+            {
+                Utils.ExceptionLog(ex, "HeapsTemp_GetList");
+                return  new MobiResult(1013,"服务器异常");
+            }
         }
 
     }

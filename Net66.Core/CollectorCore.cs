@@ -63,15 +63,18 @@ namespace Net66.Core
                     BadPoints=0,
                     IsActive = 1
                 } };
-                var selectKey = new string[] { "GuidID" };
+                //var selectKey = new string[] { "GuidID" };
+                var selectKey = new string[] { "CPUId" };
                 var updateKey = new string[] { "CPUId", "IsActive" };
-                reint = cRepository.AddUpdate(addCollecters, selectKey, updateKey, "InstallDate");
+                //reint = cRepository.AddUpdate(addCollecters, selectKey, updateKey, "InstallDate");
+                reint = cRepository.AddDelete(addCollecters, selectKey, "InstallDate");
             }
 
             return reint > 0;
 
         }
 
+        #region 安装传感器，并采集温度
         /// <summary>
         /// 收集温度 2017-03-12 14:07:11
         /// </summary>
@@ -81,7 +84,10 @@ namespace Net66.Core
         {
             if (_list == null || _list.Count < 0)
                 return false;
+
+            #region 参数定义
             var reint = 0;
+            var collectid = "collectUnkwon";
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
             var addTemp = new List<Temperature>();
@@ -89,8 +95,10 @@ namespace Net66.Core
             var updateList = new List<Collector>();
             var addSensors = new List<Sensor>();
             var sensorIdList = new List<string>();
-            var badhots = new List<string>();
-            var dicBadhots = new Dictionary<string, int>();
+            var redhots = new List<string>();//红色报警
+            var dicBadhots = new Dictionary<string, int>();//坏点记录
+            #endregion  参数定义 
+
             foreach (var cmodel in _list)
             {
                 //cmodel.c_short
@@ -100,6 +108,7 @@ namespace Net66.Core
                 #region  添加传感器
                 if (cmodel.SensorId != null && cmodel.SensorId.Count > 0 && string.IsNullOrEmpty(cmodel.temp))
                 {
+                    collectid = cmodel.m_cpuid + "No";
                     #region 更新采集器
                     updateList.Add(new Collector()
                     {
@@ -113,22 +122,24 @@ namespace Net66.Core
                     var sublayer = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);
                     if (sublayer == null)
                         continue;
-                    var sblist = sbRepository.GetList(g => sensorList.Contains(g.SCpu));//传感器的基础信息表，用于定位
                     Dictionary<string, int> linelist = new Dictionary<string, int>();
                     foreach (var f in sensorList)
                     {
-                        var sequen = ++depth;
-                        string lineCode = "Unkwon";
-                        var baseinfo = sblist.FirstOrDefault(d => d.SCpu == f);
-                        if (baseinfo != null)
+                        #region 生成传感线
+                        var fsensor = f;
+                        string lineCode = collectid + linelist.Count + 1;
+                        if (f.StartsWith("3"))
                         {
-                            lineCode = baseinfo.SLineCode;
-                            if (linelist == null || !linelist.ContainsKey(lineCode))
-                            {
-                                var count = linelist == null ? 0 : linelist.Count;
-                                linelist.Add(lineCode, count + 1);
-                            }
-                            sequen = baseinfo.SSequen ?? 0;
+                            fsensor = "2" + fsensor.Substring(1);
+                            lineCode = collectid + linelist.Count + 1;
+                            depth = 0;
+                        }
+                        var sequen = ++depth;
+
+                        if (linelist == null || !linelist.ContainsKey(lineCode))
+                        {
+                            var count = linelist == null ? 0 : linelist.Count;
+                            linelist.Add(lineCode, count + 1);
                         }
 
                         var guidKey = cmodel.m_cpuid + "_" + lineCode + "_" + sequen;
@@ -142,15 +153,16 @@ namespace Net66.Core
                             if (line != null)
                                 lSequen = line.LSequence.Value;
                         }
+                        #endregion 生成传感线
 
                         addSensors.Add(new Sensor()
                         {
-                            SensorId = f,
+                            SensorId = fsensor,
                             IsActive = 1,
                             Collector = cmodel.m_cpuid,
                             Label = lineCode,
                             Direction_X = sequen,
-                            Direction_Y = lSequen != -1 ? lSequen : (baseinfo == null ? 1 : linelist.FirstOrDefault(d => d.Key == lineCode).Value),
+                            Direction_Y = lSequen != -1 ? lSequen : (linelist == null ? 1 : linelist.FirstOrDefault(d => d.Key == lineCode).Value),
                             Direction_Z = sublayer.Sublayer,
                             Sequen = sequen,
                             IsBad = 0,
@@ -195,12 +207,33 @@ namespace Net66.Core
                         for (; i < sensorList.Count; i++)
                         {
                             var f = sensorList[i];
+                            if (f.StartsWith("3"))
+                                f = "2" + f.Substring(1);
+
                             var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
+
+                            #region 坏点
                             if (temp == (decimal)63.75)//坏点
                             {
-                                badhots.Add(f);
+                                //badhots.Add(f);
+                                dicBadhots.Add(f, 1);
                                 continue;
                             }
+                            else
+                            {
+                                dicBadhots.Add(f, 0);
+                            }
+                            #endregion 坏点
+
+                            #region 高温红色报警
+
+                            if (temp >= (decimal)35 && temp < (decimal)63.75)
+                            {
+                                redhots.Add(f);
+                            }
+
+                            #endregion
+
                             cjqTemp += temp;
                             addTemp.Add(new Temperature()
                             {
@@ -249,20 +282,25 @@ namespace Net66.Core
                 #endregion
 
                 #region 更新坏点
-                var rebad = sRepository.AddUpdate(null, p => p.IsBad == 0 && badhots.Contains(p.SensorId), "IsBad", 1, "");//标记已经坏了的传感器
-                if (rebad > 0)
-                {
-                    dicBadhots.Add(cmodel.m_cpuid, rebad);
-                }
+
+                //更新采集器的坏点数
+                //new Data.Context.DbEntity().UpdateBadHot(dicBadhots);
+                Action<Dictionary<string, int>> pushMsg = new Data.Context.DbEntity().UpdateBadHot;
+                pushMsg.BeginInvoke(dicBadhots, ar => pushMsg.EndInvoke(ar), null);
+                #endregion
+
+                #region 高温报警
+
+                Action<List<string>> pushRedHotMsg = new Data.Context.DbEntity().UpdateRedHot;
+                pushRedHotMsg.BeginInvoke(redhots, ar => pushRedHotMsg.EndInvoke(ar), null);
+
                 #endregion
 
             }
 
-            //跟新采集器的坏点数
-            new Data.Context.DbEntity().UpdateCollectorBadHot(dicBadhots);
             return reint > 0;
         }
-
+        #endregion 安装传感器，并采集温度
 
     }
 }
