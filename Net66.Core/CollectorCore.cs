@@ -188,7 +188,12 @@ namespace Net66.Core
                 if (!string.IsNullOrEmpty(cmodel.c_short) && !string.IsNullOrEmpty(cmodel.temp))
                 {
                     var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
-                    var rInfo = rRepository.Get(g => g.ID == c_short) ?? new Receiver();
+                    var rInfo = rRepository.Get(g => g.ID == c_short);
+                    if (rInfo == null)
+                    {
+                        Utils.PrintLog("不存在该收集器的信息，Receiver:" + c_short, "AddTemp");
+                        return false;
+                    }
                     var wh_number = rInfo.W_Number;
                     var g_number = rInfo.Number;
 
@@ -213,7 +218,7 @@ namespace Net66.Core
                             var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
 
                             #region 坏点
-                            if (temp == (decimal)63.75)//坏点
+                            if (temp == (decimal)63.75||temp==(decimal)0)//坏点
                             {
                                 //badhots.Add(f);
                                 dicBadhots.Add(f, 1);

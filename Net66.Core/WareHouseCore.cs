@@ -376,7 +376,8 @@ namespace Net66.Core
                 Type = s.Type ?? 0,
                 UserId = s.UserId,
                 Sort = s.Sort ?? 0,
-                BadPoints=badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1).Sum(su => su.badcount)
+                BadPoints = badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1 && w.badcount > 0).Count()
+                //BadPoints = badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1 ).Sum(su=>su.badcount)
             }).ToList();
         }
 
@@ -399,7 +400,8 @@ namespace Net66.Core
                 outhumty = humtyInfo.Humility ?? 0;
 
             #region //坏点数
-            var reList = reRepository.GetList(g => number.Equals(g.W_Number)).ToList() ?? new List<Receiver>();
+            var gNumbers = granaryList.Select(s => s.Number).ToList();
+            var reList = reRepository.GetList(g => gNumbers.Contains(g.Number)).ToList() ?? new List<Receiver>();
             var reIdlist = reList.Select(s => s.ID).ToList();
             var crlist = cRepository.GetList(g => g.IsActive == 1 && reIdlist.Contains(g.R_Code)) ?? new List<Collector>();
             var cridlist = crlist.Select(s => s.CPUId).ToList();
@@ -409,7 +411,7 @@ namespace Net66.Core
                            select new { heapnumber = c.HeapNumber, collector = c.CPUId, badcount = s.IsBad });
             //var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
             #endregion //坏点数
-
+            #region 
             return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()
                 , humtys.Where(w => w.G_Number == s.Number).ToList()
                 , outtemp, outhumty )
@@ -420,8 +422,10 @@ namespace Net66.Core
                 //OutSideHumidity = Math.Round(outhumty, 2),
                 UserId = s.UserId.ToString(),
                 Sort = s.Sort ?? 0,
-                BadPoints=badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1).ToList().Sum(su=>su.badcount)
+                BadPoints = badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1 && w.badcount > 0).Count()
+                //BadPoints = badlist.Where(w => w.heapnumber.IndexOf(s.Number) > -1 ).Sum(su=>su.badcount)
             }).ToList();
+            #endregion
         }
 
         /// <summary>
@@ -439,9 +443,12 @@ namespace Net66.Core
             //var intemp = temps.Average(a => a.Temp);//堆位的仓内温度取，所在廒间的所有温度的平均值
 
             #region //坏点数
-            var reList = reRepository.Get(g => number.Equals(g.Number))??new Receiver();
-            var reId = reList.ID;
-            var crlist = cRepository.GetList(g => g.IsActive == 1 && reId.Equals(g.R_Code)) ?? new List<Collector>();
+            //var reList = reRepository.Get(g => number.Equals(g.Number))??new Receiver();
+            //var reId = reList.ID;
+            //gNumbers.Contains(g.HeapNumber)
+            //var crlist = cRepository.GetList(g => g.IsActive == 1 && reId.Equals(g.R_Code)) ?? new List<Collector>();
+            var gNumbers = heapList.Select(s => s.Number).ToList();
+            var crlist = cRepository.GetList(g => g.IsActive == 1 && gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
             var cridlist = crlist.Select(s => s.CPUId).ToList();
             var srlist = sRepository.GetList(g => cridlist.Contains(g.Collector));
             var badlist = (from c in crlist
@@ -458,7 +465,7 @@ namespace Net66.Core
                 //OutSideTemperature = Math.Round(outtemp, 2),
                 Number = s.Number,
                 Name = s.Name,
-                BadPoints = badlist.Where(w => w.heapnumber == s.Number).Sum(u => u.badcount),
+                BadPoints = badlist.Where(w => w.heapnumber == s.Number&&w.badcount>0).Count(),
                 UserId = s.UserId.ToString(),
                 Sort = s.Sort ?? 0
             }).ToList();

@@ -156,7 +156,7 @@ namespace Net66.Data.Context
                 Action<List<string>> pushMsg = AddMsgConn;
                 pushMsg.BeginInvoke(sidlist, ar => pushMsg.EndInvoke(ar), null);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utils.ExceptionLog(ex, "UpdateBadHot");
             }
@@ -223,6 +223,46 @@ namespace Net66.Data.Context
                 }
                 return db.SaveChanges() > 0;
             }
+        }
+
+        /// <summary>
+        /// 安装或更新Receiver 2017-6-7 15:12:24
+        /// </summary>
+        public int AddOrUpdateReceiver(Receiver model)
+        {
+            int reInt = 0;
+            bool isup = false;
+            var rId = 0;
+            using (var db = new GrainContext())
+            {
+                var info = db.Receivers.Where(w =>w.Number == model.Number).FirstOrDefault();
+                if (info != null && !info.CPUId.Equals(model.CPUId))
+                {
+                    info.CPUId = model.CPUId;
+                    //{ "CPUId", "Humidity", "IsActive", "Temperature" }
+                    rId = info.ID;
+                    db.Receivers.Attach(info);
+                    db.Entry(info).State = EntityState.Modified;
+                    isup = true;                  
+                }
+                else
+                {
+                    var info2 = db.Receivers.Where(w => w.CPUId == model.CPUId).FirstOrDefault();
+                    if (info2!=null&&!info2.Number.Equals(model.Number) )
+                    {
+                        info2.CPUId = ""; 
+                        db.Receivers.Attach(info2);
+                        db.Entry(info2).State = EntityState.Modified;
+                    }
+                    db.Receivers.Add(model);
+                }
+                reInt = db.SaveChanges();
+                if (isup == true)
+                    reInt = rId;
+                return reInt;
+
+            }
+
         }
 
 

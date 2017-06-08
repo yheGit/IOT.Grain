@@ -32,42 +32,54 @@ namespace Net66.Core
             var reint = 0;
             c_short = "ff";
             var datenow = Utils.GetServerDateTime();
-            var datenowStr = datenow.ToString();
-            var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
-            var guid = Utils.MD5(guidKey);
             var cupid = _entity.c_cpuid;
+            var number = Utils.StrSequenConcat(_entity.building, endash, _entity.layer, endash, _entity.room);
+            var datenowStr = datenow.ToString();
+            //var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
+            var guidKey = cupid.Trim() + "_" + number;
+            var guid = guidKey;//Utils.MD5(guidKey);
             var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
-            var addList = new List<Receiver>() { new Receiver()
+            var model = new Receiver()
             {
-                 GuidID=guid,
+                GuidID = guid,
                 CPUId = cupid,
                 InstallDate = datenowStr,
                 IsActive = 1,
-                W_Number=_entity.building,
+                W_Number = _entity.building,
                 F_Number = _entity.layer.ToString(),
-                G_Number=_entity.room.ToString(),
-                Number=Utils.StrSequenConcat(_entity.building,endash,_entity.layer,endash,_entity.room),
+                G_Number = _entity.room.ToString(),
+                Number = number,
                 //IPAddress=null,
                 //UserId = null,
-                 Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
-                Temperature =temp// Convert.ToDecimal(_entity.temp)
-            } };
-            //var selectKey = new string[] { "GuidID" };
-            var selectKey = new string[] { "CPUId" };
-            var updateKey = new string[] { "CPUId", "Humidity", "IsActive", "Temperature" };
-            //reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
-            reint = rRepository.AddDelete(addList, selectKey, "InstallDate");
+                Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
+                Temperature = temp// Convert.ToDecimal(_entity.temp)
+            };
+            ////var addList = new List<Receiver>() { model };
+            ////var selectKey = new string[] { "GuidID" };
+            //var selectKey = new string[] { "CPUId" };
+            //var updateKey = new string[] { "CPUId", "Humidity", "IsActive", "Temperature" };
+            ////reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
+            //reint = rRepository.AddDelete(addList, selectKey, "InstallDate");
+            try
+            {
+                reint = new Data.Context.DbEntity().AddOrUpdateReceiver(model);
+            }
+            catch (Exception ex)
+            {
+                Utils.ExceptionLog(ex, "AddOrUpdateReceiver");
+            }
 
             if (reint > 0)
             {
-                var reId = addList.FirstOrDefault().ID;
-                if (reId == 0)
-                {
-                    //var rInfo = rRepository.Get(g => g.GuidID == guid);
-                    var rInfo = rRepository.Get(g => g.CPUId == cupid);
-                    if (rInfo != null)
-                        reId = rInfo.ID;
-                }
+                //var reId = addList.FirstOrDefault().ID;
+                //if (reId == 0)
+                //{
+                //    //var rInfo = rRepository.Get(g => g.GuidID == guid);
+                //    var rInfo = rRepository.Get(g => g.CPUId == cupid);
+                //    if (rInfo != null)
+                //        reId = rInfo.ID;
+                //}
+                var reId = reint;
                 c_short = TypeParse._10NSC_To_16NAC(reId);
                 return true;
             }

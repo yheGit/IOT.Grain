@@ -110,6 +110,7 @@ namespace Net66.Service.Controllers.SysSec
                 rebit = new DepartmentCore().IsExistOrg(entity);
                 if (rebit == true)
                     return new ReturnData(1008, "已经存在该Code");
+                entity.IsShow = 0;
                 entity.Id = Utils.GetNewId();
                 rebit = new DepartmentCore().AddOrg(entity);
             }

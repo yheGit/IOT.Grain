@@ -218,12 +218,19 @@ namespace Net66.Core
                 return null;
             var gNumbers = reList.Select(s => s.Number).ToList();//duiweibianhao
 
-            var clist = cRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
+            var clist = cRepository.GetList(g => g.IsActive == 1 && gNumbers.Contains(g.HeapNumber)) ?? new List<Collector>();
             var cIds = clist.Select(s => s.CPUId).ToList();
             //huoqu tongcang chaunganxiandegeshu
             var hllist = hlRepository.GetList(g => gNumbers.Contains(g.HeapNumber)) ?? new List<HeapLine>();
 
             var sList = sRepository.GetList(g => cIds.Contains(g.Collector)) ?? new List<Sensor>();
+
+            #region //坏点数;
+            var badlist = (from c in clist
+                           join s in sList on c.CPUId equals s.Collector
+                           select new { heapnumber = c.HeapNumber, collector = c.CPUId, badcount = s.IsBad });
+            #endregion //坏点数    
+
             var sIds = sList.Select(s => s.SensorId).ToList();
             var tempList = tRepository.GetList(g => g.Type == 0 && sIds.Contains(g.PId) && g.RealHeart == 0) ?? new List<Temperature>();
 
@@ -255,7 +262,7 @@ namespace Net66.Core
                 AverageTemperature = s.AverageTemperature,
                 MaxiTemperature = s.MaxiTemperature,
                 MinTemperature = s.MinTemperature,
-                BadPoints = s.BadPoints,
+                BadPoints = badlist.Where(w => w.heapnumber == s.Number && w.badcount > 0).Count(),//  s.BadPoints,
                 OutSideTemperature=0,
                 InSideTemperature= s.AverageTemperature,
                 Code = s.Code,
