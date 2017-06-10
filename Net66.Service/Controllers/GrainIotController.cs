@@ -44,7 +44,7 @@ namespace Net66.Service.Controllers
 
             var clist = _pack.Measurers;
             if (clist != null && clist.Count > 0)
-            {
+            {                
                 rebit = collectorCore.AddTemp(clist);
                 return string.Empty;
             }

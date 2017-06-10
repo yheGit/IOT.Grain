@@ -18,6 +18,7 @@ namespace Net66.Entity.IO_Model
         public Nullable<int> IsActive { get; set; }
 
         public List<Granary> GranaryList { get; set; }
+        public int? Sort { get; set; }//排序
 
     }
 }

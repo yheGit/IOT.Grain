@@ -17,6 +17,7 @@ namespace Net66.Entity.Models
         public Nullable<decimal> Temperature { get; set; }
         public Nullable<decimal> Humidity { get; set; }
         public Nullable<int> UserId { get; set; }
-        public Nullable<int> IsActive { get; set; }//
+        public Nullable<int> IsActive { get; set; }
+        //public Nullable<int> RandKey { get; set; }
     }
 }

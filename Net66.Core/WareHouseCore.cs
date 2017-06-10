@@ -44,9 +44,11 @@ namespace Net66.Core
         /// <summary>
         /// 通过组织id获取对应的liangcang结构信息
         /// </summary>
-        public dynamic GetGrainTree(string departid)
+        public dynamic GetGrainTree(string departid=null)
         {
-            var grainList = Repository.GetList(g => g.OrgId == departid);
+            var grainList = Repository.GetList(g => g.OrgId == departid&& g.IsActive == 1);
+            if (string.IsNullOrEmpty(departid))
+                grainList = Repository.GetList(g=>g.IsActive==1);
             var grainNumbers = grainList.Select(s => s.Number);
             var granaryList = gRepository.GetList(g => grainNumbers.Contains(g.WH_Number) && g.IsActive == 1);
 
@@ -59,6 +61,7 @@ namespace Net66.Core
                 UserId = p.UserId,
                 OrgCode = p.OrgCode,
                 OrgId = p.OrgId,
+                Sort = p.Sort,
                 #region louceng
                 children = granaryList.Where(w => w.Type == 1 && w.WH_Number.Equals(p.Number)).Select(s => new
                 {
@@ -69,11 +72,13 @@ namespace Net66.Core
                     {
                         ID = l.ID,
                         Number = l.Number,
+                        Sort = l.Sort,
                         #region duiwei
                         children = granaryList.Where(w => w.Type == 0 && w.Number.Contains(l.Number)).Select(c => new
                         {
                             ID = c.ID,
-                            Number = c.Number
+                            Number = c.Number,
+                            Sort=c.Sort
                         }).AsEnumerable()
                         #endregion
                     }).AsEnumerable()
@@ -178,6 +183,7 @@ namespace Net66.Core
                     UserId = s.UserId,
                     WH_Number = s.WH_Number,
                     Name = s.Name,
+                    Sort=s.Sort,
                     //GranaryList = granaryList.Where(w => SqlFunctions.PatIndex(s.Number + "__", w.Number) > 0).ToList()
                     GranaryList = granaryList.Where(w => w.Number.Contains(s.Number)).OrderBy(o => o.Code).ToList()
                 }).ToList();
@@ -231,7 +237,9 @@ namespace Net66.Core
                 Width = _entity.Width,
                 depth = _entity.depth,
                 Height = _entity.Height,
-                Sort = _entity.Sort
+                Sort = _entity.Sort,
+                OrgId=_entity.OrgId,
+                OrgCode=_entity.OrgCode
             };
 
 
@@ -268,7 +276,7 @@ namespace Net66.Core
                 return false;
             //_entity.StampTime = Utils.GetServerDateTime();
             //var model = Repository.Get(g => g.ID == _entity.ID);
-            var fieldArr = new string[] { "IsActive", "Location", "Name", "Type", "UserId", "Sort" };
+            var fieldArr = new string[] { "IsActive", "Location", "Name", "Type", "UserId", "Sort", "Width", "depth", "Height", "OrgId", "OrgCode" };
             var reInt = Repository.Update(new List<WareHouse>() { _entity }, new string[] { "Number" }, fieldArr, "StampTime");
             return reInt > 0;
         }
@@ -368,8 +376,11 @@ namespace Net66.Core
                            select new { heapnumber = c.HeapNumber, collector = c.CPUId, badcount = s.IsBad });
             #endregion //坏点数
 
+            //提供获取有效温度
+            var sridlist = srlist.Select(s => s.SensorId).ToList();
+
             return rList.Select(s => new OGrainsReport(temps.Where(w => w.WH_Number == s.Number).ToList()
-                , humtys.Where(w => w.WH_Number == s.Number).ToList() )
+                , humtys.Where(w => w.WH_Number == s.Number).ToList() ,sridlist)
             {
                 Number = s.Number,
                 Name = s.Name,
@@ -411,10 +422,14 @@ namespace Net66.Core
                            select new { heapnumber = c.HeapNumber, collector = c.CPUId, badcount = s.IsBad });
             //var badlist = cRepository.GetList(g => g.IsActive == 1 && g.BadPoints > 0 && g.HeapNumber.IndexOf(number) > -1) ?? new List<Collector>();
             #endregion //坏点数
+
+            //提供获取有效温度
+            var sridlist = srlist.Select(s => s.SensorId).ToList();          
+
             #region 
             return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()
                 , humtys.Where(w => w.G_Number == s.Number).ToList()
-                , outtemp, outhumty )
+                , outtemp, outhumty, sridlist)
             {
                 Number = s.Number,
                 Name = s.Name,

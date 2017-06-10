@@ -22,6 +22,22 @@ namespace Net66.Service.Controllers
             wareHouseCore = _wareHouseCore;
         }
 
+        [HttpGet]
+        /// <summary>
+        /// 获取该组织结构下的所有仓结构 2017-6-8 14:41:51
+        /// </summary>
+        public ReturnData GetListByOrgid(string id)
+        {           
+            if (string.IsNullOrEmpty(id))
+                return new ReturnData(1009);
+            var orgId = id;
+            if (id.Equals("0"))
+                orgId = "";
+            var grainlist = wareHouseCore.GetGrainTree(orgId);
+            if (grainlist == null)
+                return new ReturnData(1012);
+            return new ReturnData(1000, "成功", new datagrid() { total = -1, rows = grainlist });
+        }
         /// <summary>
         /// 查寻粮仓信息（包涵楼层、廒间信息）
         /// </summary>
@@ -29,7 +45,7 @@ namespace Net66.Service.Controllers
         //[System.Web.Mvc.Route("PostArray")]  
         public MobiResult GetList(ISearch _search)
         {
-            
+
             Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             var _params = _search.DicList;
             if (_params == null) return new MobiResult(1009, "参数不合法，请用可选参数占位，如TextValue", null, "'DicList': [ ],");
@@ -119,7 +135,7 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {
-            Utils.PrintLog("获取粮仓报表" , "PostPack2");
+            Utils.PrintLog("获取粮仓报表", "PostPack2");
             var reList = wareHouseCore.GetGrainsTemp();
             Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
             if (reList != null)
@@ -169,10 +185,10 @@ namespace Net66.Service.Controllers
                 else
                     return new MobiResult(1012);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utils.ExceptionLog(ex, "HeapsTemp_GetList");
-                return  new MobiResult(1013,"服务器异常");
+                return new MobiResult(1013, "服务器异常");
             }
         }
 

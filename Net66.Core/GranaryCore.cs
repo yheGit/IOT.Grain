@@ -97,7 +97,7 @@ namespace Net66.Core
                 addList.Add(model);
             }
 
-            var fieldArr = new string[] { "IsActive", "Location", "Code", "UserId", "WH_Number", "MaxiTemperature", "MinTemperature" };
+            var fieldArr = new string[] { "IsActive", "Location", "Code", "UserId", "WH_Number", "MaxiTemperature", "MinTemperature", "Sort" };
             var reInt = gRepository.AddUpdate(addList, new string[] { "Number" }, fieldArr, "StampTime");
             return reInt > 0;
         }

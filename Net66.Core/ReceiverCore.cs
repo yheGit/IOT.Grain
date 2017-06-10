@@ -36,8 +36,8 @@ namespace Net66.Core
             var number = Utils.StrSequenConcat(_entity.building, endash, _entity.layer, endash, _entity.room);
             var datenowStr = datenow.ToString();
             //var guidKey = _entity.building + "_" + _entity.layer + "_" + _entity.room;
-            var guidKey = cupid.Trim() + "_" + number;
-            var guid = guidKey;//Utils.MD5(guidKey);
+            var guidKey = number;
+            var guid = Utils.MD5(guidKey);
             var temp = Comm.SysApi.Tools.GetTemp(_entity.temp, 0);
             var model = new Receiver()
             {

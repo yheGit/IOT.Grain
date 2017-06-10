@@ -23,7 +23,7 @@ namespace Net66.Core.Interface
     {
 
 
-        dynamic GetGrainTree(string departid);
+        dynamic GetGrainTree(string departid=null);
         List<OWareHouse> GetPageLists(ISearch _search,List<string> _params);
 
         bool AddWareHouse(IWareHouse _entity);

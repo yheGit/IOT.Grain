@@ -644,14 +644,18 @@ namespace Net66.Comm
                     Directory.CreateDirectory(path);
                 string str = logtype + DateTime.Now.Year.ToString().Trim() + DateTime.Now.Month.ToString().Trim() + ".txt";
                 string file = path + "\\" + str;
-                using (StreamWriter streamWriter = new StreamWriter(file, true))
+                try
                 {
-                    streamWriter.WriteLine("记录时间：" + DateTime.Now.ToString());
-                    streamWriter.Write(msg);
-                    streamWriter.WriteLine();
-                    streamWriter.WriteLine("*****************************************************");
-                    streamWriter.Close();
+                    using (StreamWriter streamWriter = new StreamWriter(file, true))
+                    {
+                        streamWriter.WriteLine("记录时间：" + DateTime.Now.ToString());
+                        streamWriter.Write(msg);
+                        streamWriter.WriteLine();
+                        streamWriter.WriteLine("*****************************************************");
+                        streamWriter.Close();
+                    }
                 }
+                catch { }
             }
         }
 

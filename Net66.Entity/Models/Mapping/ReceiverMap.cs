@@ -50,6 +50,7 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Humidity).HasColumnName("Humidity");
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
+            //this.Property(t => t.RandKey).HasColumnName("RandKey");
         }
     }
 }

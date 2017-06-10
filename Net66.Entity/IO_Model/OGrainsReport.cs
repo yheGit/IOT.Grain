@@ -11,10 +11,12 @@ namespace Net66.Entity.IO_Model
     {
         public OGrainsReport() { }
 
-        public OGrainsReport(List<Temperature> temps, List<Humidity> humtys)
+        public OGrainsReport(List<Temperature> temps, List<Humidity> humtys, List<string> sidlist = null)
         {
             //0传感器、1采集器、2收集器（室内）、3收集器（室外）
             var clist = temps.Where(w => w.Type == 0 && w.RealHeart == 0).ToList();
+            if (sidlist != null)
+                clist = clist.Where(w => sidlist.Contains(w.PId)).ToList();
             Maximumemperature = Math.Round(clist.Where(w=>w.Type==0).Max(m => m.Temp) ?? 0, 2);//最高温度（整个粮仓）
             MinimumTemperature = Math.Round(clist.Where(w => w.Type == 0).Min(m => m.Temp) ?? 0, 2);//最低温度（整个粮仓）
             AverageTemperature = Math.Round((decimal)((Maximumemperature + MinimumTemperature) / 2), 2);

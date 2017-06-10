@@ -28,7 +28,7 @@ namespace Net66.Core.SysSecCore
 
         /// <summary>
         /// 获取组织信息
-        /// 0获取前三级，1获取最低阶节点
+        /// 0获取所有层级，1获取最低阶节点
         /// </summary>
         public dynamic GetOrgSelectList(int type = 0)
         {

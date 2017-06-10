@@ -1,5 +1,6 @@
 ﻿using IOT.RightsSys.Entity;
 using Net66.Comm;
+using Net66.Data.Base;
 using Net66.Entity.IO_Model;
 using Net66.Entity.Models;
 using System;
@@ -34,7 +35,7 @@ namespace Net66.Data.Context
 
                 using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
                 {
-                    var userRihts = dbEntity.UserGranaryRights.Where(w => hnumbers.Contains(w.GranaryNumber)).ToList();
+                    var userRihts = dbEntity.UserGranaryRights.Where(w => hnumbers.FirstOrDefault().Contains(w.GranaryNumber)).ToList();
                     var userids = userRihts.Select(s => s.UserId).ToList();
                     var users = dbEntity.UserInfos.Where(w => userids.Contains(w.Id)).ToList();
                     List<PushAlarmMsg> pushList = new List<PushAlarmMsg>();
@@ -87,11 +88,12 @@ namespace Net66.Data.Context
 
             using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
             {
-                ////调试模式则输出SQL
-                //if (Utils.DebugApp)
-                //    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
+                //调试模式则输出SQL
+                if (Utils.DebugApp)
+                    dbEntity.Database.Log = new Action<string>(q => System.Diagnostics.Debug.WriteLine(q));
 
-                var userRihts = dbEntity.UserGranaryRights.Where(w => hnumbers.Contains(w.GranaryNumber)).ToList();
+                //var userRihts = dbEntity.UserGranaryRights.Where(w => hnumbers.Contains(w.GranaryNumber)).ToList();
+                var userRihts = dbEntity.UserGranaryRights.Where(w => hnumbers.FirstOrDefault().IndexOf(w.GranaryNumber) > -1).ToList();
                 var userids = userRihts.Select(s => s.UserId).ToList();
                 var users = dbEntity.UserInfos.Where(w => userids.Contains(w.Id)).ToList();
                 List<PushAlarmMsg> pushList = new List<PushAlarmMsg>();
@@ -153,8 +155,9 @@ namespace Net66.Data.Context
                 }
 
                 //用异步发送 通知（moa、email）消息
-                Action<List<string>> pushMsg = AddMsgConn;
-                pushMsg.BeginInvoke(sidlist, ar => pushMsg.EndInvoke(ar), null);
+                AddMsgConn(sidlist);
+                //Action<List<string>> pushMsg = AddMsgConn;
+                //pushMsg.BeginInvoke(sidlist, ar => pushMsg.EndInvoke(ar), null);
             }
             catch (Exception ex)
             {
@@ -232,40 +235,145 @@ namespace Net66.Data.Context
         {
             int reInt = 0;
             bool isup = false;
+            bool addbit = false;
             var rId = 0;
             using (var db = new GrainContext())
             {
-                var info = db.Receivers.Where(w =>w.Number == model.Number).FirstOrDefault();
-                if (info != null && !info.CPUId.Equals(model.CPUId))
+                var info = db.Receivers.Where(w => w.GuidID == model.GuidID).FirstOrDefault();
+                if (info != null)
                 {
                     info.CPUId = model.CPUId;
                     //{ "CPUId", "Humidity", "IsActive", "Temperature" }
+                    info.InstallDate = model.InstallDate;
                     rId = info.ID;
                     db.Receivers.Attach(info);
                     db.Entry(info).State = EntityState.Modified;
-                    isup = true;                  
+                    isup = true;
                 }
                 else
                 {
-                    var info2 = db.Receivers.Where(w => w.CPUId == model.CPUId).FirstOrDefault();
-                    if (info2!=null&&!info2.Number.Equals(model.Number) )
-                    {
-                        info2.CPUId = ""; 
-                        db.Receivers.Attach(info2);
-                        db.Entry(info2).State = EntityState.Modified;
-                    }
                     db.Receivers.Add(model);
+                    //model.RandKey = model.ID;
+                    addbit = true;
                 }
-                reInt = db.SaveChanges();
-                if (isup == true)
-                    reInt = rId;
-                return reInt;
+                var info2 = db.Receivers.Where(w => w.CPUId == model.CPUId).FirstOrDefault();
+                if (info2 != null && !info2.GuidID.Equals(model.GuidID))
+                {
+                    info2.CPUId = "";
+                    db.Receivers.Attach(info2);
+                    db.Entry(info2).State = EntityState.Modified;
+                }
+
+                if (db.SaveChanges() > 0)
+                {
+                    if (isup == true)
+                        reInt = rId;
+                    if (addbit == true)
+                        reInt = model.ID;
+                    return reInt;
+                }
+                else
+                {
+                    return 0;
+                }
 
             }
 
         }
 
+        /// <summary>
+        /// 安装或更新Collector 2017-6-9 17:59:38
+        /// </summary>
+        public int AddUpdateCollector(List<Collector> list)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                foreach (var current in list)
+                {
+                    var t = db.Collectors.FirstOrDefault(f => f.GuidID == current.GuidID);
+                    if (t == null)
+                    {
+                        current.BadPoints = 0;
+                        db.Collectors.Add(current);
+                    }
+                    else
+                    {
+                        t.CPUId = current.CPUId;
+                        t.InstallDate = current.InstallDate;
+                        t.SensorIdArr = current.SensorIdArr;
+                        t.Sublayer = current.Sublayer;
+                        t.UserId = 0;
+                        t.Voltage = 0;
+                        db.Collectors.Attach(t);
+                        db.Entry<Collector>(t).State = EntityState.Modified;
+                    }
 
+                    var info2 = db.Collectors.Where(w => w.CPUId == current.CPUId).FirstOrDefault();
+                    if (info2 != null && !info2.GuidID.Equals(current.GuidID))
+                    {
+                        info2.CPUId = "";
+                        db.Collectors.Attach(info2);
+                        db.Entry(info2).State = EntityState.Modified;
+                    }
+
+                }
+                try
+                {
+                    return db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 安装或更新Sensor  2017-6-9 17:59:38
+        /// </summary>
+        public int AddUpdateSensor(List<Sensor> list)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                foreach (var current in list)
+                {
+                    var t = db.Sensors.FirstOrDefault(f => f.GuidID == current.GuidID);
+                    if (t == null)
+                    {
+                        current.UserId = 0;
+                        db.Sensors.Add(current);
+                    }
+                    else
+                    {
+                        t.SensorId = current.SensorId;
+                        t.UserId = current.UserId;
+                        t.CRC = current.CRC;
+                        t.Label = current.Label;
+                        t.UserId = 0;
+                        t.Collector = current.Collector;
+                        db.Sensors.Attach(t);
+                        db.Entry<Sensor>(t).State = EntityState.Modified;
+                    }
+
+                    var info2 = db.Sensors.Where(w => w.SensorId == current.SensorId).FirstOrDefault();
+                    if (info2 != null && !info2.GuidID.Equals(current.GuidID))
+                    {
+                        info2.SensorId = "";
+                        db.Sensors.Attach(info2);
+                        db.Entry(info2).State = EntityState.Modified;
+                    }
+
+                }
+                try
+                {
+                    return db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
 
     }
 }

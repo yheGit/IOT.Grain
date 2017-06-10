@@ -166,7 +166,8 @@ namespace Net66.Core.SysSecCore
                     info.NickName = _entity.NickName;
                     info.LoginID = _entity.LoginID;
                     info.State = _entity.State;//是否开启
-                    info.Password = _entity.Password; 
+                    if(!string.IsNullOrEmpty(_entity.Password))
+                        info.Password = _entity.Password; 
                     info.PhoneNumber = _entity.PhoneNumber;
                     info.Remark = _entity.Remark;
                     info.RoleId = _entity.RoleId;

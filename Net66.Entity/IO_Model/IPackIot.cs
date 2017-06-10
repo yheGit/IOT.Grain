@@ -46,6 +46,13 @@ public class ICollector
     /// </summary>
     public string temp { get; set; }
 
+    /// <summary>
+    /// 1温度、 2ID、3线编号,
+    /// </summary>
+    public string type { get; set; }
+
+    public string label { get; set; }
+
 }
 
 /// <summary>
