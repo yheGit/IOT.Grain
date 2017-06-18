@@ -76,6 +76,7 @@
     <Compile Include="vxin\SecurityUtility.cs" />
     <Compile Include="vxin\Signature.cs" />
     <Compile Include="vxin\UploadHelper.cs" />
+    <Compile Include="vxin\VxinMsg.cs" />
     <Compile Include="vxin\VxinUtils.cs" />
     <Compile Include="WebHelper.cs" />
   </ItemGroup>

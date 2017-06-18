@@ -11,7 +11,8 @@ namespace Net66.Comm.vxin
 {
     public class VxinUtils
     {
-        public static void SendVoiceMsgToVxUser(string _json)
+        //发消息给微信用户
+        public static void SendMsgToVxUser(string _json)
         {
             var access_token = GetAccess_token(false);
             var url = Helper.SendMsg_Url + access_token;
@@ -20,7 +21,9 @@ namespace Net66.Comm.vxin
             if (isCreateToken == true)
             {
                 GetAccess_token(true);
-                SendVoiceMsgToVxUser(_json);
+                SendMsgToVxUser(_json);
+
+                //VxinMsg =>  _json
             }
         }
 
@@ -106,7 +109,7 @@ namespace Net66.Comm.vxin
             }
             catch (Exception ex)
             {
-                Utils.ExceptionLog(ex,"GetMenuToken获取二维码失败:" + ex.Message.ToString());
+                Utils.ExceptionLog(ex, "GetMenuToken获取二维码失败:" + ex.Message.ToString());
                 return false;
             }
         }
@@ -162,14 +165,14 @@ namespace Net66.Comm.vxin
                     if (error.Equals("40001") || error.Equals("42001"))
                         GetAccess_token(true);
 
-                    Utils.PrintLog("VxinUtils"+ ele + "获取二维码失败,GetQrcode方法内的ticket为空,result：" + result + ",access_token：" + access_token);
+                    Utils.PrintLog("VxinUtils" + ele + "获取二维码失败,GetQrcode方法内的ticket为空,result：" + result + ",access_token：" + access_token);
                     return "";
                 }
                 return url.ToString();
             }
             catch (Exception ex)
             {
-                Utils.ExceptionLog(ex,"VxinUtils"+ ele + "获取二维码失败:" + ex.Message.ToString());
+                Utils.ExceptionLog(ex, "VxinUtils" + ele + "获取二维码失败:" + ex.Message.ToString());
                 expire_seconds = 0;
                 return "";
             }
@@ -227,6 +230,6 @@ namespace Net66.Comm.vxin
                 return result;
             }
         }
-     
+
     }
 }

@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="AlarmCore.cs" />
     <Compile Include="CollectorCore.cs" />
+    <Compile Include="CommonCore.cs" />
     <Compile Include="GranaryCore.cs" />
     <Compile Include="HeapCore.cs" />
     <Compile Include="Interface\IAlarmCore.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="SysSecCore\MenuRoleOperationCore.cs" />
     <Compile Include="SysSecCore\OperationCore.cs" />
     <Compile Include="SysSecCore\RoleCore.cs" />
+    <Compile Include="SysSecCore\UserVxinInfoCore.cs" />
     <Compile Include="SysSecCore\UserInfoCore.cs" />
     <Compile Include="SysSecCore\UserGranaryRightsCore.cs" />
     <Compile Include="WareHouseCore.cs" />

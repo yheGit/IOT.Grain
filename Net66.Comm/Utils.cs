@@ -582,6 +582,27 @@ namespace Net66.Comm
             }
         }
 
+        /// <summary>
+        /// 定时
+        /// </summary>
+        public static int TimingClock
+        {
+            get
+            {
+                try
+                {
+                    var val = ConfigurationManager.AppSettings["TimingClock"].ToString();
+                    if (!string.IsNullOrEmpty(val))
+                        return TypeParse.StrToInt(val, 3600 * 1000);
+                    return 3600*1000;
+                }
+                catch
+                {
+                    return 3600 * 1000;
+                }
+            }
+        }
+
 
         #endregion
 

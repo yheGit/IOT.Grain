@@ -29,5 +29,7 @@ namespace Net66.Entity.Models
         public Nullable<int> IsActive { get; set; }
         public Nullable<int> IsBad { get; set; }
         public string GuidID { get; set; }
+        public string InstallDate { get; set; }
+
     }
 }

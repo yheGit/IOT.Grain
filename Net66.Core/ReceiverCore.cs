@@ -27,6 +27,9 @@ namespace Net66.Core
             tRepository = _tRepository;
         }
 
+        /// <summary>
+        /// an zhuang shoujiqi
+        /// </summary>
         public bool Install(IReceiver _entity, out string c_short)
         {
             var reint = 0;
@@ -62,7 +65,7 @@ namespace Net66.Core
             //reint = rRepository.AddDelete(addList, selectKey, "InstallDate");
             try
             {
-                reint = new Data.Context.DbEntity().AddOrUpdateReceiver(model);
+                reint = new Data.Context.DbEntity().AddOrUpdateReceiver(model);                
             }
             catch (Exception ex)
             {

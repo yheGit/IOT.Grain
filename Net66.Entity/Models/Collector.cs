@@ -10,13 +10,19 @@ namespace Net66.Entity.Models
         //public string H_Number { get; set; }
         public int R_Code { get; set; }
         public string InstallDate { get; set; }
-        public Nullable<int> UserId { get; set; }//
-        public string HeapNumber { get; set; }//
+        public Nullable<int> UserId { get; set; }
+        public string HeapNumber { get; set; }
         public Nullable<decimal> Voltage { get; set; }
         public int IsActive { get; set; }
         public string SensorIdArr { get; set; }
         public int Sublayer { get; set; }
         public string GuidID { get; set; }
-        public int BadPoints { get; set; }//
+        public int BadPoints { get; set; }
+
+        /// <summary>
+        /// 一及一线时用，一机多线时传零
+        /// </summary>
+        public int? Column { get; set; }
+
     }
 }

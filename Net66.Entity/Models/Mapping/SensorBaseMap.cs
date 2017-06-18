@@ -27,6 +27,8 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.SSequen).HasColumnName("SSequen");
             this.Property(t => t.SLineCode).HasColumnName("SLineCode");
             this.Property(t => t.StampTime).HasColumnName("StampTime");
+            this.Property(t => t.SCount).HasColumnName("SCount");
+            this.Property(t => t.SCpuOrg).HasColumnName("SCpuOrg");
         }
     }
 }

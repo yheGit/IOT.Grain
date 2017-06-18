@@ -1,5 +1,6 @@
 ﻿using IOT.RightsSys.Entity;
 using Net66.Comm;
+using Net66.Comm.vxin;
 using Net66.Data.Base;
 using Net66.Entity.IO_Model;
 using Net66.Entity.Models;
@@ -14,6 +15,44 @@ namespace Net66.Data.Context
 {
     public class DbEntity
     {
+
+        /// <summary>
+        /// 定时发送消息
+        /// </summary>
+        public void DelayedSendingMsg()
+        {
+
+            using (DbSysSEC dbEntity = new DbSysSEC("DB_SEC"))
+            {
+                //var uplist= new List<PushAlarmMsg>();
+                var list = dbEntity.PushAlarmMsgs.Where(w => w.IsSend == 0).ToList() ?? new List<PushAlarmMsg>();
+                foreach (var mode in list)
+                {
+                    mode.IsSend = 1;
+                    //uplist.Add(mode);
+                    dbEntity.PushAlarmMsgs.Attach(mode);
+                    dbEntity.Entry(mode).State = EntityState.Modified;
+                    #region Vxin
+                    var vxinJson = JsonConvertHelper.SerializeObjectNo(new VxinMsg()
+                    {
+                        touser = mode.VxinID,
+                        msgtype = "text",
+                        text = new MsgText(mode.MsgConn)
+                    });
+                    VxinUtils.SendMsgToVxUser(vxinJson);
+                    #endregion
+
+                    #region SMS
+                    var tels = "13560709956;" + mode.LoginID;
+                    if (Utils.DebugApp)
+                        tels = "13560709956;";
+                    NetSendMsg.DirectSend(tels, mode.MsgConn, 1);
+                    #endregion
+                }
+
+                dbEntity.SaveChanges();
+            }
+        }
 
 
         /// <summary>
@@ -102,6 +141,8 @@ namespace Net66.Data.Context
                     var uInfo = users.FirstOrDefault(f => f.Id == ur.UserId);
                     if (uInfo == null)
                         continue;
+                    var vxinid = dbEntity.UserVxinInfos.FirstOrDefault(f => f.UserLoginID == uInfo.LoginID) == null ? "" : dbEntity.UserVxinInfos.FirstOrDefault(f => f.UserLoginID == uInfo.LoginID).XvinID;
+
                     var msg = "您好，您负责的" + ur.GranaryNumber + "存在坏点，请及时核查。";
 
                     pushList.Add(new PushAlarmMsg()
@@ -111,6 +152,7 @@ namespace Net66.Data.Context
                         LoginID = uInfo.LoginID,
                         MsgConn = msg,
                         Type = 1,
+                        VxinID = vxinid,
                         //SendTime=DateTime.Now.ToString("yyyy -MM-dd HH: mm:ss")
                         SendTime = DateTime.Now
                     });
@@ -329,6 +371,39 @@ namespace Net66.Data.Context
         }
 
         /// <summary>
+        /// 安装或更新Collector 2017-06-18 15:32:20
+        /// </summary>
+        public int UpdateCollector(List<Collector> list)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                foreach (var current in list)
+                {
+                    var t = db.Collectors.FirstOrDefault(f => f.GuidID == current.GuidID);
+                    if (t != null)
+                    {
+                        //t.CPUId = current.CPUId;
+                        //t.InstallDate = current.InstallDate;
+                        t.SensorIdArr = current.SensorIdArr;
+                        //t.Sublayer = current.Sublayer;
+                        //t.UserId = 0;
+                        //t.Voltage = 0;
+                        db.Collectors.Attach(t);
+                        db.Entry<Collector>(t).State = EntityState.Modified;
+                    }
+                }
+                try
+                {
+                    return db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
+
+        /// <summary>
         /// 安装或更新Sensor  2017-6-9 17:59:38
         /// </summary>
         public int AddUpdateSensor(List<Sensor> list)
@@ -349,12 +424,12 @@ namespace Net66.Data.Context
                         t.UserId = current.UserId;
                         t.CRC = current.CRC;
                         t.Label = current.Label;
-                        t.UserId = 0;
                         t.Collector = current.Collector;
                         db.Sensors.Attach(t);
                         db.Entry<Sensor>(t).State = EntityState.Modified;
                     }
 
+                    #region 于老位置摘除传感器 2017-6-08 11:04:05
                     var info2 = db.Sensors.Where(w => w.SensorId == current.SensorId).FirstOrDefault();
                     if (info2 != null && !info2.GuidID.Equals(current.GuidID))
                     {
@@ -362,6 +437,7 @@ namespace Net66.Data.Context
                         db.Sensors.Attach(info2);
                         db.Entry(info2).State = EntityState.Modified;
                     }
+                    #endregion
 
                 }
                 try
@@ -374,6 +450,47 @@ namespace Net66.Data.Context
                 }
             }
         }
+
+        /// <summary>
+        /// 给线备案 2017-5-18 09:58:00
+        /// </summary>
+        public int AddSbSensor(List<SensorBase> addlist)
+        {
+            using (GrainContext db = new GrainContext())
+            {
+                foreach (var current in addlist)
+                {
+                    var t = db.SensorBase.FirstOrDefault(f => f.SCpu == current.SCpu);
+                    if (t == null)
+                    {
+                        db.SensorBase.Add(current);
+                    }
+                    else
+                    {
+                        t.SCpu = current.SCpu;
+                        t.SCpuOrg = current.SCpuOrg;
+                        t.SLineCode = current.SLineCode;
+                        t.SSequen = current.SSequen;
+                        t.SCount = current.SCount;
+                        t.StampTime = current.StampTime;
+                        db.SensorBase.Attach(t);
+                        db.Entry<SensorBase>(t).State = EntityState.Modified;
+                    }
+                }
+                try
+                {
+                    return db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return -22;
+                }
+            }
+        }
+
+
+
+
 
     }
 }

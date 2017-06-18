@@ -1,5 +1,7 @@
-﻿using Net66.Comm;
+﻿using IOT.RightsSys.Entity;
+using Net66.Comm;
 using Net66.Comm.vxin;
+using Net66.Core.SysSecCore;
 using Net66.Service.Ashx.Messages;
 using System;
 using System.Collections.Generic;
@@ -90,6 +92,15 @@ namespace Net66.Service.Ashx.Controls
             //{
             //    BindText.GetBindingText(deviceId, openId);
             //}
+            if (true)
+            {
+               var rebit= new UserVxinInfoCore().AddVxin(new UserVxinInfo() {
+                    UserLoginID = "13488091880",
+                    XvinID = "openid",
+                    SendTime=DateTime.Now
+                });
+            }
+
            
             return response;
         }

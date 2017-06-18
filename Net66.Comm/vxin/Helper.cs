@@ -82,7 +82,8 @@ namespace Net66.Comm.vxin
         /// 微信向用户发送消息
         /// </summary>
         public static string SendMsg_Url { get { return "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="; } }
-      
+        //https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=XHuQTIJr7NKmOvFQ4O2QXst_scnxIgqqhPy0rfbyBGgbzXt86x8NomCMLoFkCg9Yrnf_bsDS3WDB7D7fczwY93pZzHUwALPKpXu_tz0RGCRlam7WJcHY-E_0z0AwhXtiSVRgAHAADZ
+
 
         /// <summary>
         /// 微信获取用户信息

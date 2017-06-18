@@ -101,6 +101,11 @@ public class IReceiver
     /// 收集器自己的温度值（仓外温度）
     /// </summary>
     public string temp { get; set; }
+    /// <summary>
+    /// 指定分机所在排
+    /// </summary>
+    public string column { get; set;  }
+
 }
 
 /// <summary>

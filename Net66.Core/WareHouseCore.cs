@@ -377,10 +377,10 @@ namespace Net66.Core
             #endregion //坏点数
 
             //提供获取有效温度
-            var sridlist = srlist.Select(s => s.SensorId).ToList();
+            var sridlist = srlist.Select(s => s.GuidID).ToList();
 
             return rList.Select(s => new OGrainsReport(temps.Where(w => w.WH_Number == s.Number).ToList()
-                , humtys.Where(w => w.WH_Number == s.Number).ToList() ,sridlist)
+                , humtys.Where(w => w.WH_Number == s.Number).ToList(), s.Type ?? 0, sridlist)
             {
                 Number = s.Number,
                 Name = s.Name,
@@ -424,7 +424,7 @@ namespace Net66.Core
             #endregion //坏点数
 
             //提供获取有效温度
-            var sridlist = srlist.Select(s => s.SensorId).ToList();          
+            var sridlist = srlist.Select(s => s.GuidID).ToList();          
 
             #region 
             return granaryList.Select(s => new OGranaryReport(temps.Where(w => w.G_Number == s.Number).ToList()

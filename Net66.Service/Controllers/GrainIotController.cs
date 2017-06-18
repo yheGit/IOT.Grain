@@ -34,19 +34,22 @@ namespace Net66.Service.Controllers
         [HttpPost]
         public string PostPackTest(IPacks _pack)
         {
+            string reStr = string.Empty;
             var pkentity = JsonConvertHelper.SerializeObjectNo(_pack);
             Utils.PrintLog("pkentity" + pkentity, "PostPack2");
             if (_pack == null)
                 return string.Empty;
-            bool rebit = false;          
+
+            bool rebit = false;
 
             #region 批量采集温度
 
             var clist = _pack.Measurers;
             if (clist != null && clist.Count > 0)
-            {                
-                rebit = collectorCore.AddTemp(clist);
-                return string.Empty;
+            {
+                //rebit = collectorCore.AddTemp(clist);
+                reStr = collectorCore.UploadMeasurers(clist);
+                return reStr;
             }
 
             #endregion
@@ -61,7 +64,11 @@ namespace Net66.Service.Controllers
                 if (type == 2)
                     rebit = receiverCore.Install(rmodel, out c_short);//安装收集器
                 else if (type == 1)
-                    rebit = collectorCore.Install(rmodel);//安装采集器
+                {
+                    reStr = collectorCore.CollectorInstall(rmodel);//安装采集器
+                    return reStr;
+
+                }
                 else if (type == 0)//更新温、湿度（包含室内外）
                 {
                     rebit = receiverCore.AddHum(rmodel);
@@ -91,23 +98,25 @@ namespace Net66.Service.Controllers
 
         /// <summary>
         /// 200成功，203失败(IOT设备调用2017-03-10 17:12:46)
+        /// 正式
         /// </summary>
         [HttpGet]
         public string PostPack2(string _pack)
         {
             if (string.IsNullOrEmpty(_pack))
                 return string.Empty;
-
+            string reStr = string.Empty;
             Utils.PrintLog("pkentity" + _pack, "PostPack2");
-            var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);          
+            var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);
             bool rebit = false;
 
             #region 批量采集温度
             var clist = pkentity.Measurers;
             if (clist != null && clist.Count > 0)
             {
-                rebit = collectorCore.AddTemp(clist);
-                return string.Empty;
+                //rebit = collectorCore.AddTemp(clist);
+                reStr = collectorCore.UploadMeasurers(clist);
+                return reStr;
             }
             #endregion
 
@@ -120,7 +129,10 @@ namespace Net66.Service.Controllers
                 if (type == 2)
                     rebit = receiverCore.Install(rmodel, out c_short);
                 else if (type == 1)
-                    rebit = collectorCore.Install(rmodel);
+                {
+                    reStr = collectorCore.CollectorInstall(rmodel);
+                    return reStr;
+                }
                 else if (type == 0)//更新湿度
                 {
                     rebit = receiverCore.AddHum(rmodel);
@@ -130,7 +142,7 @@ namespace Net66.Service.Controllers
                 if (rebit == false)
                     return string.Empty;
                 else
-                    return !string.IsNullOrEmpty(c_short) ? ("BSN,"+c_short.PadLeft(4, '0')+",") : string.Empty;
+                    return !string.IsNullOrEmpty(c_short) ? ("BSN," + c_short.PadLeft(4, '0') + ",") : string.Empty;
             }
             #endregion
 
@@ -146,6 +158,7 @@ namespace Net66.Service.Controllers
             return string.Empty;
         }
 
+        #region Test
         /// <summary>
         /// 200成功，203失败(old) 2017-03-12 17:18:09
         /// </summary>
@@ -194,6 +207,8 @@ namespace Net66.Service.Controllers
             #endregion
             return "";
         }
+
+        #endregion
 
         /// <summary>
         /// IOT获取BBD数据 2017-03-15 17:17:51

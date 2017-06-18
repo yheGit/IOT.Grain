@@ -85,6 +85,11 @@ namespace Net66.Data.Context
         /// </summary>
         public DbSet<PushAlarmMsg> PushAlarmMsgs { get; set; }
 
+        /// <summary>
+        /// 用户微信关系表
+        /// </summary>
+        public DbSet<UserVxinInfo> UserVxinInfos { get; set; }
+
 
 
 

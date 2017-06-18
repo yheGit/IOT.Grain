@@ -203,6 +203,7 @@
     </Compile>
     <Compile Include="Base\BaseAuthentication.cs" />
     <Compile Include="Base\Comm.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\FloorController.cs" />
     <Compile Include="Controllers\GrainController.cs" />
     <Compile Include="Controllers\GrainIotController.cs" />
@@ -241,6 +242,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Account\" />
+    <Folder Include="Views\Common\" />
     <Folder Include="Views\Department\" />
     <Folder Include="Views\Floor\" />
     <Folder Include="Views\GrainIot\" />

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace Net66.Core.Interface
 {
-   public interface ICollectorCore
+    public interface ICollectorCore
     {
-       bool Install(IReceiver _entity);
+        string CollectorInstall(IReceiver _entity);
         bool AddTemp(List<ICollector> _list);
+
+        string UploadMeasurers(List<ICollector> _list);
     }
 }

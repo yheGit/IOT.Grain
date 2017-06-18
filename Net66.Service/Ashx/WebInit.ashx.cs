@@ -15,30 +15,31 @@ namespace Net66.Service.Ashx
 
         public void ProcessRequest(HttpContext context)
         {
-            var msg = GetRequest(context);
+            var msg = "hello develeper";
+            //var msg = GetRequest(context);
             //Utils.SetGzip(context);
             //context.Response.Clear();
             //context.Response.Charset = "UTF-8";
             context.Response.Write(msg);
             //context.Response.End();
-            //http://kimireader-web.kyd2002.com/Ashx/IotInit.ashx
+            ////http://kimireader-web.kyd2002.com/Ashx/IotInit.ashx
         }
 
         private string GetRequest(HttpContext context)
         {
             var method = context.Request.HttpMethod.ToUpper();
-            ////验证签名
-            //if (method == "GET")
-            //{
-            //    var signature = Utils.GetString("signature");
-            //    var timestamp = Utils.GetString("timestamp");
-            //    var nonce = Utils.GetString("nonce");
-            //    var token = Helper.WeiXinToken;
-            //    if (Signature.ToCheckSignature(signature, timestamp, nonce, token))
-            //        return Utils.GetString("echostr");
-            //    else
-            //        return "error";
-            //}
+            //验证签名
+            if (method == "GET")
+            {
+                var signature = Utils.GetString("signature");
+                var timestamp = Utils.GetString("timestamp");
+                var nonce = Utils.GetString("nonce");
+                var token = Helper.WeiXinToken;
+                if (Signature.ToCheckSignature(signature, timestamp, nonce, token))
+                    return Utils.GetString("echostr");
+                else
+                    return "error";
+            }
             //处理消息
             if (method == "POST")
                 return Controls.Handler.CreateHandler(context.Request);

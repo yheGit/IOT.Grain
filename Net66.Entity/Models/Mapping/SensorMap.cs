@@ -27,6 +27,9 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.GuidID)
                 .HasMaxLength(50);
 
+            this.Property(t => t.InstallDate)
+              .HasMaxLength(50);
+
             // Table & Column Mappings
             this.ToTable("Sensor");
             this.Property(t => t.ID).HasColumnName("ID");
@@ -42,8 +45,9 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.MinTemp).HasColumnName("MinTemp");
             this.Property(t => t.UserId).HasColumnName("UserId");
             this.Property(t => t.IsActive).HasColumnName("IsActive");
-            this.Property(t => t.GuidID).HasColumnName("GuidID");//
-            this.Property(t => t.IsBad).HasColumnName("IsBad");//
+            this.Property(t => t.GuidID).HasColumnName("GuidID");
+            this.Property(t => t.IsBad).HasColumnName("IsBad");
+            this.Property(t => t.InstallDate).HasColumnName("InstallDate");
         }
     }
 }

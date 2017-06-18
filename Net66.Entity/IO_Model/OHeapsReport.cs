@@ -13,9 +13,9 @@ namespace Net66.Entity.IO_Model
 
         public OHeapReport(List<string> ckfenji, List<Sensor> sensors, List<Temperature> temps, decimal outtemp)
         {
-            var curSensors = sensors.Where(w => ckfenji.Contains(w.Collector)).Select(s => s.SensorId).ToList();
+            var curSensors = sensors.Where(w => ckfenji.Contains(w.Collector)).Select(s => s.GuidID).ToList();
             var headTemps = temps.Where(a => curSensors.Contains(a.PId) && a.Type == 0).ToList();
-            //Type 0传感器、1采集器、2收集器（仓外）
+            //Type 0传感器、1采集器(堆平均)、2收集器（仓内）、3收集器（仓外）
             //var intemp = Math.Round(headTemps.Average(v => v.Temp) ?? 0, 2);//0、堆位的平均温度， 1、堆位的仓内温度取，所在廒间的所有温度的平均值            
             var intemp = Math.Round(temps.Where(w=>w.RealHeart==0&&w.Type==2).Average(v => v.Temp) ?? 0, 2);
             var maxTemp = Math.Round(headTemps.Max(m => m.Temp) ?? 0, 2);//堆位的最高温度，也就是传感器的最高温度
