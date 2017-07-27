@@ -16,6 +16,7 @@ namespace Net66.Comm
         private static HttpWebRequest httpWReq;
         private static HttpWebResponse httpWResp;
         private static CookieContainer cookiecn = null;
+        private static int count = 0;
 
         public static CookieContainer Cookiecon
         {
@@ -32,6 +33,11 @@ namespace Net66.Comm
         //发送短信
         public static string DirectSend(string Phones, string Content, int SendType = 1, string SendTime = "", string PostFixNumber = "")
         {
+            //每天上限30条
+            if (count > 30)
+                return "";
+            if (Utils.OPENMSG == false)
+                return "";
             var userID = Utils.GetSendUserID;
             var account = Utils.GetSendAccount;
             var password = Utils.GetSendPassword;
@@ -62,7 +68,8 @@ namespace Net66.Comm
                 XmlNode SendFlag = doc.SelectSingleNode("//sms:RetCode", nsmgr);
                 if (SendFlag.InnerText == "Sucess")
                 {
-                    
+                    count++;
+
                     rtustr = "发送成功!";
                 }
                 else

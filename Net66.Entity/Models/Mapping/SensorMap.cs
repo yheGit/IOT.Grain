@@ -23,6 +23,8 @@ namespace Net66.Entity.Models.Mapping
             this.Property(t => t.Collector)
                 .HasMaxLength(50);
 
+            this.Property(t => t.Sequen)
+              .HasMaxLength(50);
 
             this.Property(t => t.GuidID)
                 .HasMaxLength(50);

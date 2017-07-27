@@ -32,8 +32,6 @@ namespace Net66.Core.SysSecCore
             }
         }
 
-
-
         /// <summary>
         /// 验证用户名和密码是否正确
         /// </summary>

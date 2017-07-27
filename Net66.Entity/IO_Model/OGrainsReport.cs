@@ -35,7 +35,7 @@ namespace Net66.Entity.IO_Model
         /// 仓号
         /// </summary>
         public string Number { get; set; }
-        public string Name { get; set; }//
+        public string Name { get; set; }
         public string UserId { get; set; }
         /// <summary>
         /// 最高温度

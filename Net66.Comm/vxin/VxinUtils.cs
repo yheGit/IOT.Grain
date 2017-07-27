@@ -22,7 +22,6 @@ namespace Net66.Comm.vxin
             {
                 GetAccess_token(true);
                 SendMsgToVxUser(_json);
-
                 //VxinMsg =>  _json
             }
         }

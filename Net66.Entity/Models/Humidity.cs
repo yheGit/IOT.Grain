@@ -14,5 +14,12 @@ namespace Net66.Entity.Models
         public string WH_Number { get; set; }
         public string G_Number { get; set; }
         public Nullable<int> RealHeart { get; set; }
+
+        /// <summary>
+        /// PID
+        /// </summary>
+        public string H_Number { get; set; }
+
+        public string TimeFlag { get; set; }
     }
 }

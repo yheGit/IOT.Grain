@@ -9,6 +9,7 @@ using System.Net;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
+using System.Web.UI.WebControls;
 
 
 /******************************************
@@ -24,6 +25,99 @@ namespace Net66.Comm
 {
     public class Utils
     {
+        #region  获取0点时间
+
+
+        ////获得当天0点时间 
+        //public static int getTimesmorning()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(Calendar.HOUR_OF_DAY, 0);
+        //    cal.set(Calendar.SECOND, 0);
+        //    cal.set(Calendar.MINUTE, 0);
+        //    cal.set(Calendar.MILLISECOND, 0);
+        //    return (int)(cal.getTimeInMillis() / 1000);
+        //}
+        ////获得当天24点时间 
+        //public static int getTimesnight()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(Calendar.HOUR_OF_DAY, 24);
+        //    cal.set(Calendar.SECOND, 0);
+        //    cal.set(Calendar.MINUTE, 0);
+        //    cal.set(Calendar.MILLISECOND, 0);
+        //    return (int)(cal.getTimeInMillis() / 1000);
+        //}
+        ////获得本周一0点时间 
+        //public static int getTimesWeekmorning()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        //    cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        //    return (int)(cal.getTimeInMillis() / 1000);
+        //}
+        ////获得本周日24点时间 
+        //public static int getTimesWeeknight()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        //    cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        //    return (int)((cal.getTime().getTime() + (7 * 24 * 60 * 60 * 1000)) / 1000);
+        //}
+        ////获得本月第一天0点时间 
+        //public static int getTimesMonthmorning()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        //    cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+        //    return (int)(cal.getTimeInMillis() / 1000);
+        //}
+        ////获得本月最后一天24点时间 
+        //public static int getTimesMonthnight()
+        //{
+        //    Calendar cal = Calendar.getInstance();
+        //    cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        //    cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        //    cal.set(Calendar.HOUR_OF_DAY, 24);
+        //    return (int)(cal.getTimeInMillis() / 1000);
+        //}
+
+
+        #endregion 
+
+
+        #region 得到每周的第一天和最后一天
+        /// <summary>  
+        /// 得到本周第一天(以星期一为第一天)  
+        /// </summary>  
+        public static DateTime GetWeekFirstDayMon(DateTime datetime)
+        {
+            //星期一为第一天  
+            int weeknow = Convert.ToInt32(datetime.DayOfWeek);
+
+            //因为是以星期一为第一天，所以要判断weeknow等于0时，要向前推6天。  
+            weeknow = (weeknow == 0 ? (7 - 1) : (weeknow - 1));
+            int daydiff = (-1) * weeknow;
+
+            //本周第一天  
+            string FirstDay = datetime.AddDays(daydiff).ToString("yyyy-MM-dd");
+            return Convert.ToDateTime(FirstDay);
+        }
+        /// <summary>  
+        /// 得到本周最后一天(以星期天为最后一天)  
+        /// </summary>  
+        public static DateTime GetWeekLastDaySun(DateTime datetime)
+        {
+            //星期天为最后一天  
+            int weeknow = Convert.ToInt32(datetime.DayOfWeek);
+            weeknow = (weeknow == 0 ? 7 : weeknow);
+            int daydiff = (7 - weeknow);
+
+            //本周最后一天  
+            string LastDay = datetime.AddDays(daydiff).ToString("yyyy-MM-dd");
+            return Convert.ToDateTime(LastDay);
+        }
+        #endregion
 
         /// <summary>
         /// 有序连接字符串 by yhw 2017-3-27 11:46:58
@@ -515,6 +609,27 @@ namespace Net66.Comm
                 try
                 {
                     var val = ConfigurationManager.AppSettings["Debug"].ToString();
+                    if (!string.IsNullOrEmpty(val) && val.ToUpper().Equals("TRUE"))
+                        return true;
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// true发送，false不发送
+        /// </summary>
+        public static bool OPENMSG
+        {
+            get
+            {
+                try
+                {
+                    var val = ConfigurationManager.AppSettings["OPENMSG"].ToString();
                     if (!string.IsNullOrEmpty(val) && val.ToUpper().Equals("TRUE"))
                         return true;
                     return false;

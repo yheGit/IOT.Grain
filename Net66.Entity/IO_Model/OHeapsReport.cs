@@ -20,7 +20,8 @@ namespace Net66.Entity.IO_Model
             var intemp = Math.Round(temps.Where(w=>w.RealHeart==0&&w.Type==2).Average(v => v.Temp) ?? 0, 2);
             var maxTemp = Math.Round(headTemps.Max(m => m.Temp) ?? 0, 2);//堆位的最高温度，也就是传感器的最高温度
             var minTemp = Math.Round(headTemps.Min(m => m.Temp) ?? 0, 2);//最低温度
-            AverageTemperature = Math.Round((decimal)((maxTemp + minTemp) / 2), 2);
+            //AverageTemperature = Math.Round((decimal)((maxTemp + minTemp) / 2), 2);
+            AverageTemperature = Math.Round((decimal)(headTemps.Average(a=>a.Temp)??0), 2);
             InSideTemperature = intemp;
             Maximumemperature = maxTemp;
             MinimumTemperature = minTemp;

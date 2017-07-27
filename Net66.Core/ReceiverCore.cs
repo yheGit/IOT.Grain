@@ -30,8 +30,16 @@ namespace Net66.Core
         /// <summary>
         /// an zhuang shoujiqi
         /// </summary>
-        public bool Install(IReceiver _entity, out string c_short)
+        public bool InstallReceiver(IReceiver _entity, out string c_short)
         {
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(_entity);
+                Utils.PrintLog(msg, "InstallReceiver-安装主机", "DebugLog");
+            }
+            #endregion //调试打印日志
+
             var reint = 0;
             c_short = "ff";
             var datenow = Utils.GetServerDateTime();
@@ -57,15 +65,9 @@ namespace Net66.Core
                 Humidity = Comm.SysApi.Tools.GetTemp(_entity.hum, 0),//Convert.ToDecimal(_entity.hum),
                 Temperature = temp// Convert.ToDecimal(_entity.temp)
             };
-            ////var addList = new List<Receiver>() { model };
-            ////var selectKey = new string[] { "GuidID" };
-            //var selectKey = new string[] { "CPUId" };
-            //var updateKey = new string[] { "CPUId", "Humidity", "IsActive", "Temperature" };
-            ////reint = rRepository.AddUpdate(addList, selectKey, updateKey, "InstallDate");
-            //reint = rRepository.AddDelete(addList, selectKey, "InstallDate");
             try
             {
-                reint = new Data.Context.DbEntity().AddOrUpdateReceiver(model);                
+                reint = new Data.Context.DbEntity().AddOrUpdateReceiver(model);
             }
             catch (Exception ex)
             {
@@ -74,14 +76,6 @@ namespace Net66.Core
 
             if (reint > 0)
             {
-                //var reId = addList.FirstOrDefault().ID;
-                //if (reId == 0)
-                //{
-                //    //var rInfo = rRepository.Get(g => g.GuidID == guid);
-                //    var rInfo = rRepository.Get(g => g.CPUId == cupid);
-                //    if (rInfo != null)
-                //        reId = rInfo.ID;
-                //}
                 var reId = reint;
                 c_short = TypeParse._10NSC_To_16NAC(reId);
                 return true;
@@ -95,8 +89,16 @@ namespace Net66.Core
         /// </summary>
         /// <param name="_entity"></param>
         /// <returns></returns>
-        public bool AddHum(IReceiver _entity)
+        public string AddTemAndHum(IReceiver _entity)
         {
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(_entity);
+                Utils.PrintLog(msg, "AddTemAndHum-添加室(内)外(温)湿度", "DebugLog");
+            }
+            #endregion //调试打印日志
+
             var datenow = Utils.GetServerDateTime();
             var datenowStr = datenow.ToString();
             var temp = Convert.ToDecimal(_entity.temp);//Convert.ToDecimal(Convert.ToDouble(_entity.temp)*175.72/0x10000-46.85);
@@ -109,6 +111,7 @@ namespace Net66.Core
                 var wh_number = rInfo.W_Number;
                 var f_number = rInfo.F_Number;
                 var g_number = rInfo.Number;
+                var h_number = "";
                 #region  仓内、外湿度              
                 var ttype = 0;//仓内湿度
                 var temptype = 2;//仓内温度
@@ -117,8 +120,7 @@ namespace Net66.Core
                     ttype = 1;// 仓外湿度
                     temptype = 3;//仓外温度
                     g_number = "0";
-                }
-
+                }   
                 var receierid = TypeParse._16NAC_To_10NSC(_entity.c_short);
                 var addEntity = new Humidity()
                 {
@@ -129,10 +131,15 @@ namespace Net66.Core
                     Type = ttype,  //0仓内湿度，1仓外湿度
                     G_Number = g_number,
                     RealHeart = 0,
-                    WH_Number = wh_number
+                    WH_Number = wh_number,
+                    H_Number="-",
+                    TimeFlag="-"
                 };
-                reint = hRepository.AddUpdate(new List<Humidity>() { addEntity },p=>p.RealHeart==0&&p.Type==ttype&&p.ReceiverId== receierid
+                reint = hRepository.AddUpdate(new List<Humidity>() { addEntity }, p => p.RealHeart == 0 && p.Type == ttype && p.ReceiverId == receierid
                 , "RealHeart", 1, "StampTime");
+
+                //Action<string, string, string, decimal, int> pushHums = new Data.Context.DbEntity().AddHumsChartData;
+                //pushHums.BeginInvoke(wh_number, g_number, "", hum, ttype, ar => pushHums.EndInvoke(ar), null);
                 #endregion
 
                 #region 仓内、外温度
@@ -145,15 +152,22 @@ namespace Net66.Core
                         RealHeart = 0,
                         Temp = temp,
                         G_Number=g_number,
-                        WH_Number=wh_number//
+                        WH_Number=wh_number,
+                        H_Number="-",
+                        TimeFlag="-"
                     } }, p => (p.RealHeart == 0 && p.Type == temptype && p.PId.Equals(receierid.ToString())), "RealHeart", 1, "StampTime");
+
+                new Data.Context.DbEntity().AddTempsChartData(wh_number, g_number, "-", receierid.ToString(), temptype);
+                //Action<string, string, string,string, int> pushTemps = new Data.Context.DbEntity().AddTempsChartData;
+                //pushTemps.BeginInvoke(wh_number, g_number, "", receierid.ToString(), temptype, ar => pushTemps.EndInvoke(ar), null);
 
                 #endregion
 
-                return 1 > 0;
+                if (1 > 0)
+                    return datenowStr;
             }
 
-            return 0 > 0;
+            return "";
         }
 
 

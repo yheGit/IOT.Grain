@@ -35,6 +35,10 @@ namespace Net66.Core.Interface
 
         List<Temperature> GetSensorsChart(string number, int type = 0);
 
+        List<Temperature> GetHeapTempsChart2(string number, int type = 0);
+
+        List<Temperature> GetSensorsChart2(string number, int type = 0);
+
         bool AddList2(List<Granary> _addList);
 
         bool IsExist2(List<string> _params);

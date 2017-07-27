@@ -1,4 +1,5 @@
-﻿using Net66.Core.Interface;
+﻿using Net66.Comm;
+using Net66.Core.Interface;
 using Net66.Entity.IO_Model;
 using Net66.Entity.Models;
 using System;
@@ -165,7 +166,21 @@ namespace Net66.Service.Controllers
         {
             if (param == null || param.Count <= 0)
                 return new MobiResult(1009);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(param);
+                Utils.PrintLog(msg, "GetHeapList-获取堆位信息（包含温度信息）", "InParamLog");
+            }
+            #endregion //调试打印日志
             var reList = granaryCore.GetList(param);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(reList);
+                Utils.PrintLog(msg, "GetHeapList-获取堆位信息（包含温度信息）", "OutParamLog");
+            }
+            #endregion //调试打印日志
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
@@ -180,7 +195,21 @@ namespace Net66.Service.Controllers
         {
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
-            var reList = granaryCore.GetHeapTempsChart(number,type);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = number;
+                Utils.PrintLog(msg, "GetHeapTempsChart2-获取粮食的三温图", "InParamLog");
+            }
+            #endregion //调试打印日志
+            var reList = granaryCore.GetHeapTempsChart2(number,type);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(reList);
+                Utils.PrintLog(msg, "GetHeapTempsChart2-获取粮食的三温图", "OutParamLog");
+            }
+            #endregion //调试打印日志
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
@@ -198,7 +227,29 @@ namespace Net66.Service.Controllers
         {
             if (string.IsNullOrEmpty(sensorId))
                 return new MobiResult(1009);
-            var reList = granaryCore.GetSensorsChart(sensorId, type);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = sensorId;
+                Utils.PrintLog(msg, "GetSensorsChart-获取传感器的折线变化图", "InParamLog");
+            }
+            #endregion //调试打印日志
+            List<Temperature> reList = null;
+            try
+            {
+                reList = granaryCore.GetSensorsChart2(sensorId, type);
+            }
+            catch (Exception ex)
+            {
+                Utils.ExceptionLog(ex, "GetSensorsChart");
+            }
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(reList);
+                Utils.PrintLog(msg, "GetSensorsChart-获取传感器的折线变化图", "OutParamLog");
+            }
+            #endregion //调试打印日志
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else

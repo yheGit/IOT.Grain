@@ -9,7 +9,10 @@ namespace Net66.Entity.Models
         public string SensorId { get; set; }
         public string CRC { get; set; }
         public string Label { get; set; }
-        public Nullable<int> Sequen { get; set; }
+        /// <summary>
+        /// Collector µÄGUID
+        /// </summary>
+        public string Sequen { get; set; }
         public string Collector { get; set; }
         /// <summary>
         /// ´«¸ÐÆ÷±àºÅ

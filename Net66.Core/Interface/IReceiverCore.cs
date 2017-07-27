@@ -8,8 +8,8 @@ namespace Net66.Core.Interface
 {
     public interface IReceiverCore
     {
-        bool Install(IReceiver _entity, out string c_short);
+        bool InstallReceiver(IReceiver _entity, out string c_short);
 
-        bool AddHum(IReceiver _entity);
+        string AddTemAndHum(IReceiver _entity);
     }
 }

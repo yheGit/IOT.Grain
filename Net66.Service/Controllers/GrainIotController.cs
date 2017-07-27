@@ -62,16 +62,16 @@ namespace Net66.Service.Controllers
             {
                 var type = TypeParse.StrToInt(rmodel.type, 0);
                 if (type == 2)
-                    rebit = receiverCore.Install(rmodel, out c_short);//安装收集器
+                    rebit = receiverCore.InstallReceiver(rmodel, out c_short);//安装收集器
                 else if (type == 1)
                 {
                     reStr = collectorCore.CollectorInstall(rmodel);//安装采集器
                     return reStr;
-
                 }
                 else if (type == 0)//更新温、湿度（包含室内外）
                 {
-                    rebit = receiverCore.AddHum(rmodel);
+                    reStr = receiverCore.AddTemAndHum(rmodel);
+                    return reStr;
                 }
                 else // 外网安装用，或者以备后续推行消息指令
                 { }
@@ -106,7 +106,14 @@ namespace Net66.Service.Controllers
             if (string.IsNullOrEmpty(_pack))
                 return string.Empty;
             string reStr = string.Empty;
-            Utils.PrintLog("pkentity" + _pack, "PostPack2");
+            //Utils.PrintLog("pkentity" + _pack, "PostPack2");
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = _pack;//JsonConvertHelper.SerializeObject(_entity);
+                Utils.PrintLog(msg, "PostPack2-IOT交互信息", "DebugLog");
+            }
+            #endregion //调试打印日志
             var pkentity = JsonConvertHelper.DeserializeJsonToObject<IPacks>(_pack);
             bool rebit = false;
 
@@ -127,7 +134,7 @@ namespace Net66.Service.Controllers
             {
                 var type = TypeParse.StrToInt(rmodel.type, 0);
                 if (type == 2)
-                    rebit = receiverCore.Install(rmodel, out c_short);
+                    rebit = receiverCore.InstallReceiver(rmodel, out c_short);
                 else if (type == 1)
                 {
                     reStr = collectorCore.CollectorInstall(rmodel);
@@ -135,7 +142,8 @@ namespace Net66.Service.Controllers
                 }
                 else if (type == 0)//更新湿度
                 {
-                    rebit = receiverCore.AddHum(rmodel);
+                    reStr = receiverCore.AddTemAndHum(rmodel);
+                    return reStr;
                 }
                 else // 外网安装用，或者以备后续推行消息指令
                 { }

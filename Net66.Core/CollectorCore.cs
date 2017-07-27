@@ -38,6 +38,14 @@ namespace Net66.Core
 
         public string CollectorInstall(IReceiver _entity)
         {
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(_entity);
+                Utils.PrintLog(msg, "CollectorInstall-安装分机", "DebugLog");
+            }
+            #endregion //调试打印日志
+
             var reStr = "BAP";
             var reint = 0;
             var datenow = Utils.GetServerTime();
@@ -70,7 +78,7 @@ namespace Net66.Core
                     IsActive = 1
                 } };
                 reint = new Data.Context.DbEntity().AddUpdateCollector(addCollecters);
-                Utils.PrintLog("", "CollectorCore-Install");
+                Utils.PrintLog("reint:" + reint, "CollectorCore-Install");
             }
             else
             {
@@ -104,14 +112,22 @@ namespace Net66.Core
             var datenowStr = datenow.ToString();
             if (_list == null || _list.Count < 0)
                 return string.Empty;
+            var rebit = false;
             foreach (var cmodel in _list)
             {
                 var type = TypeParse.StrToInt(cmodel.type, 0);
 
                 if (type == 1)
                 {
+                    #region  调试打印日志               
+                    if (Utils.DebugApp)
+                    {
+                        var msg = JsonConvertHelper.SerializeObject(cmodel);
+                        Utils.PrintLog(msg, "AddTemps-采集温度", "DebugLog");
+                    }
+                    #endregion //调试打印日志
                     //采集温度
-                    AddTemps(cmodel);
+                    rebit = AddTemps(cmodel);
                     //2017-06-15 11:27:18 废弃采集器的平均温度
                     ////同时更新采集器的温度
                     //var cpuIds = _list.Select(s => s.m_cpuid).ToList();
@@ -120,6 +136,14 @@ namespace Net66.Core
 
                 if (type == 2)
                 {
+                    #region  调试打印日志               
+                    if (Utils.DebugApp)
+                    {
+                        var msg = JsonConvertHelper.SerializeObject(cmodel);
+                        Utils.PrintLog(msg, "AddSensors-将传感器映射到指定位置（这里包含更新分机、给线备案）", "DebugLog");
+                    }
+                    #endregion //调试打印日志
+
                     #region 更新采集器  供后续上传温度使用
                     var sublayer = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);
                     if (sublayer == null)
@@ -147,9 +171,18 @@ namespace Net66.Core
 
                 if (type == 3)
                 {
+                    #region  调试打印日志               
+                    if (Utils.DebugApp)
+                    {
+                        var msg = JsonConvertHelper.SerializeObject(cmodel);
+                        Utils.PrintLog(msg, "AddLineCode-备案传感线", "DebugLog");
+                    }
+                    #endregion //调试打印日志
                     AddLineCode(cmodel);
                 }
             }
+            if (rebit == true)
+                return datenowStr;
 
             return "";
         }
@@ -167,80 +200,104 @@ namespace Net66.Core
             var addTemp = new List<Temperature>();
 
             #region 收集温度
-            if (!string.IsNullOrEmpty(cmodel.c_short) && !string.IsNullOrEmpty(cmodel.temp))
+            if (string.IsNullOrEmpty(cmodel.c_short) || string.IsNullOrEmpty(cmodel.temp))
+                return false;
+
+            #region 基础信息判断
+            var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
+            var rInfo = rRepository.Get(g => g.ID == c_short);//主机
+            var cinfo = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);//分机
+
+            if (rInfo == null || cinfo == null)
             {
-                var c_short = TypeParse._16NAC_To_10NSC(cmodel.c_short);
-                var rInfo = rRepository.Get(g => g.ID == c_short);//主机
-                var cinfo = cRepository.Get(g => g.CPUId == cmodel.m_cpuid);//分机
-
-                if (rInfo == null || cinfo == null)
-                {
-                    Utils.PrintLog("不存在该收集器/采集器的信息，Receiver:" + c_short + ",CollecterID:" + cmodel.m_cpuid, "AddTemp");
-                    return false;
-                }              
-
-                var sensorList = cinfo.SensorIdArr.Split(',').ToList();
-                if (sensorList.Count > 0)
-                {
-                    var sList = sRepository.GetList(g => sensorList.Contains(g.SensorId)) ?? new List<Sensor>();
-                    #region chuanganqi temp
-                    int i = 0;
-                    for (; i < sensorList.Count; i++)
-                    {
-                        var sf = sensorList[i];
-                        #region 将传感器ID转化位物理位置
-                        var sInfo = sList.FirstOrDefault(d => d.SensorId == sf);
-                        if (sInfo == null)
-                            continue;
-                        var pid = sInfo.GuidID;
-                        structList.Add(pid);//将物理结构ID假如集合
-                        #endregion 将传感器ID转化位物理位置
-
-                        var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
-
-                        #region 坏点
-                        if (temp == (decimal)63.75 || temp == (decimal)0)//坏点
-                        {
-                            //badhots.Add(f);
-                            dicBadhots.Add(sf, 1);
-                            continue;
-                        }
-                        else
-                        {
-                            dicBadhots.Add(sf, 0);
-                        }
-                        #endregion 坏点
-
-                        #region 高温红色报警
-
-                        if (temp >= (decimal)35 && temp < (decimal)63.75)
-                        {
-                            redhots.Add(sf);
-                        }
-
-                        #endregion
-
-                        var wh_number = rInfo.W_Number;
-                        var g_number = rInfo.Number;
-                        addTemp.Add(new Temperature()
-                        {
-                            PId = pid,
-                            StampTime = datenowStr,
-                            UpdateTime = datenow,
-                            Temp = temp,
-                            RealHeart = 0,
-                            Type = 0,
-                            WH_Number = wh_number,
-                            G_Number = g_number
-                        });
-
-                    }
-                    #endregion
-                }
+                Utils.PrintLog("不存在该收集器/采集器的信息，Receiver:" + c_short + ",CollecterID:" + cmodel.m_cpuid, "AddTemp");
+                return false;
             }
+
+            var sensorList = cinfo.SensorIdArr.Split(',').ToList();
+            sensorList = sensorList.Distinct().ToList();
+            if (sensorList.Count <= 0)
+            {
+                Utils.PrintLog("不存在传感器的安装信息，sensorList:" + string.Join("-", sensorList), "AddTemp");
+                return false;
+            }
+
+            #endregion 基础信息判断
+            var wh_number = rInfo.W_Number;
+            var g_number = rInfo.Number;
+            var h_number = cinfo.HeapNumber;
+
+            var sList = sRepository.GetList(g => sensorList.Contains(g.SensorId)) ?? new List<Sensor>();
+            #region chuanganqi temp
+            int i = 0;
+            for (; i < sensorList.Count; i++)
+            {
+                var sf = sensorList[i];
+                #region 将传感器ID转化位物理位置
+                var sInfo = sList.FirstOrDefault(d => d.SensorId == sf);
+                if (sInfo == null)
+                    continue;
+                var pid = sInfo.GuidID;
+                structList.Add(pid);//将物理结构ID假如集合
+                #endregion 将传感器ID转化位物理位置
+
+                var temp = Comm.SysApi.Tools.GetTemp(cmodel.temp, i);
+
+                #region 坏点
+                if (temp == (decimal)63.75 || temp == (decimal)0)//坏点
+                {
+                    //badhots.Add(f);
+                    dicBadhots.Add(sf, 1);
+                    continue;
+                }
+                else
+                {
+                    dicBadhots.Add(sf, 0);
+                }
+                #endregion 坏点
+
+                #region 高温红色报警
+
+                if (temp >= (decimal)35 && temp < (decimal)63.75)
+                {
+                    redhots.Add(sf);
+                }
+
+                #endregion
+
+                addTemp.Add(new Temperature()
+                {
+                    PId = pid,
+                    StampTime = datenowStr,
+                    UpdateTime = datenow,
+                    Temp = temp,
+                    RealHeart = 0,
+                    Type = 0,
+                    WH_Number = wh_number,
+                    G_Number = g_number,
+                    H_Number = h_number,
+                    TimeFlag = "-"
+                });
+
+                //做传感器的折线的变化图
+                new Data.Context.DbEntity().AddTempsChartData2(wh_number, g_number, h_number, pid, temp, 1);
+                //Action<string, string, string, string, decimal, int> pushTemps2 = new Data.Context.DbEntity().AddTempsChartData2;
+                //pushTemps2.BeginInvoke(wh_number, g_number, h_number, pid, temp, 1, ar => pushTemps2.EndInvoke(ar), null);
+
+            }
+            #endregion
+
 
             #region 批量插入温度、更新坏点、高温报警            
             var reint = tRepository.AddUpdate(addTemp, p => p.RealHeart == 0 && structList.Contains(p.PId) && p.Type == 0, "RealHeart", 1, "StampTime");
+            if (reint > 0)
+            {
+                //做粮堆的三温图
+                new Data.Context.DbEntity().AddTempsChartData(wh_number, g_number, h_number, "-", 1);
+                //Action<string, string, string, string, decimal, int> pushTemps = new Data.Context.DbEntity().AddTempsChartData;
+                //pushTemps.BeginInvoke(wh_number, g_number, h_number, "-", averTepms, 1, ar => pushTemps.EndInvoke(ar), null);
+
+            }
             //更新坏点- 更新采集器的坏点数
             new Data.Context.DbEntity().UpdateBadHot(dicBadhots);
             //高温报警
@@ -308,7 +365,7 @@ namespace Net66.Core
                     Direction_X = x,
                     Direction_Y = y,
                     Direction_Z = z,
-                    Sequen = sequen,
+                    Sequen = _collecter.GuidID,
                     IsBad = 0,
                     GuidID = guid,
                     InstallDate = datenowStr

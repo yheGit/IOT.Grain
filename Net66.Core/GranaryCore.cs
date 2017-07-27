@@ -58,7 +58,7 @@ namespace Net66.Core
 
         public bool IsExist2(List<string> _params)
         {
-             //TypeParse.StrToInt(Utils.GetValue(_params, "number^"), 0)
+            //TypeParse.StrToInt(Utils.GetValue(_params, "number^"), 0)
             string _number = Utils.GetValue(_params, "number^");
             int _type = TypeParse.StrToInt(Utils.GetValue(_params, "type^"), 0);
             var ifno = gRepository.Get(g => g.Number == _number && g.Type == _type);
@@ -172,7 +172,7 @@ namespace Net66.Core
         public bool AddList2(List<Granary> _addList)
         {
             //_type 0duiwei、1louceng、2aojian
-            _addList.ForEach(a => { a.IsActive = 1;});
+            _addList.ForEach(a => { a.IsActive = 1; });
 
             var reInt = gRepository.Add(_addList);
             return reInt > 0;
@@ -248,10 +248,10 @@ namespace Net66.Core
                 Label = s.Label,
                 MaxTemp = s.MaxTemp,
                 MinTemp = s.MinTemp,
-                IsBad=s.IsBad,
+                IsBad = s.IsBad,
                 SensorId = s.SensorId,
                 Sequen = s.Sequen,
-                UserId = s.UserId
+                UserId = s.UserId,
             }).ToList() ?? new List<OSensor>();
             #endregion
 
@@ -264,22 +264,22 @@ namespace Net66.Core
                 MaxiTemperature = s.MaxiTemperature,
                 MinTemperature = s.MinTemperature,
                 BadPoints = badlist.Where(w => w.heapnumber == s.Number && w.badcount > 0).Count(),//  s.BadPoints,
-                OutSideTemperature=0,
-                InSideTemperature= s.AverageTemperature,
+                OutSideTemperature = 0,
+                InSideTemperature = s.AverageTemperature,
                 Code = s.Code,
-                Name=s.Name,
+                Name = s.Name,
                 IsActive = s.IsActive,
-                Location = s.Location,               
+                Location = s.Location,
                 Number = s.Number,
                 PID = s.PID,
-                SensorList = osensorList.Where(w => clist.Where(wh => wh.HeapNumber == s.Number).Select(se => se.CPUId).Contains(w.Collector)).ToList(),
+                SensorList = osensorList.Where(w => clist.Where(wh => wh.HeapNumber == s.Number).Select(se => se.GuidID).Contains(w.Sequen)).ToList(),
                 Type = s.Type,
                 UserId = s.UserId,
                 WH_ID = s.WH_ID,
                 WH_Number = s.WH_Number,
                 LineCount = hllist.Where(w => w.HeapNumber == s.Number).OrderBy(o => o.Sort).Select(e => e.Counts.Value).ToList(),
                 LastTime = tempList.OrderByDescending(d => d.UpdateTime).FirstOrDefault() == null ? "" : tempList.OrderByDescending(d => d.UpdateTime).FirstOrDefault().StampTime,
-                Sort=s.Sort
+                Sort = s.Sort
                 #endregion 
 
             }).ToList();
@@ -291,18 +291,14 @@ namespace Net66.Core
         /// Q1-1-1-1
         /// type=0 最近24小时、 1最近7天、 2最近1个月、3 最近1年
         /// </summary>
-        /// <param name="number"></param>
         public List<Temperature> GetHeapTempsChart(string number, int type = 0)
         {
             var cList = cRepository.GetList(g => g.HeapNumber == number) ?? new List<Collector>();
             List<string> cpuIdList = cList.Select(s => s.CPUId).ToList();
             var sList = sRepository.GetList(g => cpuIdList.Contains(g.Collector)) ?? new List<Sensor>();
             var sidList = sList.Select(s => s.GuidID);
-            //var rIdList = cList.Select(s => s.R_Code).Distinct().ToList();
-            //var rList = rRepository.GetList(g => rIdList.Contains(g.ID));
-            //cpuIdList.AddRange(rList.Select(s => s.ID.ToString()).ToList());
             DateTime datenow = DateTime.Now;
-            
+
             switch (type)
             {
                 case 1:
@@ -314,14 +310,64 @@ namespace Net66.Core
                 default:
                     datenow = datenow.AddHours(-24); break;//zuijin 1tian
             }
-            //0chuanganqi、1caijiqi、2shoujiqi nei、3shoujiqi wai
-            //var temps = tRepository.GetList(g => cpuIdList.Contains(g.PId)&& string.Compare(g.StampTime,DateTime.Now.ToString())>=0);
-            //0传感器、1采集器(粮堆平均温度)、2收集器（室内）、3收集器（室外）
-            //var temps = tRepository.GetList(g => ((cpuIdList.Contains(g.PId) && (g.Type == 1||g.Type==2))||
-            //    (g.Type==3&&number.Contains(g.WH_Number))) && g.UpdateTime >= datenow);
-            var temps = tRepository.GetList(g => ((sidList.Contains(g.PId) && g.Type == 0) || ((g.Type == 2 ||g.Type == 3) && number.Contains(g.WH_Number))) && g.UpdateTime >= datenow);
 
-            return temps=temps.OrderBy(o => o.UpdateTime).ToList();
+            //0传感器、1采集器(粮堆平均温度)、2收集器（室内）、3收集器（室外）
+            var temps = tRepository.GetList(g => ((sidList.Contains(g.PId) && g.Type == 0) || ((g.Type == 2 || g.Type == 3) && number.Contains(g.WH_Number))) && g.UpdateTime >= datenow);
+
+            return temps = temps.OrderBy(o => o.UpdateTime).ToList();
+
+        }
+
+        /// <summary>
+        /// 2017-06-27 15:46:10
+        /// </summary>
+        public List<Temperature> GetHeapTempsChart2(string number, int type = 0)
+        {
+            DateTime datenow = DateTime.Now;
+            string TimeFlag = "DAY";//MONTH,YEAR
+            var where = EfUtils.True<Temperature>();
+            //var where2 = EfUtils.True<Temperature>();
+            switch (type)
+            {
+                case 1:
+                    datenow = datenow.AddDays(-7);
+                    break;//zuijin 1zhou
+                case 2:
+                    datenow = datenow.AddMonths(-1);
+                    TimeFlag = "MONTH"; break;//zuijin 1yue
+                case 3:
+                    datenow = datenow.AddYears(-1);
+                    TimeFlag = "YEAR"; break;//zuijin 1nian
+                default:
+                    datenow = datenow.AddHours(-24);
+                    TimeFlag = "DAY"; break;//zuijin 1tian
+            }
+
+            var wh_number = number.Substring(0, number.IndexOf('-'));
+            var g_number = number.Substring(0, number.LastIndexOf('-'));
+
+            Utils.PrintLog("wh_number" + wh_number + ",g_number" + g_number, "ILog");
+            //0传感器、1采集器(粮堆平均温度)、2收集器（室内）、3收集器（室外）
+            var temps = tRepository.GetList(g => (
+               (g.H_Number.Equals(number) && g.Type == 1)
+            || (g_number.Equals(g.G_Number) && g.Type == 2)
+            || (wh_number.Equals(g.WH_Number) && g.Type == 3)
+            ) && g.RealHeart == 1 && g.UpdateTime >= datenow && g.TimeFlag == TimeFlag);
+
+            return temps = temps.OrderBy(o => o.UpdateTime).Select(s => new Temperature()
+            {
+                G_Number = s.G_Number,
+                H_Number = s.H_Number,
+                ID = s.ID,
+                PId = s.PId,
+                RealHeart = s.RealHeart,
+                StampTime = s.StampTime,
+                Temp = s.Temp,
+                UpdateTime = s.UpdateTime,
+                WH_Number = s.WH_Number,
+                Type = s.Type == 1 ? 0 : s.Type,
+                TimeFlag = s.TimeFlag
+            }).ToList();
 
         }
 
@@ -333,7 +379,8 @@ namespace Net66.Core
         /// </summary>
         public List<Temperature> GetSensorsChart(string number, int type = 0)
         {
-            var sInfo = sRepository.Get(g => g.SensorId == number);
+            //var sInfo = sRepository.Get(g => g.SensorId == number);
+            var sInfo = sRepository.Get(g => g.GuidID == number);
             if (sInfo == null)
                 return null;
             DateTime datenow = DateTime.Now;
@@ -351,6 +398,55 @@ namespace Net66.Core
             var temps = tRepository.GetList(g => sInfo.GuidID.Equals(g.PId) && g.Type == 0 && g.UpdateTime > datenow);
 
             return temps = temps.OrderBy(o => o.UpdateTime).ToList();
+
+        }
+
+        /// <summary>
+        /// 通过传感器编号获取其折线变化图 2017-06-27 15:46:00
+        /// Q1-1-1-1
+        /// type=0 最近24小时、 1最近7天、 2最近1个月、3 最近1年
+        /// </summary>
+        public List<Temperature> GetSensorsChart2(string number, int type = 0)
+        {
+            var guidid = number;
+            var sInfo = sRepository.Get(g => g.GuidID == guidid);
+            if (sInfo == null)
+                return null;
+            var h_number = cRepository.Get(g => g.CPUId == sInfo.Collector).HeapNumber;
+
+            DateTime datenow = DateTime.Now;
+            string TimeFlag = "DAY";//MONTH,YEAR
+            switch (type)
+            {
+                case 1:
+                    datenow = datenow.AddDays(-7);
+                    break;//zuijin 1zhou
+                case 2:
+                    datenow = datenow.AddMonths(-1);
+                    TimeFlag = "MONTH"; break;//zuijin 1yue
+                case 3:
+                    datenow = datenow.AddYears(-1);
+                    TimeFlag = "YEAR"; break;//zuijin 1nian
+                default:
+                    datenow = datenow.AddHours(-24);
+                    TimeFlag = "DAY"; break;//zuijin 1tian
+            }
+
+            var temps = tRepository.GetList(g => sInfo.GuidID.Equals(g.PId) && g.Type == 0 && g.UpdateTime > datenow && g.TimeFlag == TimeFlag);//WH_Number---sensorGuid
+
+            return temps = temps.OrderBy(o => o.UpdateTime).Select(s => new Temperature()
+            {
+                G_Number = s.G_Number,
+                H_Number = s.H_Number,
+                ID = s.ID,
+                PId = s.PId,
+                RealHeart = s.RealHeart,
+                StampTime = s.StampTime,
+                Temp = s.Temp,
+                UpdateTime = s.UpdateTime,
+                WH_Number = s.WH_Number,
+                Type = s.Type == 1 ? 0 : s.Type
+            }).ToList();
 
         }
 

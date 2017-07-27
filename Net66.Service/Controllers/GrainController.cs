@@ -46,7 +46,7 @@ namespace Net66.Service.Controllers
         public MobiResult GetList(ISearch _search)
         {
 
-            Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
+            Utils.PrintLog("GetList", "GetList");
             var _params = _search.DicList;
             if (_params == null) return new MobiResult(1009, "参数不合法，请用可选参数占位，如TextValue", null, "'DicList': [ ],");
             if (!_params.Exists(e => e.Contains("UserId^")) || !_params.Exists(e => e.Contains("Type^")))
@@ -135,9 +135,28 @@ namespace Net66.Service.Controllers
         [HttpGet]
         public MobiResult GetList_GrainReport_ByUserId()
         {
-            Utils.PrintLog("获取粮仓报表", "PostPack2");
-            var reList = wareHouseCore.GetGrainsTemp();
-            Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId");
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                Utils.PrintLog("GetList_GrainReport_ByUserId", "GetList_GrainReport_ByUserId-ME移动端首页", "InParamLog");
+            }
+            #endregion //调试打印日志
+            List<OGrainsReport> reList=new List<OGrainsReport>();
+            try
+            {
+                reList = wareHouseCore.GetGrainsTemp();
+            }
+            catch (Exception ex)
+            {
+                Utils.ExceptionLog(ex, "GetList_GrainReport_ByUserId");
+            }
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(reList);
+                Utils.PrintLog(msg, "GetList_GrainReport_ByUserId-ME移动端首页", "OutParamLog");
+            }
+            #endregion //调试打印日志
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
@@ -152,11 +171,24 @@ namespace Net66.Service.Controllers
         public MobiResult GranaryTemp_GetList(string id)
         {
             string number = id;//粮仓编号
-            Utils.PrintLog("获取廒间报表" + id, "PostPack2");
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = "number:" + id;
+                Utils.PrintLog(msg, "GranaryTemp_GetList-ME廒间温度报表", "InParamLog");
+            }
+            #endregion //调试打印日志
 
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             var reList = wareHouseCore.getGranaryTemp(number);
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = JsonConvertHelper.SerializeObject(reList);
+                Utils.PrintLog(msg, "GranaryTemp_GetList-ME廒间温度报表", "OutParamLog");
+            }
+            #endregion //调试打印日志
             if (reList != null)
                 return new MobiResult(1000, "成功", reList);
             else
@@ -173,13 +205,26 @@ namespace Net66.Service.Controllers
 
             string number = id;//廒间编号
 
-            Utils.PrintLog("获取堆位报表" + id, "PostPack2");
+            #region  调试打印日志               
+            if (Utils.DebugApp)
+            {
+                var msg = "number:"+id;
+                Utils.PrintLog(msg, "HeapsTemp_GetList-ME堆位温度报表", "InParamLog");
+            }
+            #endregion //调试打印日志
 
             if (string.IsNullOrEmpty(number))
                 return new MobiResult(1009);
             try
             {
                 var reList = wareHouseCore.getHeapsTemp(number);
+                #region  调试打印日志               
+                if (Utils.DebugApp)
+                {
+                    var msg = JsonConvertHelper.SerializeObject(reList);
+                    Utils.PrintLog(msg, "HeapsTemp_GetList-ME堆位温度报表", "OutParamLog");
+                }
+                #endregion //调试打印日志
                 if (reList != null)
                     return new MobiResult(1000, "成功", reList);
                 else
